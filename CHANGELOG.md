@@ -31,13 +31,13 @@ generation instead: the specification is vendored under `Spec/`, the generator l
   none, so callers could not appear in Authorized Devices or use the OAuth PIN flow.
 - `HTTPTransport`, so requests can be intercepted, stubbed or wrapped.
 - Support for the JWT device-registration flow the current specification describes.
-- A test suite — 273 tests, where there were previously none.
-- `client.discover`, hand-written support for the Plex Discover and metadata providers, which
-  the specification does not describe: catalogue search, home-screen hubs, the watchlist, title
-  details, a show's children, and streaming availability. Its models decode leniently — every
-  property optional, decoding non-throwing, a bad element in a list skipped — because these
-  endpoints are undocumented and change without notice. See
-  [Plex Discover](README.md#plex-discover).
+- A test suite — 272 tests, where there were previously none.
+- `client.discover`, handwritten support for the Plex Discover and metadata providers, which
+  the specification does not describe: catalogue search, home-screen hubs, arbitrary provider
+  keys, title details, a show's children, the watchlist, and the provider's photo transcoder.
+  Its models decode leniently — every property optional, decoding non-throwing, a bad element
+  in a list skipped — because these endpoints are undocumented and change without notice.
+  See [Plex Discover](README.md#plex-discover).
 
 ### Changed
 

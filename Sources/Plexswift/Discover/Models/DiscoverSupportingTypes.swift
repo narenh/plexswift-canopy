@@ -9,7 +9,7 @@ import Foundation
 /// Discover returns artwork twice over: as the flat `thumb` and `art` paths the media server
 /// also uses, and as this list, whose `url` is usually already absolute and whose `type` names
 /// the role — `coverPoster`, `background`, `clearLogo`, `snapshot`.
-public struct DiscoverImage: Decodable, Hashable, Sendable {
+public struct DiscoverImage: Codable, Hashable, Sendable {
     /// The role the image plays, such as `coverPoster` or `background`.
     public let type: String?
     /// The image's location. Usually an absolute URL on Plex's static host.
@@ -39,7 +39,7 @@ public struct DiscoverImage: Decodable, Hashable, Sendable {
 ///
 /// The same shape covers all of them. Which properties are populated depends on the relation —
 /// `role` and `thumb` are a cast member's, `count` belongs to a faceted genre.
-public struct DiscoverTag: Decodable, Hashable, Sendable {
+public struct DiscoverTag: Codable, Hashable, Sendable {
     /// The display name — the genre, the person's name, the country.
     public let tag: String?
     /// An opaque key identifying the tag on the provider, such as `tag://…` for a person.
@@ -109,7 +109,7 @@ public struct DiscoverTag: Decodable, Hashable, Sendable {
 /// An item usually carries several: a critic score and an audience score from Rotten Tomatoes,
 /// an IMDb score, sometimes a TMDB one. `type` distinguishes `critic` from `audience`, and
 /// `image` names the source — `rottentomatoes://image.rating.ripe`, `imdb://image.rating`.
-public struct DiscoverRating: Decodable, Hashable, Sendable {
+public struct DiscoverRating: Codable, Hashable, Sendable {
     /// Which side of the aggregate this is: `critic` or `audience`.
     public let type: String?
     /// The score itself. The scale is the source's own — IMDb out of 10, Rotten Tomatoes out
@@ -145,7 +145,7 @@ public struct DiscoverRating: Decodable, Hashable, Sendable {
 /// The `id` is a URI: `imdb://tt0133093`, `tmdb://603`, `tvdb://70327`. See
 /// ``DiscoverMetadata/imdbID``, ``DiscoverMetadata/tmdbID`` and ``DiscoverMetadata/tvdbID``
 /// for the parsed forms.
-public struct DiscoverGuid: Decodable, Hashable, Sendable {
+public struct DiscoverGuid: Codable, Hashable, Sendable {
     /// The identifier, as a `scheme://value` URI.
     public let id: String?
 
@@ -171,7 +171,7 @@ public struct DiscoverGuid: Decodable, Hashable, Sendable {
 }
 
 /// A critic's review, returned when reviews are requested.
-public struct DiscoverReview: Decodable, Hashable, Sendable {
+public struct DiscoverReview: Codable, Hashable, Sendable {
     /// The reviewer's name.
     public let tag: String?
     /// The publication the review appeared in.
@@ -228,7 +228,7 @@ public struct DiscoverReview: Decodable, Hashable, Sendable {
 /// price. It is populated when availability is requested — see
 /// ``DiscoverMetadataInclusions/availability`` — and is region-specific, so the answer depends
 /// on the account making the request.
-public struct DiscoverAvailability: Decodable, Hashable, Sendable {
+public struct DiscoverAvailability: Codable, Hashable, Sendable {
     /// The provider's identifier for this offer.
     public let id: String?
     /// The service's display name, such as `Netflix`.
@@ -330,10 +330,9 @@ public struct DiscoverAvailability: Decodable, Hashable, Sendable {
 /// What the requesting account has done with an item: watched it, rated it, put it on a
 /// watchlist.
 ///
-/// Returned when ``DiscoverMetadataInclusions/userState`` is requested. Plex sends these
-/// fields inline on the item as well as in this object, depending on the endpoint;
-/// ``DiscoverMetadata`` exposes both.
-public struct DiscoverUserState: Decodable, Hashable, Sendable {
+/// Returned when `includeUserState` is asked for. Plex sends these fields inline on the item
+/// as well as in this object, depending on the endpoint; ``DiscoverMetadata`` exposes both.
+public struct DiscoverUserState: Codable, Hashable, Sendable {
     /// When the item was added to the watchlist, in seconds since the epoch.
     public let watchlistedAt: Int?
     /// How many times the account has watched it.
@@ -388,7 +387,7 @@ public struct DiscoverUserState: Decodable, Hashable, Sendable {
 ///
 /// On Discover this is a trailer or another extra rather than the title itself: the providers
 /// hold metadata, not media. ``DiscoverPart/key`` is the path to hand to a player.
-public struct DiscoverMedia: Decodable, Hashable, Sendable {
+public struct DiscoverMedia: Codable, Hashable, Sendable {
     /// The provider's identifier for this stream.
     public let id: String?
     /// The duration in milliseconds.
@@ -471,7 +470,7 @@ public struct DiscoverMedia: Decodable, Hashable, Sendable {
 }
 
 /// One file of a ``DiscoverMedia`` stream.
-public struct DiscoverPart: Decodable, Hashable, Sendable {
+public struct DiscoverPart: Codable, Hashable, Sendable {
     /// The provider's identifier for this part.
     public let id: String?
     /// The path to play, relative to the provider that returned it.

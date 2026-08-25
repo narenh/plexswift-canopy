@@ -1,7 +1,7 @@
 import Foundation
 
 extension Operations {
-    /// Fetch a set of Discover hubs — the rows that make up a Discover screen.
+    /// Get a set of Discover hubs — the rows that make up a Discover screen.
     ///
     /// `GET /hubs` on `discover.provider.plex.tv` by default. Pass another key to follow a hub
     /// that groups its contents into further rows rather than listing them.
@@ -23,13 +23,10 @@ extension Operations {
         /// The content directory the hubs are drawn from.
         public var contentDirectoryID: String?
 
-        /// The content directories pinned to the screen, as a comma-separated list.
+        /// The content directories pinned to the screen, comma-separated.
         public var pinnedContentDirectoryID: String?
 
-        /// Query items appended to the request, for the parameters this type does not name.
-        ///
-        /// The providers accept flags that are not documented anywhere, including here. Rather
-        /// than force a fork of the SDK to try one, pass it through.
+        /// Query items appended to the request, for parameters this type does not name.
         public var additionalQueryItems: [URLQueryItem]
 
         public init(
@@ -50,23 +47,17 @@ extension Operations {
 
         public var queryItems: [URLQueryItem] {
             var items: [URLQueryItem] = []
-            if let count {
-                items.append(URLQueryItem(name: "count", value: QueryValue(count).encoded))
+            if let value = count {
+                items.append(URLQueryItem(name: "count", value: QueryValue(value).encoded))
             }
-            if let contentDirectoryID {
+            if let value = contentDirectoryID {
                 items.append(
-                    URLQueryItem(
-                        name: "contentDirectoryID",
-                        value: QueryValue(contentDirectoryID).encoded
-                    )
+                    URLQueryItem(name: "contentDirectoryID", value: QueryValue(value).encoded)
                 )
             }
-            if let pinnedContentDirectoryID {
+            if let value = pinnedContentDirectoryID {
                 items.append(
-                    URLQueryItem(
-                        name: "pinnedContentDirectoryID",
-                        value: QueryValue(pinnedContentDirectoryID).encoded
-                    )
+                    URLQueryItem(name: "pinnedContentDirectoryID", value: QueryValue(value).encoded)
                 )
             }
             items.append(contentsOf: additionalQueryItems)

@@ -1,16 +1,18 @@
 import Foundation
 
 extension Operations {
-    /// Fetch the account's watchlist from the Discover provider.
+    /// Get the account's Plex Discover watchlist.
     ///
     /// `GET /library/sections/watchlist/all` on `discover.provider.plex.tv`.
     ///
-    /// The specification describes this endpoint too, as ``Operations/GetWatchlist``, and that
-    /// operation decodes into the media server's ``Metadata``. This one decodes into
-    /// ``DiscoverMetadata``, which is the type the rest of Discover returns — so a watchlist
-    /// entry can be handed to ``DiscoverAPI/metadata(ratingKey:including:relatedCount:)``
-    /// without translation, and carries the availability and slug fields the media server's
-    /// model has no place for.
+    /// The specification describes this endpoint too, as ``Operations/GetWatchlist``, which
+    /// decodes into the media server's ``Metadata``. This one decodes into
+    /// ``DiscoverMetadata``, the type the rest of Discover returns — so an entry can be handed
+    /// straight to ``Operations/GetDiscoverMetadata`` without translation, and keeps the
+    /// availability and slug fields the media server's model has no place for.
+    ///
+    /// Adding and removing entries are specified operations, at
+    /// ``ProviderAPI/addToWatchlist(uri:)`` and ``ProviderAPI/removeFromWatchlist(uri:)``.
     public struct GetDiscoverWatchlist: PlexOperation {
         public typealias Success = DiscoverItemsResponse
 
@@ -30,33 +32,28 @@ extension Operations {
         /// `watchlistedAt:desc`.
         public var sort: String?
 
-        /// Where to start, for paging. Sent as `X-Plex-Container-Start`.
-        public var offset: Int?
+        /// Where the returned page starts. Sent as `X-Plex-Container-Start`.
+        public var containerStart: Int?
 
-        /// How many entries a page holds. Sent as `X-Plex-Container-Size`.
-        public var pageSize: Int?
+        /// How many entries the page holds. Sent as `X-Plex-Container-Size`.
+        public var containerSize: Int?
 
-        /// Which optional sections to ask for on each entry.
-        public var inclusions: DiscoverMetadataInclusions
-
-        /// Query items appended to the request, for the parameters this type does not name.
+        /// Query items appended to the request, for parameters this type does not name.
         public var additionalQueryItems: [URLQueryItem]
 
         public init(
             filter: String? = nil,
             libtype: String? = nil,
             sort: String? = nil,
-            offset: Int? = nil,
-            pageSize: Int? = nil,
-            inclusions: DiscoverMetadataInclusions = .none,
+            containerStart: Int? = nil,
+            containerSize: Int? = nil,
             additionalQueryItems: [URLQueryItem] = []
         ) {
             self.filter = filter
             self.libtype = libtype
             self.sort = sort
-            self.offset = offset
-            self.pageSize = pageSize
-            self.inclusions = inclusions
+            self.containerStart = containerStart
+            self.containerSize = containerSize
             self.additionalQueryItems = additionalQueryItems
         }
 
@@ -64,29 +61,21 @@ extension Operations {
 
         public var queryItems: [URLQueryItem] {
             var items: [URLQueryItem] = []
-            if let filter {
-                items.append(URLQueryItem(name: "filter", value: QueryValue(filter).encoded))
+            if let value = filter {
+                items.append(URLQueryItem(name: "filter", value: QueryValue(value).encoded))
             }
-            if let libtype {
-                items.append(URLQueryItem(name: "libtype", value: QueryValue(libtype).encoded))
+            if let value = libtype {
+                items.append(URLQueryItem(name: "libtype", value: QueryValue(value).encoded))
             }
-            if let sort {
-                items.append(URLQueryItem(name: "sort", value: QueryValue(sort).encoded))
+            if let value = sort {
+                items.append(URLQueryItem(name: "sort", value: QueryValue(value).encoded))
             }
-            items.append(contentsOf: inclusions.queryItems)
             items.append(contentsOf: additionalQueryItems)
             return items
         }
 
         public var headers: [String: String] {
-            var headers: [String: String] = [:]
-            if let offset {
-                headers["X-Plex-Container-Start"] = QueryValue(offset).encoded
-            }
-            if let pageSize {
-                headers["X-Plex-Container-Size"] = QueryValue(pageSize).encoded
-            }
-            return headers
+            DiscoverContainerPaging(start: containerStart, size: containerSize).headers
         }
     }
 }

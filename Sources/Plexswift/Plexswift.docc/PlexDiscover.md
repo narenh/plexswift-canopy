@@ -8,18 +8,22 @@ Everything else in this package is generated from the published Plex specificati
 not in it.
 
 Discover is the part of Plex that knows about titles independently of any server: the catalogue
-behind the search field, the rows on the home screen, the account's watchlist, and the one
-thing a media server cannot answer at all — which services a film is currently streaming on,
+behind the search field, the rows on a Discover screen, the account's watchlist, and the one
+thing a media server cannot answer at all — which services a title is currently streaming on,
 and for how much. The Plex apps reach it through two hosts, `discover.provider.plex.tv` and
 `metadata.provider.plex.tv`, and ``DiscoverAPI`` wraps those calls.
 
-```swift
-let matches = try await client.discover.search("severance", types: [.tv])
-guard let key = matches.items.first?.ratingKey else { return }
+It is an ordinary namespace otherwise. The operations are ``PlexOperation``s like any other,
+they declare their host the way generated operations do, and they return their container
+through ``PlexClient/perform(_:)``.
 
-let show = try await client.discover.metadata(ratingKey: key, including: [.availability])
-for offer in show?.streamingAvailability ?? [] {
-    print(offer.title ?? "", offer.videoQuality ?? "")
+```swift
+let matches = try await client.discover.searchDiscoverProvider(query: "severance", searchTypes: "tv")
+guard let key = matches.mediaContainer?.results.first?.metadata?.ratingKey else { return }
+
+let details = try await client.discover.getDiscoverMetadata(ratingKey: key, includeAvailability: true)
+for offer in details.mediaContainer?.metadata?.first?.availability ?? [] {
+    print(offer.title ?? "", offer.offerType ?? "")
 }
 ```
 
@@ -28,18 +32,25 @@ for offer in show?.streamingAvailability ?? [] {
 A media server's API is addressed: a path is assembled from a section identifier and a rating
 key. Discover is walked. A hub arrives with its first few items and a ``DiscoverHub/key``, a
 directory arrives with a ``DiscoverDirectory/key``, and following one is how the next screen is
-fetched. ``DiscoverAPI/items(path:count:offset:pageSize:queryItems:)`` takes whatever key it is
-handed, including one that carries its own query string, which several do.
+fetched. ``DiscoverAPI/getDiscoverItems(key:count:containerStart:containerSize:additionalQueryItems:)``
+takes whatever key it is handed, including one that carries its own query string, which several
+do.
 
 ```swift
-for hub in try await client.discover.hubs(count: 12).hubs {
+let screen = try await client.discover.getDiscoverHubs(count: 12)
+for hub in screen.mediaContainer?.hub ?? [] {
     guard hub.more == true, let key = hub.key else { continue }
-    let rest = try await client.discover.items(path: key, count: 40)
-    print(hub.title ?? "", rest.items.count)
+    let rest = try await client.discover.getDiscoverItems(key: key, count: 40)
+    print(hub.title ?? "", rest.mediaContainer?.metadata?.count ?? 0)
 }
 ```
 
-Rating keys follow the same rule. A Discover key is an opaque hexadecimal string —
+Paging is the same as elsewhere in Plex and unlike most HTTP APIs: the window travels in the
+`X-Plex-Container-Start` and `X-Plex-Container-Size` headers, which `containerStart` and
+`containerSize` set, and the total comes back in `X-Plex-Container-Total-Size` — reachable from
+``PlexResponse/headers`` when the operation is sent with ``PlexClient/send(_:)``.
+
+Rating keys follow the walking rule too. A Discover key is an opaque hexadecimal string —
 `5d7768ba96b655001fdc0408` — and belongs to the providers; a media server's rating key is a
 small integer and belongs to that server. Neither is meaningful to the other.
 
@@ -68,6 +79,31 @@ The cost is that a typo in a field name looks exactly like a field Plex removed:
 The limit is that a body which is not a container at all still fails, so an error page cannot
 masquerade as an empty result.
 
+Otherwise these are ordinary models: `Codable`, `Hashable` and `Sendable`, with memberwise
+initialisers, exactly like the generated ones.
+
+### Artwork
+
+Most artwork needs nothing built: the entries in ``DiscoverMetadata/image`` are already
+absolute URLs on Plex's static host.
+
+```swift
+let poster = item.image?.first { $0.type == "coverPoster" }?.url
+```
+
+``DiscoverMetadata/thumb`` and ``DiscoverMetadata/art`` are provider-relative, and go through
+the provider's copy of the photo transcoder. It is the same endpoint as the media server's, at
+the same path, so ``Operations/TranscodeDiscoverImage`` mirrors ``Operations/TranscodeImage``
+and differs only in the host it is addressed to. Build the request rather than sending it, as
+with any other image URL in this package:
+
+```swift
+var configuration = client.configuration
+configuration.tokenPlacement = .queryItem      // an image loader cannot set headers
+let request = try PlexClient(configuration: configuration)
+    .makeRequest(for: Operations.TranscodeDiscoverImage(url: item.thumb, width: 300, minSize: .n1))
+```
+
 ### Passing through what is not named
 
 The providers accept parameters that are documented nowhere, this package included. Every
@@ -75,10 +111,10 @@ Discover operation takes `additionalQueryItems` so that trying one does not requ
 SDK.
 
 ```swift
-let response = try await client.perform(Operations.GetDiscoverItems(
+let response = try await client.discover.getDiscoverItems(
     key: "/hubs/home/recommended",
     additionalQueryItems: [URLQueryItem(name: "excludeFields", value: "summary")]
-))
+)
 ```
 
 ### Where the specification overlaps
@@ -87,13 +123,14 @@ Two of these endpoints are in the specification, and their generated operations 
 
 ``Operations/SearchDiscover`` types the search response as a plain metadata container. The
 provider answers with scored results grouped by source, so that operation decodes to an empty
-container even when there were matches — prefer ``DiscoverAPI/search(_:types:limit:providers:includeMetadata:)``.
+container even when there were matches — prefer
+``DiscoverAPI/searchDiscoverProvider(query:limit:searchTypes:searchProviders:includeMetadata:additionalQueryItems:)``.
 
 ``Operations/GetWatchlist`` works, but decodes into ``Metadata``, which has nowhere to put the
 availability and slug fields a watchlist entry carries.
-``DiscoverAPI/watchlist(filter:libtype:sort:offset:pageSize:including:)`` decodes into
-``DiscoverMetadata`` instead, so an entry can be handed straight back to
-``DiscoverAPI/metadata(ratingKey:including:relatedCount:)``.
+``DiscoverAPI/getDiscoverWatchlist(filter:libtype:sort:containerStart:containerSize:additionalQueryItems:)``
+decodes into ``DiscoverMetadata`` instead, so an entry can be handed straight back to
+``DiscoverAPI/getDiscoverMetadata(ratingKey:includeUserState:includeReviews:includeExtras:includeChildren:includeRelated:includeRelatedCount:includeOnDeck:includeAvailability:includeExternalMedia:asyncAugmentMetadata:additionalQueryItems:)``.
 
 Adding to and removing from the watchlist are specified operations, under
 ``ProviderAPI/addToWatchlist(uri:)`` and ``ProviderAPI/removeFromWatchlist(uri:)``. Both take
@@ -104,7 +141,6 @@ the item's ``DiscoverMetadata/guid`` as their `uri`.
 ### Making requests
 
 - ``DiscoverAPI``
-- ``DiscoverMetadataInclusions``
 
 ### Items
 

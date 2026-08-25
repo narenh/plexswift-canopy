@@ -17,7 +17,7 @@ import Foundation
 /// The `type` property is what distinguishes one kind of item from another: `movie`, `show`,
 /// `season`, `episode`, `clip` and `person` all decode to this type, with a different subset
 /// of the properties populated.
-public struct DiscoverMetadata: Decodable, Hashable, Sendable {
+public struct DiscoverMetadata: Codable, Hashable, Sendable {
 
     // MARK: Identity
 
@@ -219,6 +219,176 @@ public struct DiscoverMetadata: Decodable, Hashable, Sendable {
     /// provider's own.
     public let score: Double?
 
+    public init(
+        ratingKey: String? = nil,
+        key: String? = nil,
+        guid: String? = nil,
+        primaryGuid: String? = nil,
+        slug: String? = nil,
+        type: String? = nil,
+        subtype: String? = nil,
+        title: String? = nil,
+        titleSort: String? = nil,
+        originalTitle: String? = nil,
+        studio: String? = nil,
+        contentRating: String? = nil,
+        summary: String? = nil,
+        tagline: String? = nil,
+        year: Int? = nil,
+        originallyAvailableAt: String? = nil,
+        duration: Int? = nil,
+        publicPagesURL: String? = nil,
+        attributes: String? = nil,
+        thumb: String? = nil,
+        art: String? = nil,
+        banner: String? = nil,
+        theme: String? = nil,
+        image: [DiscoverImage]? = nil,
+        rating: Double? = nil,
+        ratingImage: String? = nil,
+        audienceRating: Double? = nil,
+        audienceRatingImage: String? = nil,
+        imdbRatingCount: Int? = nil,
+        ratings: [DiscoverRating]? = nil,
+        genre: [DiscoverTag]? = nil,
+        country: [DiscoverTag]? = nil,
+        director: [DiscoverTag]? = nil,
+        writer: [DiscoverTag]? = nil,
+        producer: [DiscoverTag]? = nil,
+        role: [DiscoverTag]? = nil,
+        similar: [DiscoverTag]? = nil,
+        collection: [DiscoverTag]? = nil,
+        label: [DiscoverTag]? = nil,
+        mood: [DiscoverTag]? = nil,
+        guids: [DiscoverGuid]? = nil,
+        reviews: [DiscoverReview]? = nil,
+        availability: [DiscoverAvailability]? = nil,
+        media: [DiscoverMedia]? = nil,
+        extras: DiscoverItemsContainer? = nil,
+        related: DiscoverHubsContainer? = nil,
+        onDeck: DiscoverOnDeck? = nil,
+        index: Int? = nil,
+        parentIndex: Int? = nil,
+        parentTitle: String? = nil,
+        parentRatingKey: String? = nil,
+        parentGuid: String? = nil,
+        parentKey: String? = nil,
+        parentThumb: String? = nil,
+        parentArt: String? = nil,
+        grandparentTitle: String? = nil,
+        grandparentRatingKey: String? = nil,
+        grandparentGuid: String? = nil,
+        grandparentKey: String? = nil,
+        grandparentThumb: String? = nil,
+        grandparentArt: String? = nil,
+        grandparentTheme: String? = nil,
+        grandparentSlug: String? = nil,
+        leafCount: Int? = nil,
+        viewedLeafCount: Int? = nil,
+        childCount: Int? = nil,
+        seasonCount: Int? = nil,
+        children: DiscoverItemsContainer? = nil,
+        userState: DiscoverUserState? = nil,
+        watchlistedAt: Int? = nil,
+        viewCount: Int? = nil,
+        viewOffset: Int? = nil,
+        lastViewedAt: Int? = nil,
+        userRating: Double? = nil,
+        addedAt: Int? = nil,
+        updatedAt: Int? = nil,
+        expiresAt: Int? = nil,
+        availableDate: Int? = nil,
+        primaryExtraKey: String? = nil,
+        reason: String? = nil,
+        reasonTitle: String? = nil,
+        reasonID: String? = nil,
+        score: Double? = nil
+    ) {
+        self.ratingKey = ratingKey
+        self.key = key
+        self.guid = guid
+        self.primaryGuid = primaryGuid
+        self.slug = slug
+        self.type = type
+        self.subtype = subtype
+        self.title = title
+        self.titleSort = titleSort
+        self.originalTitle = originalTitle
+        self.studio = studio
+        self.contentRating = contentRating
+        self.summary = summary
+        self.tagline = tagline
+        self.year = year
+        self.originallyAvailableAt = originallyAvailableAt
+        self.duration = duration
+        self.publicPagesURL = publicPagesURL
+        self.attributes = attributes
+        self.thumb = thumb
+        self.art = art
+        self.banner = banner
+        self.theme = theme
+        self.image = image
+        self.rating = rating
+        self.ratingImage = ratingImage
+        self.audienceRating = audienceRating
+        self.audienceRatingImage = audienceRatingImage
+        self.imdbRatingCount = imdbRatingCount
+        self.ratings = ratings
+        self.genre = genre
+        self.country = country
+        self.director = director
+        self.writer = writer
+        self.producer = producer
+        self.role = role
+        self.similar = similar
+        self.collection = collection
+        self.label = label
+        self.mood = mood
+        self.guids = guids
+        self.reviews = reviews
+        self.availability = availability
+        self.media = media
+        self.extras = extras
+        self.related = related
+        self.onDeck = onDeck
+        self.index = index
+        self.parentIndex = parentIndex
+        self.parentTitle = parentTitle
+        self.parentRatingKey = parentRatingKey
+        self.parentGuid = parentGuid
+        self.parentKey = parentKey
+        self.parentThumb = parentThumb
+        self.parentArt = parentArt
+        self.grandparentTitle = grandparentTitle
+        self.grandparentRatingKey = grandparentRatingKey
+        self.grandparentGuid = grandparentGuid
+        self.grandparentKey = grandparentKey
+        self.grandparentThumb = grandparentThumb
+        self.grandparentArt = grandparentArt
+        self.grandparentTheme = grandparentTheme
+        self.grandparentSlug = grandparentSlug
+        self.leafCount = leafCount
+        self.viewedLeafCount = viewedLeafCount
+        self.childCount = childCount
+        self.seasonCount = seasonCount
+        self.children = children
+        self.userState = userState
+        self.watchlistedAt = watchlistedAt
+        self.viewCount = viewCount
+        self.viewOffset = viewOffset
+        self.lastViewedAt = lastViewedAt
+        self.userRating = userRating
+        self.addedAt = addedAt
+        self.updatedAt = updatedAt
+        self.expiresAt = expiresAt
+        self.availableDate = availableDate
+        self.primaryExtraKey = primaryExtraKey
+        self.reason = reason
+        self.reasonTitle = reasonTitle
+        self.reasonID = reasonID
+        self.score = score
+    }
+
     private enum CodingKeys: String, CodingKey {
         case ratingKey, key, guid, primaryGuid, slug, type, subtype
         case title, titleSort, originalTitle, studio, contentRating, summary, tagline
@@ -350,54 +520,5 @@ public struct DiscoverMetadata: Decodable, Hashable, Sendable {
         reasonTitle = values.discoverString(.reasonTitle)
         reasonID = values.discoverString(.reasonID)
         score = values.discoverDouble(.score)
-    }
-}
-
-// MARK: - Reading an item
-
-extension DiscoverMetadata {
-    /// The item's IMDb identifier, such as `tt0133093`.
-    public var imdbID: String? { externalID(for: "imdb") }
-
-    /// The item's TMDB identifier.
-    public var tmdbID: String? { externalID(for: "tmdb") }
-
-    /// The item's TVDB identifier.
-    public var tvdbID: String? { externalID(for: "tvdb") }
-
-    /// The item's identifier in `service`, parsed out of ``guids``.
-    ///
-    /// - Parameter service: The scheme of the identifier, such as `imdb` or `tmdb`.
-    public func externalID(for service: String) -> String? {
-        guids?.lazy.compactMap { $0.value(for: service) }.first
-    }
-
-    /// The URL of the artwork of a given role, such as `coverPoster` or `background`.
-    ///
-    /// These are absolute and need no transcoding, unlike ``thumb`` and ``art``. Use
-    /// ``DiscoverAPI/artworkURL(for:width:height:)`` for those.
-    public func imageURL(ofType type: String) -> URL? {
-        image?.first { $0.type == type }.flatMap { $0.url }.flatMap(URL.init(string:))
-    }
-
-    /// Whether the account has this item on its watchlist, as far as the response says.
-    ///
-    /// Only meaningful when account state was requested — see
-    /// ``DiscoverMetadataInclusions/userState``. A response that did not carry it reads as
-    /// `false`, not as unknown.
-    public var isWatchlisted: Bool {
-        (watchlistedAt ?? userState?.watchlistedAt) != nil
-    }
-
-    /// The services the item can be streamed on without an additional payment.
-    ///
-    /// Rentals and purchases are excluded; ``availability`` has the complete list.
-    public var streamingAvailability: [DiscoverAvailability] {
-        (availability ?? []).filter { offer in
-            switch offer.offerType {
-            case "subscription", "free", "ads": return true
-            default: return false
-            }
-        }
     }
 }

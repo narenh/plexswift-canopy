@@ -33,18 +33,19 @@ final class DiscoverDecodingTests: XCTestCase {
           ]
         }}
         """)
+        let container = try XCTUnwrap(response.mediaContainer)
 
-        XCTAssertEqual(response.groups.count, 2)
-        XCTAssertEqual(response.groups.first?.title, "Movies")
+        XCTAssertEqual(container.searchResults?.count, 2)
+        XCTAssertEqual(container.searchResults?.first?.title, "Movies")
         XCTAssertEqual(
-            response.items.map(\.title),
+            container.results.compactMap(\.metadata?.title),
             ["The Matrix", "The Matrix Reloaded", "Keanu Reeves"]
         )
-        XCTAssertEqual(response.results.first?.score, 0.94)
+        XCTAssertEqual(container.results.first?.score, 0.94)
     }
 
     /// A search of one provider comes back ungrouped, with the results directly on the
-    /// container. Both shapes reach the same accessors.
+    /// container. Both shapes reach the same accessor.
     func testUngroupedSearchResultsAreReadTheSameWay() throws {
         let response = try decode(DiscoverSearchResponse.self, from: """
         {"MediaContainer": {"size": 1, "SearchResult": [
@@ -52,14 +53,17 @@ final class DiscoverDecodingTests: XCTestCase {
         ]}}
         """)
 
-        XCTAssertEqual(response.items.map(\.title), ["The Matrix"])
+        XCTAssertEqual(
+            response.mediaContainer?.results.compactMap(\.metadata?.title),
+            ["The Matrix"]
+        )
     }
 
     func testAnEmptyContainerIsNotAFailure() throws {
         let response = try decode(DiscoverSearchResponse.self, from: #"{"MediaContainer":{"size":0}}"#)
 
-        XCTAssertTrue(response.items.isEmpty)
         XCTAssertEqual(response.mediaContainer?.size, 0)
+        XCTAssertEqual(response.mediaContainer?.results, [])
     }
 
     // MARK: - Type flip-flops
@@ -132,7 +136,7 @@ final class DiscoverDecodingTests: XCTestCase {
         ]}
         """)
 
-        XCTAssertEqual(hub.items.map(\.title), ["First", "Third"])
+        XCTAssertEqual(hub.metadata?.map(\.title), ["First", "Third"])
     }
 
     /// Plex's JSON is derived from its XML, and a collection with a single member is sometimes
@@ -210,9 +214,13 @@ final class DiscoverDecodingTests: XCTestCase {
     }}
     """
 
-    func testADetailResponseDecodes() throws {
+    private func detailItem() throws -> DiscoverMetadata {
         let response = try decode(DiscoverItemsResponse.self, from: Self.detailJSON)
-        let item = try XCTUnwrap(response.items.first)
+        return try XCTUnwrap(response.mediaContainer?.metadata?.first)
+    }
+
+    func testADetailResponseDecodes() throws {
+        let item = try detailItem()
 
         XCTAssertEqual(item.ratingKey, "5d7768ba96b655001fdc0408")
         XCTAssertEqual(item.slug, "the-matrix-1999")
@@ -221,57 +229,52 @@ final class DiscoverDecodingTests: XCTestCase {
         XCTAssertEqual(item.role?.first?.role, "Neo")
         XCTAssertEqual(item.ratings?.count, 2)
         XCTAssertEqual(item.reviews?.first?.source, "Rolling Stone")
+        XCTAssertEqual(item.userState?.viewCount, 2)
         XCTAssertEqual(item.onDeck?.metadata?.title, "Next One")
-        XCTAssertEqual(item.related?.hub?.first?.items.map(\.title), ["Blade Runner"])
+        XCTAssertEqual(item.related?.hub?.first?.metadata?.map(\.title), ["Blade Runner"])
     }
 
-    func testExternalIdentifiersAreParsedOutOfTheGuids() throws {
-        let item = try XCTUnwrap(
-            try decode(DiscoverItemsResponse.self, from: Self.detailJSON).items.first
-        )
+    /// Availability is the part of Discover a media server cannot answer at all.
+    func testAvailabilityCarriesTheOfferAndItsPrice() throws {
+        let item = try detailItem()
 
-        XCTAssertEqual(item.imdbID, "tt0133093")
-        XCTAssertEqual(item.tmdbID, "603")
-        XCTAssertEqual(item.tvdbID, "169")
-        XCTAssertNil(item.externalID(for: "anidb"))
+        XCTAssertEqual(item.availability?.map(\.platform), ["netflix", "appletv"])
+        XCTAssertEqual(item.availability?.first?.offerType, "subscription")
+        XCTAssertEqual(item.availability?.last?.price, 14.99)
+        XCTAssertEqual(item.availability?.last?.priceDescription, "$14.99")
     }
 
-    func testArtworkOfAGivenRoleIsFoundInTheImageList() throws {
-        let item = try XCTUnwrap(
-            try decode(DiscoverItemsResponse.self, from: Self.detailJSON).items.first
-        )
+    /// External identifiers arrive as URIs, so reading one back out is the type's own job.
+    func testAnExternalIdentifierIsParsedOutOfItsURI() throws {
+        let item = try detailItem()
+        let guids = try XCTUnwrap(item.guids)
+
+        XCTAssertEqual(guids.compactMap { $0.value(for: "imdb") }, ["tt0133093"])
+        XCTAssertEqual(guids.compactMap { $0.value(for: "tmdb") }, ["603"])
+        XCTAssertEqual(guids.compactMap { $0.value(for: "anidb") }, [])
+    }
+
+    /// The artwork in `Image` is already absolute — it is `thumb` and `art` that need the
+    /// provider's transcoder.
+    func testTheImageListCarriesAbsoluteURLs() throws {
+        let item = try detailItem()
 
         XCTAssertEqual(
-            item.imageURL(ofType: "coverPoster")?.absoluteString,
+            item.image?.first { $0.type == "coverPoster" }?.url,
             "https://metadata-static.plex.tv/poster.jpg"
         )
-        XCTAssertNil(item.imageURL(ofType: "clearLogo"))
+        XCTAssertEqual(item.thumb, "/library/metadata/5d7768ba96b655001fdc0408/thumb/1618")
     }
 
-    /// Availability is the part of Discover a media server cannot answer, and the distinction
-    /// that matters to a viewer is between what they can watch now and what they would have to
-    /// pay for.
-    func testStreamingAvailabilityExcludesRentalsAndPurchases() throws {
-        let item = try XCTUnwrap(
-            try decode(DiscoverItemsResponse.self, from: Self.detailJSON).items.first
-        )
+    /// The models are `Codable` like the generated ones, so a response can be cached to disk
+    /// and read back.
+    func testAnItemSurvivesBeingEncodedAndDecodedAgain() throws {
+        let original = try detailItem()
 
-        XCTAssertEqual(item.availability?.count, 2)
-        XCTAssertEqual(item.streamingAvailability.map(\.platform), ["netflix"])
-        XCTAssertEqual(item.availability?.last?.price, 14.99)
-    }
+        let encoded = try JSONEncoder().encode(original)
+        let restored = try JSONDecoder().decode(DiscoverMetadata.self, from: encoded)
 
-    func testWatchlistStateIsReadFromEitherPlaceItArrives() throws {
-        let inline = try decode(DiscoverMetadata.self, from: #"{"watchlistedAt": 1712345678}"#)
-        let nested = try decode(
-            DiscoverMetadata.self,
-            from: #"{"UserState": {"watchlistedAt": 1712345678}}"#
-        )
-        let neither = try decode(DiscoverMetadata.self, from: #"{"title": "X"}"#)
-
-        XCTAssertTrue(inline.isWatchlisted)
-        XCTAssertTrue(nested.isWatchlisted)
-        XCTAssertFalse(neither.isWatchlisted)
+        XCTAssertEqual(restored, original)
     }
 
     // MARK: - Hubs
@@ -293,13 +296,14 @@ final class DiscoverDecodingTests: XCTestCase {
           ]
         }}
         """)
+        let hubs = try XCTUnwrap(response.mediaContainer?.hub)
 
-        XCTAssertEqual(response.hubs.count, 2)
-        XCTAssertEqual(response.hubs.first?.more, true)
-        XCTAssertEqual(response.hubs.first?.items.map(\.title), ["The Matrix", "Severance"])
-        XCTAssertEqual(response.hubs.first?.items.last?.leafCount, 18)
-        XCTAssertEqual(response.hubs.last?.directory?.first?.title, "Action")
-        XCTAssertEqual(response.hubs.last?.directory?.first?.count, 412)
+        XCTAssertEqual(hubs.count, 2)
+        XCTAssertEqual(hubs.first?.more, true)
+        XCTAssertEqual(hubs.first?.metadata?.map(\.title), ["The Matrix", "Severance"])
+        XCTAssertEqual(hubs.first?.metadata?.last?.leafCount, 18)
+        XCTAssertEqual(hubs.last?.directory?.first?.title, "Action")
+        XCTAssertEqual(hubs.last?.directory?.first?.count, 412)
     }
 
     // MARK: - Children
@@ -314,8 +318,8 @@ final class DiscoverDecodingTests: XCTestCase {
         ]}}
         """)
 
-        XCTAssertEqual(response.items.map(\.index), [1, 2])
-        XCTAssertEqual(response.items.first?.parentRatingKey, "5d9c0879")
+        XCTAssertEqual(response.mediaContainer?.metadata?.map(\.index), [1, 2])
+        XCTAssertEqual(response.mediaContainer?.metadata?.first?.parentRatingKey, "5d9c0879")
         XCTAssertEqual(response.mediaContainer?.size, 2)
     }
 

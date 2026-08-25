@@ -226,26 +226,30 @@ final class READMEExampleTests: XCTestCase {
     func testDiscoverExampleCompiles() async throws {
         let client = discoverClient(responses: [
             #"{"MediaContainer":{"SearchResult":[{"score":0.9,"Metadata":{"ratingKey":"5d9c0879","title":"Severance"}}]}}"#,
-            #"{"MediaContainer":{"Metadata":[{"ratingKey":"5d9c0879","title":"Severance","Availability":[{"title":"Apple TV+","platform":"appletv","offerType":"subscription","videoQuality":"uhd"}]}]}}"#,
+            #"{"MediaContainer":{"Metadata":[{"ratingKey":"5d9c0879","title":"Severance","Availability":[{"title":"Apple TV+","offerType":"subscription","priceDescription":""}]}]}}"#,
             #"{"MediaContainer":{"Metadata":[{"ratingKey":"5d9c0880","type":"season","index":1}]}}"#
         ])
 
-        let matches = try await client.discover.search("severance", types: [.tv])
-        let key = try XCTUnwrap(matches.items.first?.ratingKey)
+        let matches = try await client.discover.searchDiscoverProvider(
+            query: "severance",
+            searchTypes: "tv"
+        )
+        let key = try XCTUnwrap(matches.mediaContainer?.results.first?.metadata?.ratingKey)
 
-        let show = try await client.discover.metadata(
+        let details = try await client.discover.getDiscoverMetadata(
             ratingKey: key,
-            including: [.availability, .related]
+            includeAvailability: true
         )
         var offers: [String] = []
-        for offer in show?.streamingAvailability ?? [] {
-            offers.append([offer.title ?? "", offer.videoQuality ?? ""].joined(separator: " "))
+        for offer in details.mediaContainer?.metadata?.first?.availability ?? [] {
+            offers.append([offer.title ?? "", offer.offerType ?? "", offer.priceDescription ?? ""]
+                .joined(separator: " "))
         }
 
-        let seasons = try await client.discover.children(ratingKey: key)
+        let seasons = try await client.discover.getDiscoverMetadataChildren(ratingKey: key)
 
-        XCTAssertEqual(offers, ["Apple TV+ uhd"])
-        XCTAssertEqual(seasons.items.count, 1)
+        XCTAssertEqual(offers, ["Apple TV+ subscription "])
+        XCTAssertEqual(seasons.mediaContainer?.metadata?.count, 1)
     }
 
     func testDiscoverHubExampleCompiles() async throws {
@@ -255,25 +259,45 @@ final class READMEExampleTests: XCTestCase {
         ])
 
         var counts: [Int] = []
-        for hub in try await client.discover.hubs(count: 12).hubs {
-            counts.append(hub.items.count)
+        let screen = try await client.discover.getDiscoverHubs(count: 12)
+        for hub in screen.mediaContainer?.hub ?? [] {
+            counts.append(hub.metadata?.count ?? 0)
 
             if hub.more == true, let key = hub.key {
-                let rest = try await client.discover.items(path: key, count: 40)
-                counts.append(rest.items.count)
+                let rest = try await client.discover.getDiscoverItems(key: key, count: 40)
+                counts.append(rest.mediaContainer?.metadata?.count ?? 0)
             }
         }
 
         XCTAssertEqual(counts, [1, 2])
     }
 
+    func testDiscoverArtworkExampleCompiles() throws {
+        let client = discoverClient(responses: [])
+        let item = try JSONDecoder().decode(
+            DiscoverMetadata.self,
+            from: Data(#"{"thumb":"/library/metadata/1/thumb/2","Image":[{"type":"coverPoster","url":"https://metadata-static.plex.tv/p.jpg"}]}"#.utf8)
+        )
+
+        let poster = item.image?.first { $0.type == "coverPoster" }?.url
+
+        var configuration = client.configuration
+        configuration.tokenPlacement = .queryItem      // an image loader cannot set headers
+        let request = try PlexClient(configuration: configuration)
+            .makeRequest(for: Operations.TranscodeDiscoverImage(url: item.thumb, width: 300, minSize: .n1))
+
+        XCTAssertEqual(poster, "https://metadata-static.plex.tv/p.jpg")
+        XCTAssertEqual(request.url?.host, "metadata.provider.plex.tv")
+        XCTAssertEqual(request.queryItemsByName["url"], "/library/metadata/1/thumb/2")
+    }
+
     func testDiscoverPassthroughParameterExampleCompiles() async throws {
         let client = discoverClient(responses: [#"{"MediaContainer":{"size":0}}"#])
 
-        let response = try await client.perform(Operations.GetDiscoverItems(
+        let response = try await client.discover.getDiscoverItems(
             key: "/hubs/home/recommended",
             additionalQueryItems: [URLQueryItem(name: "excludeFields", value: "summary")]
-        ))
+        )
 
         XCTAssertEqual(response.mediaContainer?.size, 0)
     }

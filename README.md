@@ -241,43 +241,67 @@ search field, the rows on the home screen, the watchlist, and — the thing a me
 answer at all — which services a film is currently streaming on.
 
 Its endpoints are not in the specification. They are what the Plex apps themselves call, they
-have been stable for years, and `client.discover` wraps them:
+have been stable for years, and `client.discover` wraps them. It is an ordinary namespace
+otherwise: the same operation types, the same `throws(PlexError)`, the same containers.
 
 ```swift
-let matches = try await client.discover.search("severance", types: [.tv])
-guard let key = matches.items.first?.ratingKey else { return }
+let matches = try await client.discover.searchDiscoverProvider(query: "severance", searchTypes: "tv")
+guard let key = matches.mediaContainer?.results.first?.metadata?.ratingKey else { return }
 
-let show = try await client.discover.metadata(ratingKey: key, including: [.availability, .related])
-for offer in show?.streamingAvailability ?? [] {
-    print(offer.title ?? "", offer.videoQuality ?? "")
+let details = try await client.discover.getDiscoverMetadata(ratingKey: key, includeAvailability: true)
+for offer in details.mediaContainer?.metadata?.first?.availability ?? [] {
+    print(offer.title ?? "", offer.offerType ?? "", offer.priceDescription ?? "")
 }
 
-let seasons = try await client.discover.children(ratingKey: key)
+let seasons = try await client.discover.getDiscoverMetadataChildren(ratingKey: key)
 ```
 
 | Method | Endpoint |
 | --- | --- |
-| `search(_:types:limit:)` | `GET discover.provider.plex.tv/library/search` |
-| `hubs(path:count:)` | `GET discover.provider.plex.tv/hubs` |
-| `items(path:count:offset:pageSize:)` | Any Discover key — a hub's contents, a directory, a person's filmography |
-| `metadata(ratingKey:including:)` | `GET metadata.provider.plex.tv/library/metadata/{key}` |
-| `children(ratingKey:)` | `GET metadata.provider.plex.tv/library/metadata/{key}/children` |
-| `watchlist(filter:libtype:sort:)` | `GET discover.provider.plex.tv/library/sections/watchlist/all` |
-| `artworkURL(for:width:height:)` | A signed URL for a provider artwork path |
+| `searchDiscoverProvider(query:limit:searchTypes:)` | `discover.provider.plex.tv/library/search` |
+| `getDiscoverHubs(key:count:)` | `discover.provider.plex.tv/hubs` |
+| `getDiscoverItems(key:count:)` | Any Discover key — a hub's contents, a directory, a person's filmography |
+| `getDiscoverMetadata(ratingKey:include…)` | `metadata.provider.plex.tv/library/metadata/{key}` |
+| `getDiscoverMetadataChildren(ratingKey:)` | `metadata.provider.plex.tv/library/metadata/{key}/children` |
+| `getDiscoverWatchlist(filter:libtype:sort:)` | `discover.provider.plex.tv/library/sections/watchlist/all` |
+| `transcodeDiscoverImage(url:width:height:)` | `metadata.provider.plex.tv/photo/:/transcode` |
 
 Discover is walked by following keys rather than by assembling paths: a hub arrives with its
-first few items and a `key`, and that key — query string and all — is what `items(path:)`
-takes.
+first few items and a `key`, and that key — query string and all — is what `getDiscoverItems`
+takes. Paging is by the `X-Plex-Container-Start` and `X-Plex-Container-Size` headers, which
+`containerStart` and `containerSize` set.
 
 ```swift
-for hub in try await client.discover.hubs(count: 12).hubs {
-    print(hub.title ?? "", hub.items.count)
+let screen = try await client.discover.getDiscoverHubs(count: 12)
+for hub in screen.mediaContainer?.hub ?? [] {
+    print(hub.title ?? "Untitled", hub.metadata?.count ?? 0)
 
     if hub.more == true, let key = hub.key {
-        let rest = try await client.discover.items(path: key, count: 40)
-        print(rest.items.count)
+        let rest = try await client.discover.getDiscoverItems(key: key, count: 40)
+        print(rest.mediaContainer?.metadata?.count ?? 0)
     }
 }
+```
+
+### Artwork
+
+Most artwork needs nothing built. The entries in an item's `Image` list are already absolute
+URLs on Plex's static host, and go straight to an image loader:
+
+```swift
+let poster = item.image?.first { $0.type == "coverPoster" }?.url
+```
+
+It is `thumb` and `art` that are provider-relative, and those go through the provider's copy of
+the photo transcoder — the same endpoint as the media server's, at the same path, so
+`TranscodeDiscoverImage` mirrors `TranscodeImage` and differs only in host. As with any other
+image URL in this package, build the request rather than sending it:
+
+```swift
+var configuration = client.configuration
+configuration.tokenPlacement = .queryItem      // an image loader cannot set headers
+let request = try PlexClient(configuration: configuration)
+    .makeRequest(for: Operations.TranscodeDiscoverImage(url: item.thumb, width: 300, minSize: .n1))
 ```
 
 ### These endpoints are undocumented, and the models are built for that
@@ -297,19 +321,19 @@ Where a parameter is not named on a method, pass it through: every Discover oper
 `additionalQueryItems`.
 
 ```swift
-let response = try await client.perform(Operations.GetDiscoverItems(
+let response = try await client.discover.getDiscoverItems(
     key: "/hubs/home/recommended",
     additionalQueryItems: [URLQueryItem(name: "excludeFields", value: "summary")]
-))
+)
 ```
 
 Two of these endpoints do appear in the specification, and the generated operations for them
 are still there. `Operations.SearchDiscover` types the search response as a plain metadata
 container, where the provider actually answers with scored results grouped by source — so it
-decodes to an empty container even when there were matches, and `client.discover.search` should
+decodes to an empty container even when there were matches, and `searchDiscoverProvider` should
 be preferred. `Operations.GetWatchlist` works, but decodes into the media server's `Metadata`,
 which has no place for the availability and slug fields a watchlist entry carries;
-`client.discover.watchlist` decodes into `DiscoverMetadata` instead.
+`getDiscoverWatchlist` decodes into `DiscoverMetadata` instead.
 
 Adding to and removing from the watchlist are ordinary specified operations, under
 `client.provider`.
@@ -419,7 +443,7 @@ calls, instead of at each one.
 ## Working on this package
 
 ```bash
-swift test                       # 273 tests
+swift test                       # 272 tests
 python Tools/generate.py         # regenerate from Spec/plex-api-spec.yaml
 python Tools/generate.py --check # what CI runs
 cd Tools && python -m unittest discover -s . -p "test_*.py"

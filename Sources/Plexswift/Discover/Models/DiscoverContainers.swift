@@ -8,14 +8,11 @@ import Foundation
 
 /// A response whose container holds items.
 ///
-/// Returned by the hub, directory, children and watchlist endpoints. ``items`` is the short way
-/// to the contents.
-public struct DiscoverItemsResponse: Decodable, Hashable, Sendable {
+/// Returned by the hub, directory, children, metadata and watchlist endpoints. The contents
+/// are ``DiscoverItemsContainer/metadata`` on the container.
+public struct DiscoverItemsResponse: Codable, Hashable, Sendable {
     /// The container, absent if the provider returned an empty body.
     public let mediaContainer: DiscoverItemsContainer?
-
-    /// The items in the container, or an empty array if there were none.
-    public var items: [DiscoverMetadata] { mediaContainer?.metadata ?? [] }
 
     public init(mediaContainer: DiscoverItemsContainer? = nil) {
         self.mediaContainer = mediaContainer
@@ -32,7 +29,7 @@ public struct DiscoverItemsResponse: Decodable, Hashable, Sendable {
 }
 
 /// A container of items, with the paging counts that go with it.
-public struct DiscoverItemsContainer: Decodable, Hashable, Sendable {
+public struct DiscoverItemsContainer: Codable, Hashable, Sendable {
     /// How many items this response carries.
     public let size: Int?
     /// How many exist in total, when the provider pages the result.
@@ -99,14 +96,11 @@ public struct DiscoverItemsContainer: Decodable, Hashable, Sendable {
 
 /// A response whose container holds hubs.
 ///
-/// Returned by `/hubs` and by any hub key that groups its contents further. ``hubs`` is the
-/// short way to the rows.
-public struct DiscoverHubsResponse: Decodable, Hashable, Sendable {
+/// Returned by `/hubs` and by any hub key that groups its contents into further rows. The rows
+/// are ``DiscoverHubsContainer/hub`` on the container.
+public struct DiscoverHubsResponse: Codable, Hashable, Sendable {
     /// The container, absent if the provider returned an empty body.
     public let mediaContainer: DiscoverHubsContainer?
-
-    /// The hubs in the container, or an empty array if there were none.
-    public var hubs: [DiscoverHub] { mediaContainer?.hub ?? [] }
 
     public init(mediaContainer: DiscoverHubsContainer? = nil) {
         self.mediaContainer = mediaContainer
@@ -123,7 +117,7 @@ public struct DiscoverHubsResponse: Decodable, Hashable, Sendable {
 }
 
 /// A container of hubs.
-public struct DiscoverHubsContainer: Decodable, Hashable, Sendable {
+public struct DiscoverHubsContainer: Codable, Hashable, Sendable {
     /// How many hubs this response carries.
     public let size: Int?
     /// The provider that answered.
@@ -164,7 +158,7 @@ public struct DiscoverHubsContainer: Decodable, Hashable, Sendable {
 /// A hub arrives with the first few items already in ``metadata``. When ``more`` is true there
 /// are further items behind ``key``, which is fetched with
 /// ``DiscoverAPI/items(path:count:queryItems:)``.
-public struct DiscoverHub: Decodable, Hashable, Sendable {
+public struct DiscoverHub: Codable, Hashable, Sendable {
     /// The row's title, ready to show.
     public let title: String?
     /// The kind of item in the row, or `mixed`.
@@ -246,13 +240,10 @@ public struct DiscoverHub: Decodable, Hashable, Sendable {
         metadata = values.discoverList(DiscoverMetadata.self, .metadata)
         directory = values.discoverList(DiscoverDirectory.self, .directory)
     }
-
-    /// The items in the row, or an empty array if it arrived empty.
-    public var items: [DiscoverMetadata] { metadata ?? [] }
 }
 
 /// A place in the provider's tree: a section, a genre bucket, a filter.
-public struct DiscoverDirectory: Decodable, Hashable, Sendable {
+public struct DiscoverDirectory: Codable, Hashable, Sendable {
     /// The path this directory leads to.
     public let key: String?
     /// The directory's title.
@@ -313,7 +304,7 @@ public struct DiscoverDirectory: Decodable, Hashable, Sendable {
 }
 
 /// The item a show should resume from.
-public struct DiscoverOnDeck: Decodable, Hashable, Sendable {
+public struct DiscoverOnDeck: Codable, Hashable, Sendable {
     // Stored as an array to break a reference cycle: `DiscoverMetadata` holds a `DiscoverOnDeck`,
     // and a struct holding an optional struct that holds it back has no finite size. An array is
     // a reference to storage elsewhere, so the cycle closes. The endpoint sends a single item.
@@ -336,28 +327,25 @@ public struct DiscoverOnDeck: Decodable, Hashable, Sendable {
         // both are accepted.
         items = values.discoverList(DiscoverMetadata.self, .metadata) ?? []
     }
+
+    // Written back in the shape it arrives in, rather than as the array it is stored as.
+    public func encode(to encoder: any Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encodeIfPresent(metadata, forKey: .metadata)
+    }
 }
 
 // MARK: - Search
 
 /// A response to a Discover search.
 ///
-/// The provider groups matches by where they came from, and returns those groups in
-/// `SearchResults`. ``results`` flattens them in the order the provider ranked them, which is
-/// what a single list of results wants; ``groups`` keeps the grouping for a UI that shows
-/// sections.
-public struct DiscoverSearchResponse: Decodable, Hashable, Sendable {
+/// The provider groups matches by where they came from. ``DiscoverSearchContainer/results``
+/// flattens the groups in the order the provider ranked them, which is what a single list of
+/// results wants; ``DiscoverSearchContainer/searchResults`` keeps the grouping for a screen
+/// that shows sections.
+public struct DiscoverSearchResponse: Codable, Hashable, Sendable {
     /// The container, absent if the provider returned an empty body.
     public let mediaContainer: DiscoverSearchContainer?
-
-    /// Every match, flattened across groups, in the provider's order.
-    public var results: [DiscoverSearchResult] { mediaContainer?.results ?? [] }
-
-    /// The matches as the provider grouped them.
-    public var groups: [DiscoverSearchResultGroup] { mediaContainer?.searchResults ?? [] }
-
-    /// The matched items alone, flattened across groups.
-    public var items: [DiscoverMetadata] { results.compactMap(\.metadata) }
 
     public init(mediaContainer: DiscoverSearchContainer? = nil) {
         self.mediaContainer = mediaContainer
@@ -377,7 +365,7 @@ public struct DiscoverSearchResponse: Decodable, Hashable, Sendable {
 ///
 /// Both shapes the endpoint returns are decoded here: the grouped `SearchResults`, and the flat
 /// `SearchResult` a single-provider search answers with.
-public struct DiscoverSearchContainer: Decodable, Hashable, Sendable {
+public struct DiscoverSearchContainer: Codable, Hashable, Sendable {
     /// How many groups or results this response carries.
     public let size: Int?
     /// The provider that answered.
@@ -423,7 +411,7 @@ public struct DiscoverSearchContainer: Decodable, Hashable, Sendable {
 }
 
 /// A group of search results that share a source — a provider, or a type of match.
-public struct DiscoverSearchResultGroup: Decodable, Hashable, Sendable {
+public struct DiscoverSearchResultGroup: Codable, Hashable, Sendable {
     /// The group's title, ready to show as a section heading.
     public let title: String?
     /// A stable identifier for the group.
@@ -432,9 +420,6 @@ public struct DiscoverSearchResultGroup: Decodable, Hashable, Sendable {
     public let size: Int?
     /// The matches.
     public let searchResult: [DiscoverSearchResult]?
-
-    /// The matched items alone.
-    public var items: [DiscoverMetadata] { (searchResult ?? []).compactMap(\.metadata) }
 
     public init(
         title: String? = nil,
@@ -463,7 +448,7 @@ public struct DiscoverSearchResultGroup: Decodable, Hashable, Sendable {
 }
 
 /// One match, with the score the provider gave it.
-public struct DiscoverSearchResult: Decodable, Hashable, Sendable {
+public struct DiscoverSearchResult: Codable, Hashable, Sendable {
     /// How well the item matched. Higher is better; the scale is the provider's own.
     public let score: Double?
     /// Why the item matched, where the provider explains itself.

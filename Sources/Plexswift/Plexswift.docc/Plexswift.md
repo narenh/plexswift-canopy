@@ -87,7 +87,6 @@ SDK — an `AVPlayer` asset URL, or an image loader.
 - <doc:PlexDiscover>
 - ``DiscoverAPI``
 - ``DiscoverMetadata``
-- ``DiscoverMetadataInclusions``
 
 ### Results and failures
 

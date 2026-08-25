@@ -1,7 +1,7 @@
 import Foundation
 
 extension Operations {
-    /// Fetch a show's seasons, or a season's episodes, from the metadata provider.
+    /// Get a show's seasons, or a season's episodes, from the metadata provider.
     ///
     /// `GET /library/metadata/{ratingKey}/children` on `metadata.provider.plex.tv`.
     ///
@@ -19,10 +19,10 @@ extension Operations {
         /// The provider's key for the parent — the show, or the season.
         public var ratingKey: String
 
-        /// Whether to ask for what the account has done with each child.
+        /// Include what the requesting account has done with each child.
         public var includeUserState: Bool?
 
-        /// Query items appended to the request, for the parameters this type does not name.
+        /// Query items appended to the request, for parameters this type does not name.
         public var additionalQueryItems: [URLQueryItem]
 
         public init(
@@ -39,13 +39,8 @@ extension Operations {
 
         public var queryItems: [URLQueryItem] {
             var items: [URLQueryItem] = []
-            if let includeUserState {
-                items.append(
-                    URLQueryItem(
-                        name: "includeUserState",
-                        value: QueryValue(includeUserState).encoded
-                    )
-                )
+            if let value = includeUserState {
+                items.append(URLQueryItem(name: "includeUserState", value: QueryValue(value).encoded))
             }
             items.append(contentsOf: additionalQueryItems)
             return items

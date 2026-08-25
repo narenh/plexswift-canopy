@@ -22,19 +22,19 @@ final class DiscoverRequestTests: XCTestCase {
     // MARK: - Hosts
 
     func testSearchIsAddressedToTheDiscoverProvider() throws {
-        let request = try makeClient().makeRequest(for: Operations.DiscoverSearch(query: "matrix"))
-
-        XCTAssertEqual(
-            request.url?.absoluteString.hasPrefix("https://discover.provider.plex.tv/library/search"),
-            true
+        let request = try makeClient().makeRequest(
+            for: Operations.SearchDiscoverProvider(query: "matrix")
         )
+
+        XCTAssertEqual(request.url?.host, "discover.provider.plex.tv")
+        XCTAssertEqual(request.url?.path, "/library/search")
     }
 
     /// Titles are described by the metadata provider, not the Discover one. Sending a metadata
     /// request to Discover returns a 404, so the two hosts must not be confused.
     func testMetadataIsAddressedToTheMetadataProvider() throws {
         let request = try makeClient().makeRequest(
-            for: Operations.GetDiscoverMetadata(ratingKey: "5d7768ba", inclusions: .none)
+            for: Operations.GetDiscoverMetadata(ratingKey: "5d7768ba")
         )
 
         XCTAssertEqual(
@@ -59,8 +59,8 @@ final class DiscoverRequestTests: XCTestCase {
             for: Operations.GetDiscoverWatchlist(filter: "available", libtype: "movie")
         )
 
-        XCTAssertEqual(request.url?.path, "/library/sections/watchlist/all")
         XCTAssertEqual(request.url?.host, "discover.provider.plex.tv")
+        XCTAssertEqual(request.url?.path, "/library/sections/watchlist/all")
         XCTAssertEqual(request.queryItemsByName["filter"], "available")
         XCTAssertEqual(request.queryItemsByName["libtype"], "movie")
     }
@@ -68,7 +68,7 @@ final class DiscoverRequestTests: XCTestCase {
     // MARK: - Parameters
 
     func testSearchSendsTheQueryAndItsFlags() throws {
-        let operation = Operations.DiscoverSearch(
+        let operation = Operations.SearchDiscoverProvider(
             query: "the matrix",
             limit: 5,
             searchTypes: "movies,tv",
@@ -87,11 +87,11 @@ final class DiscoverRequestTests: XCTestCase {
         XCTAssertEqual(request.queryItemsByName["includeMetadata"], "1")
     }
 
-    func testInclusionsBecomeTheirIncludeFlags() throws {
+    func testOnlyTheRequestedInclusionsAreSent() throws {
         let operation = Operations.GetDiscoverMetadata(
             ratingKey: "abc",
-            inclusions: [.availability, .reviews],
-            relatedCount: 10
+            includeReviews: true,
+            includeAvailability: true
         )
 
         let request = try makeClient().makeRequest(for: operation)
@@ -102,36 +102,14 @@ final class DiscoverRequestTests: XCTestCase {
         XCTAssertNil(request.queryItemsByName["includeUserState"])
     }
 
-    /// `includeRelatedCount` without `includeRelated` means nothing, so it is only sent
-    /// alongside the flag it qualifies.
-    func testRelatedCountIsOnlySentWhenRelatedItemsWereAskedFor() throws {
-        let withRelated = try makeClient().makeRequest(
-            for: Operations.GetDiscoverMetadata(
-                ratingKey: "abc",
-                inclusions: [.related],
-                relatedCount: 4
-            )
-        )
-        let without = try makeClient().makeRequest(
-            for: Operations.GetDiscoverMetadata(
-                ratingKey: "abc",
-                inclusions: [.reviews],
-                relatedCount: 4
-            )
+    /// An inclusion asked for explicitly as false is sent as `0` rather than omitted: the
+    /// provider's default for a flag is its own business, and `includeX=0` says what is meant.
+    func testAnInclusionDeclinedExplicitlyIsStillSent() throws {
+        let request = try makeClient().makeRequest(
+            for: Operations.GetDiscoverMetadata(ratingKey: "abc", asyncAugmentMetadata: false)
         )
 
-        XCTAssertEqual(withRelated.queryItemsByName["includeRelatedCount"], "4")
-        XCTAssertNil(without.queryItemsByName["includeRelatedCount"])
-    }
-
-    /// The same set has to produce the same URL every time, or a response cache keyed by URL
-    /// would miss at random.
-    func testInclusionsAreEmittedInAStableOrder() {
-        let items = DiscoverMetadataInclusions.all.queryItems.map(\.name)
-
-        XCTAssertEqual(items.first, "includeUserState")
-        XCTAssertEqual(items.last, "asyncAugmentMetadata")
-        XCTAssertEqual(items, DiscoverMetadataInclusions.all.queryItems.map(\.name))
+        XCTAssertEqual(request.queryItemsByName["asyncAugmentMetadata"], "0")
     }
 
     func testAnUnnamedParameterCanStillBeSent() throws {
@@ -191,7 +169,7 @@ final class DiscoverRequestTests: XCTestCase {
     /// Plex pages these endpoints with headers rather than query parameters.
     func testPagingTravelsInTheContainerHeaders() throws {
         let request = try makeClient().makeRequest(
-            for: Operations.GetDiscoverItems(key: "/hubs/foo", offset: 40, pageSize: 20)
+            for: Operations.GetDiscoverItems(key: "/hubs/foo", containerStart: 40, containerSize: 20)
         )
 
         XCTAssertEqual(request.value(forHTTPHeaderField: "X-Plex-Container-Start"), "40")
@@ -205,64 +183,55 @@ final class DiscoverRequestTests: XCTestCase {
         XCTAssertNil(request.value(forHTTPHeaderField: "X-Plex-Container-Size"))
     }
 
+    func testTheWatchlistPagesTheSameWay() throws {
+        let request = try makeClient().makeRequest(
+            for: Operations.GetDiscoverWatchlist(containerStart: 0, containerSize: 50)
+        )
+
+        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Plex-Container-Start"), "0")
+        XCTAssertEqual(request.value(forHTTPHeaderField: "X-Plex-Container-Size"), "50")
+    }
+
     // MARK: - Artwork
 
-    func testAnAbsoluteArtworkURLIsUsedAsItIs() {
-        let url = makeClient().discover.artworkURL(
-            for: "https://metadata-static.plex.tv/a/poster.jpg",
-            width: 200
-        )
-
-        XCTAssertEqual(url?.absoluteString, "https://metadata-static.plex.tv/a/poster.jpg")
-    }
-
-    func testARelativeArtworkPathGoesThroughThePhotoTranscoder() throws {
-        let url = try XCTUnwrap(
-            makeClient().discover.artworkURL(
-                for: "/library/metadata/5d7768ba/thumb/1618",
+    /// Provider artwork paths are not resolvable against a media server, so the transcoder is
+    /// the provider's own — otherwise the same endpoint, at the same path, as the media
+    /// server's.
+    func testImageTranscodingIsAddressedToTheMetadataProvider() throws {
+        let request = try makeClient().makeRequest(
+            for: Operations.TranscodeDiscoverImage(
+                url: "/library/metadata/5d7768ba/thumb/1618",
                 width: 300,
-                height: 450
+                height: 450,
+                minSize: .n1
             )
         )
-        let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
-        let byName = Dictionary(
-            items.compactMap { item in item.value.map { (item.name, $0) } },
-            uniquingKeysWith: { _, new in new }
+
+        XCTAssertEqual(request.url?.host, "metadata.provider.plex.tv")
+        XCTAssertEqual(request.url?.path, "/photo/:/transcode")
+        XCTAssertEqual(request.queryItemsByName["url"], "/library/metadata/5d7768ba/thumb/1618")
+        XCTAssertEqual(request.queryItemsByName["width"], "300")
+        XCTAssertEqual(request.queryItemsByName["height"], "450")
+        XCTAssertEqual(request.queryItemsByName["minSize"], "1")
+    }
+
+    /// An image loader cannot set headers, so a URL handed to one has to carry the token in its
+    /// query — which is what `tokenPlacement` is for, on Discover as anywhere else.
+    func testAnArtworkURLCanBeBuiltWithoutSendingIt() throws {
+        var configuration = makeClient().configuration
+        configuration.tokenPlacement = .queryItem
+
+        let request = try PlexClient(configuration: configuration).makeRequest(
+            for: Operations.TranscodeDiscoverImage(url: "/library/metadata/1/thumb/2", width: 200)
         )
 
-        XCTAssertEqual(url.host, "metadata.provider.plex.tv")
-        XCTAssertEqual(url.path, "/photo/:/transcode")
-        XCTAssertEqual(byName["url"], "/library/metadata/5d7768ba/thumb/1618")
-        XCTAssertEqual(byName["width"], "300")
-        XCTAssertEqual(byName["height"], "450")
-        // The token has to be in the URL: an image loader has nowhere to put a header.
-        XCTAssertEqual(byName["X-Plex-Token"], "token-123")
-    }
-
-    /// The photo transcoder needs a size to transcode to. Without one the artwork is fetched
-    /// from the provider as it is stored.
-    func testArtworkWithoutASizeIsFetchedFromTheProviderDirectly() throws {
-        let url = try XCTUnwrap(
-            makeClient().discover.artworkURL(for: "/library/metadata/5d7768ba/thumb/1618")
-        )
-
-        XCTAssertEqual(url.host, "metadata.provider.plex.tv")
-        XCTAssertEqual(url.path, "/library/metadata/5d7768ba/thumb/1618")
-        XCTAssertEqual(url.query, "X-Plex-Token=token-123")
-    }
-
-    func testAnArtworkURLNeedsAToken() {
-        XCTAssertNil(makeClient(token: nil).discover.artworkURL(for: "/library/metadata/1/thumb/2"))
-    }
-
-    func testAnEmptyArtworkPathHasNoURL() {
-        XCTAssertNil(makeClient().discover.artworkURL(for: nil))
-        XCTAssertNil(makeClient().discover.artworkURL(for: ""))
+        XCTAssertEqual(request.queryItemsByName["X-Plex-Token"], "token-123")
+        XCTAssertEqual(request.url?.host, "metadata.provider.plex.tv")
     }
 
     // MARK: - Namespace
 
-    func testSearchTypesAreJoinedForTheProvider() async throws {
+    func testTheNamespaceSendsWhatItWasGiven() async throws {
         let transport = MockTransport(json: #"{"MediaContainer":{"size":0}}"#)
         let client = PlexClient(
             configuration: PlexConfiguration(
@@ -273,9 +242,34 @@ final class DiscoverRequestTests: XCTestCase {
             transport: transport
         )
 
-        _ = try await client.discover.search("matrix", types: [.movies, .tv], limit: 3)
+        _ = try await client.discover.searchDiscoverProvider(
+            query: "matrix",
+            limit: 3,
+            searchTypes: "movies,tv"
+        )
 
         XCTAssertEqual(transport.lastRequest?.queryItemsByName["searchTypes"], "movies,tv")
         XCTAssertEqual(transport.lastRequest?.queryItemsByName["limit"], "3")
+    }
+
+    /// The token is not optional on these endpoints, and failing locally beats a 401 from a
+    /// provider that answers with an HTML error page.
+    func testAnOperationWithoutATokenFailsBeforeItIsSent() {
+        let client = PlexClient(
+            configuration: PlexConfiguration(
+                server: .localhost,
+                identity: ClientIdentity(clientIdentifier: "device-abc")
+            ),
+            transport: MockTransport([])
+        )
+
+        XCTAssertThrowsError(
+            try client.makeRequest(for: Operations.GetDiscoverHubs())
+        ) { error in
+            guard case PlexError.missingToken(let operation) = error else {
+                return XCTFail("Expected a missing-token failure, got \(error)")
+            }
+            XCTAssertEqual(operation, "getDiscoverHubs")
+        }
     }
 }
