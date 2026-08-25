@@ -75,11 +75,18 @@ final class GeneratedModelDecodingTests: XCTestCase {{
 
 def _render_helper() -> str:
     return """\
+/// Locates a fixture, tolerating either shape of resource bundle.
+///
+/// SwiftPM's `.copy` rule preserves the directory, so the fixtures normally sit under a
+/// `Fixtures` subdirectory. Bundle layout differs between platforms, though, so the lookup
+/// falls back to the bundle root rather than failing on a layout difference alone.
+private func fixtureURL(_ name: String) -> URL? {
+    Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures")
+        ?? Bundle.module.url(forResource: name, withExtension: "json")
+}
+
 private func decodeFixture<T: Decodable>(_ name: String, as type: T.Type) throws -> T {
-    let url = try XCTUnwrap(
-        Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "Fixtures"),
-        "Missing fixture \\(name).json"
-    )
+    let url = try XCTUnwrap(fixtureURL(name), "Missing fixture \\(name).json")
     return try JSONDecoder().decode(type, from: try Data(contentsOf: url))
 }"""
 
