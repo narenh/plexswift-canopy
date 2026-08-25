@@ -1,2 +1,12 @@
-# This allows generated code to be indexed correctly
-*.swift linguist-generated=false
+# Everything under Generated/ is produced by Tools/generate.py from Spec/plex-api-spec.yaml.
+# Marking it generated collapses it in pull request diffs and keeps it out of GitHub's
+# language statistics, so the ~900 generated files do not bury the handwritten runtime.
+Sources/Plexswift/Generated/** linguist-generated=true
+Tests/PlexswiftTests/Generated/** linguist-generated=true
+
+# The vendored specification is upstream data, not this repository's source.
+Spec/plex-api-spec.yaml linguist-vendored=true
+
+# The handwritten runtime and the generator are ordinary source.
+Sources/Plexswift/Core/** linguist-generated=false
+Tools/** linguist-generated=false
