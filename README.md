@@ -97,9 +97,12 @@ for directory in container.mediaContainer?.directory ?? [] {
 ### Identifying your app
 
 Plex expects every client to describe itself through `X-Plex-*` headers. They are what makes
-your app appear under **Settings → Authorized Devices**, and `X-Plex-Client-Identifier` is
-mandatory for the OAuth PIN flow and JWT device registration — those endpoints reject requests
-without it.
+your app appear under **Settings → Authorized Devices**.
+
+`X-Plex-Client-Identifier` is not optional in practice: the specification marks it required on
+**366 of the 405 operations**, including most of the library and playback surface. Treat
+`identity` as a required argument to `PlexClient` — the parameter defaults to `nil` only
+because a handful of endpoints genuinely do not need it.
 
 The identifier must be **stable across launches**. Generating a fresh UUID each time registers
 a new device on every launch and invalidates previously issued tokens, so persist it and pass
@@ -195,6 +198,11 @@ let asset = AVURLAsset(url: request.url!)
 your own retry or logging:
 
 ```swift
+import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking   // URLRequest and HTTPURLResponse live here on Linux
+#endif
+
 struct StubTransport: HTTPTransport {
     func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) { /* … */ }
 }
@@ -319,6 +327,8 @@ fails the whole request rather than leaving one value `nil`.
 | `AnyValue` | `AnyJSON`, with typed accessors |
 | No client identity headers | `ClientIdentity` |
 | Mutable, non-`Sendable` `Client` | `PlexClient` is `Sendable`; `with(server:)` / `with(token:)` return copies |
+| `throws` (untyped) | `throws(PlexError)` — `catch` is exhaustive |
+| iOS 13+, Swift 5 | iOS 18+, Swift 6 language mode |
 
 The response-handling change is the one that touches every call site. Where you previously
 switched over a `Response` enum, you now write a `do`/`catch` — usually once, around a group of
@@ -327,7 +337,7 @@ calls, instead of at each one.
 ## Working on this package
 
 ```bash
-swift test                       # 214 tests
+swift test                       # 222 tests
 python Tools/generate.py         # regenerate from Spec/plex-api-spec.yaml
 python Tools/generate.py --check # what CI runs
 cd Tools && python -m unittest discover -s . -p "test_*.py"
