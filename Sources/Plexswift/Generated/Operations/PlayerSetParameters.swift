@@ -31,7 +31,7 @@ extension Operations {
         public init(
             xPlexTargetClientIdentifier: String? = nil,
             shuffle: PlayerSetParametersShuffle? = nil,
-            `repeat`: PlayerSetParametersRepeat? = nil,
+            repeat: PlayerSetParametersRepeat? = nil,
             volume: Int? = nil
         ) {
             self.xPlexTargetClientIdentifier = xPlexTargetClientIdentifier

@@ -15,7 +15,7 @@ public struct ActivitiesAPI: Sendable {
     @discardableResult
     public func cancelActivity(
         activityId: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CancelActivity(
             activityId: activityId
         ))
@@ -24,7 +24,7 @@ public struct ActivitiesAPI: Sendable {
     /// List all activities on the server. Admins can see all activities but other users can only see
     /// their own
     @discardableResult
-    public func listActivities() async throws -> ListActivitiesResponse {
+    public func listActivities() async throws(PlexError) -> ListActivitiesResponse {
         try await client.perform(Operations.ListActivities())
     }
 }

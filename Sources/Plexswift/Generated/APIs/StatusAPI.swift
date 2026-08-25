@@ -14,7 +14,7 @@ public struct StatusAPI: Sendable {
     @discardableResult
     public func deleteHistory(
         historyId: Int
-    ) async throws -> MediaContainer {
+    ) async throws(PlexError) -> MediaContainer {
         try await client.perform(Operations.DeleteHistory(
             historyId: historyId
         ))
@@ -22,7 +22,7 @@ public struct StatusAPI: Sendable {
 
     /// Get the list of all background tasks
     @discardableResult
-    public func getBackgroundTasks() async throws -> GetBackgroundTasksResponse {
+    public func getBackgroundTasks() async throws(PlexError) -> GetBackgroundTasksResponse {
         try await client.perform(Operations.GetBackgroundTasks())
     }
 
@@ -30,7 +30,7 @@ public struct StatusAPI: Sendable {
     @discardableResult
     public func getHistoryItem(
         historyId: Int
-    ) async throws -> PlaybackHistoryMetadata {
+    ) async throws(PlexError) -> PlaybackHistoryMetadata {
         try await client.perform(Operations.GetHistoryItem(
             historyId: historyId
         ))
@@ -55,7 +55,7 @@ public struct StatusAPI: Sendable {
         viewedAt2: Int? = nil,
         viewedAt3: Int? = nil,
         deviceID: Int? = nil
-    ) async throws -> ListPlaybackHistoryResponse {
+    ) async throws(PlexError) -> ListPlaybackHistoryResponse {
         try await client.perform(Operations.ListPlaybackHistory(
             xPlexContainerStart: xPlexContainerStart,
             xPlexContainerSize: xPlexContainerSize,
@@ -76,7 +76,7 @@ public struct StatusAPI: Sendable {
 
     /// List all current playbacks on this server
     @discardableResult
-    public func listSessions() async throws -> ListSessionsResponse {
+    public func listSessions() async throws(PlexError) -> ListSessionsResponse {
         try await client.perform(Operations.ListSessions())
     }
 
@@ -85,7 +85,7 @@ public struct StatusAPI: Sendable {
     public func terminateSession(
         sessionId: String,
         reason: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.TerminateSession(
             sessionId: sessionId,
             reason: reason

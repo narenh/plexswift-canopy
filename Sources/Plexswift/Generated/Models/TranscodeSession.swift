@@ -41,7 +41,7 @@ public struct TranscodeSession: Codable, Hashable, Sendable {
         error: Bool? = nil,
         key: String? = nil,
         progress: Double? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         size: Int? = nil,
         sourceAudioCodec: String? = nil,
         sourceVideoCodec: String? = nil,

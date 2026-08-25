@@ -60,7 +60,7 @@ extension Operations {
             type: CreatePlayQueueType,
             key: String? = nil,
             shuffle: BoolInt? = nil,
-            `repeat`: BoolInt? = nil,
+            repeat: BoolInt? = nil,
             continuous: BoolInt? = nil,
             extrasPrefixCount: Int? = nil,
             recursive: BoolInt? = nil,

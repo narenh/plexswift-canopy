@@ -23,7 +23,7 @@ public struct Connection: Codable, Hashable, Sendable {
         address: String? = nil,
         local: Bool? = nil,
         port: Int? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         relay: Bool? = nil,
         uri: String? = nil
     ) {

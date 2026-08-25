@@ -15,7 +15,7 @@ public struct EPGAPI: Sendable {
     public func computeChannelMap(
         device: String,
         lineup: String
-    ) async throws -> ComputeChannelMapResponse {
+    ) async throws(PlexError) -> ComputeChannelMapResponse {
         try await client.perform(Operations.ComputeChannelMap(
             device: device,
             lineup: lineup
@@ -24,7 +24,7 @@ public struct EPGAPI: Sendable {
 
     /// Returns a list of all possible languages for EPG data.
     @discardableResult
-    public func getAllLanguages() async throws -> GetAllLanguagesResponse {
+    public func getAllLanguages() async throws(PlexError) -> GetAllLanguagesResponse {
         try await client.perform(Operations.GetAllLanguages())
     }
 
@@ -32,7 +32,7 @@ public struct EPGAPI: Sendable {
     @discardableResult
     public func getChannels(
         lineup: String
-    ) async throws -> ChannelResponse {
+    ) async throws(PlexError) -> ChannelResponse {
         try await client.perform(Operations.GetChannels(
             lineup: lineup
         ))
@@ -41,7 +41,7 @@ public struct EPGAPI: Sendable {
     /// This endpoint returns a list of countries which EPG data is available for. There are three
     /// flavors, as specfied by the `flavor` attribute
     @discardableResult
-    public func getCountries() async throws -> GetCountriesResponse {
+    public func getCountries() async throws(PlexError) -> GetCountriesResponse {
         try await client.perform(Operations.GetCountries())
     }
 
@@ -51,7 +51,7 @@ public struct EPGAPI: Sendable {
         country: String,
         epgId: String,
         postalCode: String? = nil
-    ) async throws -> MediaContainerWithLineup {
+    ) async throws(PlexError) -> MediaContainerWithLineup {
         try await client.perform(Operations.GetCountriesLineups(
             country: country,
             epgId: epgId,
@@ -64,7 +64,7 @@ public struct EPGAPI: Sendable {
     public func getCountryRegions(
         country: String,
         epgId: String
-    ) async throws -> GetCountryRegionsResponse {
+    ) async throws(PlexError) -> GetCountryRegionsResponse {
         try await client.perform(Operations.GetCountryRegions(
             country: country,
             epgId: epgId
@@ -73,7 +73,7 @@ public struct EPGAPI: Sendable {
 
     /// Fetch the global electronic program guide.
     @discardableResult
-    public func getEPGGuide() async throws -> MediaContainerWithMetadata {
+    public func getEPGGuide() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetEPGGuide())
     }
 
@@ -82,7 +82,7 @@ public struct EPGAPI: Sendable {
     public func getLineup(
         device: String,
         lineupGroup: String
-    ) async throws -> MediaContainerWithLineup {
+    ) async throws(PlexError) -> MediaContainerWithLineup {
         try await client.perform(Operations.GetLineup(
             device: device,
             lineupGroup: lineupGroup
@@ -93,7 +93,7 @@ public struct EPGAPI: Sendable {
     @discardableResult
     public func getLineupChannels(
         lineup: [String]
-    ) async throws -> GetLineupChannelsResponse {
+    ) async throws(PlexError) -> GetLineupChannelsResponse {
         try await client.perform(Operations.GetLineupChannels(
             lineup: lineup
         ))
@@ -105,7 +105,7 @@ public struct EPGAPI: Sendable {
         country: String,
         epgId: String,
         region: String
-    ) async throws -> MediaContainerWithLineup {
+    ) async throws(PlexError) -> MediaContainerWithLineup {
         try await client.perform(Operations.ListLineups(
             country: country,
             epgId: epgId,
@@ -115,7 +115,7 @@ public struct EPGAPI: Sendable {
 
     /// Search the electronic program guide for upcoming airings.
     @discardableResult
-    public func searchEPG() async throws -> MediaContainerWithMetadata {
+    public func searchEPG() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.SearchEPG())
     }
 }

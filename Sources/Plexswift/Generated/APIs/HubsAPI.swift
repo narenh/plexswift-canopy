@@ -18,7 +18,7 @@ public struct HubsAPI: Sendable {
         promotedToRecommended: BoolInt? = nil,
         promotedToOwnHome: BoolInt? = nil,
         promotedToSharedHome: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CreateCustomHub(
             sectionId: sectionId,
             metadataItemId: metadataItemId,
@@ -33,7 +33,7 @@ public struct HubsAPI: Sendable {
     public func deleteCustomHub(
         sectionId: Int,
         identifier: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteCustomHub(
             sectionId: sectionId,
             identifier: identifier
@@ -46,7 +46,7 @@ public struct HubsAPI: Sendable {
         count: Int? = nil,
         onlyTransient: BoolInt? = nil,
         identifier: [String]? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetAllHubs(
             count: count,
             onlyTransient: onlyTransient,
@@ -58,7 +58,7 @@ public struct HubsAPI: Sendable {
     @discardableResult
     public func getContinueWatching(
         count: Int? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetContinueWatching(
             count: count
         ))
@@ -66,13 +66,13 @@ public struct HubsAPI: Sendable {
 
     /// Get direct access to Continue Watching items.
     @discardableResult
-    public func getContinueWatchingItems() async throws -> MediaContainerWithMetadata {
+    public func getContinueWatchingItems() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetContinueWatchingItems())
     }
 
     /// Get the recently added hub for the home screen.
     @discardableResult
-    public func getHomeRecentlyAdded() async throws -> MediaContainerWithHubs {
+    public func getHomeRecentlyAdded() async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetHomeRecentlyAdded())
     }
 
@@ -81,7 +81,7 @@ public struct HubsAPI: Sendable {
     public func getHubItems(
         count: Int? = nil,
         identifier: [String]
-    ) async throws -> GetHubItemsResponse {
+    ) async throws(PlexError) -> GetHubItemsResponse {
         try await client.perform(Operations.GetHubItems(
             count: count,
             identifier: identifier
@@ -94,7 +94,7 @@ public struct HubsAPI: Sendable {
         count: Int? = nil,
         metadataId: Int,
         onlyTransient: BoolInt? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetMetadataHubs(
             count: count,
             metadataId: metadataId,
@@ -108,7 +108,7 @@ public struct HubsAPI: Sendable {
         count: Int? = nil,
         metadataId: Int,
         onlyTransient: BoolInt? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetPostplayHubs(
             count: count,
             metadataId: metadataId,
@@ -120,7 +120,7 @@ public struct HubsAPI: Sendable {
     @discardableResult
     public func getPromotedHubs(
         count: Int? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetPromotedHubs(
             count: count
         ))
@@ -132,7 +132,7 @@ public struct HubsAPI: Sendable {
         count: Int? = nil,
         metadataId: Int,
         onlyTransient: BoolInt? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetRelatedHubs(
             count: count,
             metadataId: metadataId,
@@ -146,7 +146,7 @@ public struct HubsAPI: Sendable {
         count: Int? = nil,
         sectionId: Int,
         onlyTransient: BoolInt? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetSectionHubs(
             count: count,
             sectionId: sectionId,
@@ -159,7 +159,7 @@ public struct HubsAPI: Sendable {
     public func listHubs(
         sectionId: Int,
         metadataItemId: Int? = nil
-    ) async throws -> ListHubsResponse {
+    ) async throws(PlexError) -> ListHubsResponse {
         try await client.perform(Operations.ListHubs(
             sectionId: sectionId,
             metadataItemId: metadataItemId
@@ -172,7 +172,7 @@ public struct HubsAPI: Sendable {
         sectionId: Int,
         identifier: String,
         after: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MoveHub(
             sectionId: sectionId,
             identifier: identifier,
@@ -184,7 +184,7 @@ public struct HubsAPI: Sendable {
     @discardableResult
     public func resetSectionDefaults(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.ResetSectionDefaults(
             sectionId: sectionId
         ))
@@ -198,7 +198,7 @@ public struct HubsAPI: Sendable {
         promotedToRecommended: BoolInt? = nil,
         promotedToOwnHome: BoolInt? = nil,
         promotedToSharedHome: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UpdateHubVisibility(
             sectionId: sectionId,
             identifier: identifier,

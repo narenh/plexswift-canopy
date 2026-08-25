@@ -16,7 +16,7 @@ public struct PlexAPI: Sendable {
         includeHttps: GetServerResourcesIncludeHttps? = nil,
         includeRelay: GetServerResourcesIncludeRelay? = nil,
         includeIPv6: GetServerResourcesIncludeIPv6? = nil
-    ) async throws -> [PlexDevice] {
+    ) async throws(PlexError) -> [PlexDevice] {
         try await client.perform(Operations.GetServerResources(
             includeHttps: includeHttps,
             includeRelay: includeRelay,

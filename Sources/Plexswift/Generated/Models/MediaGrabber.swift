@@ -14,7 +14,7 @@ public struct MediaGrabber: Codable, Hashable, Sendable {
     public init(
         title: String? = nil,
         identifier: String? = nil,
-        `protocol`: String? = nil
+        protocol: String? = nil
     ) {
         self.title = title
         self.identifier = identifier

@@ -31,7 +31,7 @@ public struct PlexDeviceConnectionsItem: Codable, Hashable, Sendable {
         ipv6: Bool? = nil,
         local: Bool? = nil,
         port: Int? = nil,
-        `protocol`: PlexDeviceConnectionsItemProtocol? = nil,
+        protocol: PlexDeviceConnectionsItemProtocol? = nil,
         relay: Bool? = nil,
         uri: String? = nil
     ) {

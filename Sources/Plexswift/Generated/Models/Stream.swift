@@ -228,7 +228,7 @@ public struct Stream: Codable, Hashable, Sendable {
     public init(
         title: String? = nil,
         format: String? = nil,
-        `default`: Bool? = nil,
+        default: Bool? = nil,
         albumGain: Double? = nil,
         albumPeak: Double? = nil,
         albumRange: Double? = nil,

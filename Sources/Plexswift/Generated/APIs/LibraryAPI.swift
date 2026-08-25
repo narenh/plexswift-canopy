@@ -17,7 +17,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         extraType: Int? = nil,
         url: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddExtras(
             title: title,
             ids: ids,
@@ -39,7 +39,7 @@ public struct LibraryAPI: Sendable {
         prefs: AnyJSON? = nil,
         relative: BoolInt? = nil,
         importFromiTunes: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddSection(
             name: name,
             type: type,
@@ -60,7 +60,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         thumbOffset: Double? = nil,
         artOffset: Double? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AnalyzeMetadata(
             ids: ids,
             thumbOffset: thumbOffset,
@@ -77,7 +77,7 @@ public struct LibraryAPI: Sendable {
         mediaQuery: MediaQuery? = nil,
         sectionId: Int,
         fieldQuery: String? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.Autocomplete(
             mediaQuery: mediaQuery,
             sectionId: sectionId,
@@ -89,7 +89,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func cancelRefresh(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CancelRefresh(
             sectionId: sectionId
         ))
@@ -97,7 +97,7 @@ public struct LibraryAPI: Sendable {
 
     /// Clean out any now unused bundles. Bundles can become unused when media is deleted
     @discardableResult
-    public func cleanBundles() async throws -> SuccessResponse {
+    public func cleanBundles() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CleanBundles())
     }
 
@@ -105,7 +105,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func computeSonicPath(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.ComputeSonicPath(
             id: id
         ))
@@ -119,7 +119,7 @@ public struct LibraryAPI: Sendable {
         startTimeOffset: Int,
         endTimeOffset: Int? = nil,
         attributes: AnyJSON? = nil
-    ) async throws -> CreateMarkerResponse {
+    ) async throws(PlexError) -> CreateMarkerResponse {
         try await client.perform(Operations.CreateMarker(
             ids: ids,
             type: type,
@@ -131,7 +131,7 @@ public struct LibraryAPI: Sendable {
 
     /// Delete the hub caches so they are recomputed on next request
     @discardableResult
-    public func deleteCaches() async throws -> SuccessResponse {
+    public func deleteCaches() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteCaches())
     }
 
@@ -140,7 +140,7 @@ public struct LibraryAPI: Sendable {
     public func deleteCollection(
         sectionId: Int,
         collectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteCollection(
             sectionId: sectionId,
             collectionId: collectionId
@@ -151,7 +151,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func deleteIndexes(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteIndexes(
             sectionId: sectionId
         ))
@@ -161,7 +161,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func deleteIntros(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteIntros(
             sectionId: sectionId
         ))
@@ -171,11 +171,11 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func deleteLibrarySection(
         sectionId: String,
-        `async`: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+        async: BoolInt? = nil
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteLibrarySection(
             sectionId: sectionId,
-            `async`: `async`
+            async: `async`
         ))
     }
 
@@ -184,7 +184,7 @@ public struct LibraryAPI: Sendable {
     public func deleteMarker(
         ids: String,
         marker: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteMarker(
             ids: ids,
             marker: marker
@@ -197,7 +197,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         mediaItem: String,
         proxy: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteMediaItem(
             ids: ids,
             mediaItem: mediaItem,
@@ -210,7 +210,7 @@ public struct LibraryAPI: Sendable {
     public func deleteMetadataItem(
         ids: String,
         proxy: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteMetadataItem(
             ids: ids,
             proxy: proxy
@@ -223,7 +223,7 @@ public struct LibraryAPI: Sendable {
     public func deleteStream(
         streamId: Int,
         ext: String
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.DeleteStream(
             streamId: streamId,
             ext: ext
@@ -234,7 +234,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func detectAds(
         ids: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DetectAds(
             ids: ids
         ))
@@ -246,7 +246,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         force: BoolInt? = nil,
         manual: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DetectCredits(
             ids: ids,
             force: force,
@@ -260,7 +260,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         force: BoolInt? = nil,
         threshold: Double? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DetectIntros(
             ids: ids,
             force: force,
@@ -274,7 +274,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         force: BoolInt? = nil,
         manual: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DetectVoiceActivity(
             ids: ids,
             force: force,
@@ -286,7 +286,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func editLibrarySection(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EditLibrarySection(
             sectionId: sectionId
         ))
@@ -301,7 +301,7 @@ public struct LibraryAPI: Sendable {
         startTimeOffset: Int,
         endTimeOffset: Int? = nil,
         attributes: AnyJSON? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EditMarker(
             ids: ids,
             marker: marker,
@@ -317,7 +317,7 @@ public struct LibraryAPI: Sendable {
     public func editMetadataItem(
         ids: [String],
         args: AnyJSON? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EditMetadataItem(
             ids: ids,
             args: args
@@ -335,7 +335,7 @@ public struct LibraryAPI: Sendable {
         language: String? = nil,
         locations: [String]? = nil,
         prefs: AnyJSON? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EditSection(
             sectionId: sectionId,
             name: name,
@@ -352,7 +352,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func emptyTrash(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EmptyTrash(
             sectionId: sectionId
         ))
@@ -362,7 +362,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func emptyTrashPost(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EmptyTrashPost(
             sectionId: sectionId
         ))
@@ -372,7 +372,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func emptyTrashPut(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EmptyTrashPut(
             sectionId: sectionId
         ))
@@ -383,7 +383,7 @@ public struct LibraryAPI: Sendable {
     public func generateThumbs(
         ids: String,
         force: BoolInt? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GenerateThumbs(
             ids: ids,
             force: force
@@ -394,7 +394,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getAllItemLeaves(
         ids: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetAllItemLeaves(
             ids: ids
         ))
@@ -405,7 +405,7 @@ public struct LibraryAPI: Sendable {
     public func getAugmentationStatus(
         augmentationId: String,
         wait: BoolInt? = nil
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.GetAugmentationStatus(
             augmentationId: augmentationId,
             wait: wait
@@ -416,7 +416,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getAvailableSorts(
         sectionId: Int
-    ) async throws -> MediaContainerWithSorts {
+    ) async throws(PlexError) -> MediaContainerWithSorts {
         try await client.perform(Operations.GetAvailableSorts(
             sectionId: sectionId
         ))
@@ -426,7 +426,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getByContentRating(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetByContentRating(
             sectionId: sectionId
         ))
@@ -436,7 +436,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getByDecade(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetByDecade(
             sectionId: sectionId
         ))
@@ -446,7 +446,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getByFolder(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetByFolder(
             sectionId: sectionId
         ))
@@ -456,7 +456,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getByResolution(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetByResolution(
             sectionId: sectionId
         ))
@@ -466,7 +466,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getByYear(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetByYear(
             sectionId: sectionId
         ))
@@ -477,7 +477,7 @@ public struct LibraryAPI: Sendable {
     public func getChapterImage(
         mediaId: Int,
         chapter: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetChapterImage(
             mediaId: mediaId,
             chapter: chapter
@@ -489,7 +489,7 @@ public struct LibraryAPI: Sendable {
     public func getCollections(
         mediaQuery: MediaQuery? = nil,
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetCollections(
             mediaQuery: mediaQuery,
             sectionId: sectionId
@@ -503,7 +503,7 @@ public struct LibraryAPI: Sendable {
     public func getCommon(
         mediaQuery: MediaQuery? = nil,
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetCommon(
             mediaQuery: mediaQuery,
             sectionId: sectionId
@@ -514,7 +514,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getExtras(
         ids: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetExtras(
             ids: ids
         ))
@@ -526,7 +526,7 @@ public struct LibraryAPI: Sendable {
     public func getFile(
         ids: String,
         url: String? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetFile(
             ids: ids,
             url: url
@@ -538,7 +538,7 @@ public struct LibraryAPI: Sendable {
     public func getFirstCharacters(
         mediaQuery: MediaQuery? = nil,
         sectionId: Int
-    ) async throws -> GetFirstCharactersResponse {
+    ) async throws(PlexError) -> GetFirstCharactersResponse {
         try await client.perform(Operations.GetFirstCharacters(
             mediaQuery: mediaQuery,
             sectionId: sectionId
@@ -551,7 +551,7 @@ public struct LibraryAPI: Sendable {
         partId: Int,
         index: GetImageFromBifIndex,
         offset: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetImageFromBif(
             partId: partId,
             index: index,
@@ -565,7 +565,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         element: GetItemArtworkElement,
         timestamp: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetItemArtwork(
             ids: ids,
             element: element,
@@ -577,7 +577,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getItemTree(
         ids: String
-    ) async throws -> MediaContainerWithNestedMetadata {
+    ) async throws(PlexError) -> MediaContainerWithNestedMetadata {
         try await client.perform(Operations.GetItemTree(
             ids: ids
         ))
@@ -590,7 +590,7 @@ public struct LibraryAPI: Sendable {
     public func getLibraryDetails(
         sectionId: String,
         includeDetails: BoolInt? = nil
-    ) async throws -> GetLibraryDetailsResponse {
+    ) async throws(PlexError) -> GetLibraryDetailsResponse {
         try await client.perform(Operations.GetLibraryDetails(
             sectionId: sectionId,
             includeDetails: includeDetails
@@ -601,7 +601,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getLibraryItems(
         mediaQuery: MediaQuery? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetLibraryItems(
             mediaQuery: mediaQuery
         ))
@@ -638,7 +638,7 @@ public struct LibraryAPI: Sendable {
         index: Int? = nil,
         originallyAvailableAt: String? = nil,
         parentTitle: String? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetLibraryMatches(
             type: type,
             title: title,
@@ -661,7 +661,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getLibrarySectionHubs(
         sectionId: Int
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetLibrarySectionHubs(
             sectionId: sectionId
         ))
@@ -669,7 +669,7 @@ public struct LibraryAPI: Sendable {
 
     /// Fallback for non-owners to list library sections.
     @discardableResult
-    public func getLibrarySectionsFallback() async throws -> MediaContainerWithDirectory {
+    public func getLibrarySectionsFallback() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetLibrarySectionsFallback())
     }
 
@@ -682,7 +682,7 @@ public struct LibraryAPI: Sendable {
         changestamp: Int,
         filename: String,
         download: BoolInt? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetMediaPart(
             partId: partId,
             changestamp: changestamp,
@@ -695,7 +695,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataChildren(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataChildren(
             id: id
         ))
@@ -705,7 +705,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataGrandchildren(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataGrandchildren(
             id: id
         ))
@@ -715,7 +715,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataGrandparent(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataGrandparent(
             id: id
         ))
@@ -725,7 +725,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataOnDeck(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataOnDeck(
             id: id
         ))
@@ -735,7 +735,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataParent(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataParent(
             id: id
         ))
@@ -745,7 +745,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getMetadataReviews(
         id: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataReviews(
             id: id
         ))
@@ -759,7 +759,7 @@ public struct LibraryAPI: Sendable {
         excludeGrandparentID: Int? = nil,
         limit: Int? = nil,
         maxDistance: Double? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetNearestMetadata(
             id: id,
             excludeParentID: excludeParentID,
@@ -773,7 +773,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getNewestForSection(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetNewestForSection(
             sectionId: sectionId
         ))
@@ -783,7 +783,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getOnDeckForSection(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetOnDeckForSection(
             sectionId: sectionId
         ))
@@ -795,7 +795,7 @@ public struct LibraryAPI: Sendable {
         partId: Int,
         index: GetPartIndexIndex,
         interval: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetPartIndex(
             partId: partId,
             index: index,
@@ -807,7 +807,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getPerson(
         personId: String
-    ) async throws -> MediaContainerWithTags {
+    ) async throws(PlexError) -> MediaContainerWithTags {
         try await client.perform(Operations.GetPerson(
             personId: personId
         ))
@@ -821,7 +821,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getRandomArtwork(
         sections: [Int]? = nil
-    ) async throws -> MediaContainerWithArtwork {
+    ) async throws(PlexError) -> MediaContainerWithArtwork {
         try await client.perform(Operations.GetRandomArtwork(
             sections: sections
         ))
@@ -831,7 +831,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getRecentlyAddedForSection(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetRecentlyAddedForSection(
             sectionId: sectionId
         ))
@@ -839,7 +839,7 @@ public struct LibraryAPI: Sendable {
 
     /// Get recently added items across all library sections.
     @discardableResult
-    public func getRecentlyAddedGlobal() async throws -> MediaContainerWithMetadata {
+    public func getRecentlyAddedGlobal() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetRecentlyAddedGlobal())
     }
 
@@ -847,7 +847,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getRelatedItems(
         ids: String
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.GetRelatedItems(
             ids: ids
         ))
@@ -855,7 +855,7 @@ public struct LibraryAPI: Sendable {
 
     /// Get the root library object.
     @discardableResult
-    public func getRootLibrary() async throws -> MediaContainerWithDirectory {
+    public func getRootLibrary() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetRootLibrary())
     }
 
@@ -863,7 +863,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionAgents(
         sectionId: Int
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSectionAgents(
             sectionId: sectionId
         ))
@@ -873,7 +873,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionArtists(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionArtists(
             sectionId: sectionId
         ))
@@ -883,7 +883,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionClips(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionClips(
             sectionId: sectionId
         ))
@@ -893,7 +893,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionEdit(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.GetSectionEdit(
             sectionId: sectionId
         ))
@@ -903,7 +903,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionEpisodes(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionEpisodes(
             sectionId: sectionId
         ))
@@ -913,7 +913,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionFilters(
         sectionId: Int
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSectionFilters(
             sectionId: sectionId
         ))
@@ -926,7 +926,7 @@ public struct LibraryAPI: Sendable {
         composite: GetSectionImageComposite? = nil,
         sectionId: Int,
         updatedAt: Int
-    ) async throws -> BinaryResponse {
+    ) async throws(PlexError) -> BinaryResponse {
         try await client.perform(Operations.GetSectionImage(
             mediaQuery: mediaQuery,
             composite: composite,
@@ -939,7 +939,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionLabels(
         sectionId: Int
-    ) async throws -> MediaContainerWithTags {
+    ) async throws(PlexError) -> MediaContainerWithTags {
         try await client.perform(Operations.GetSectionLabels(
             sectionId: sectionId
         ))
@@ -949,7 +949,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionMovies(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionMovies(
             sectionId: sectionId
         ))
@@ -959,7 +959,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionPhotos(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionPhotos(
             sectionId: sectionId
         ))
@@ -969,7 +969,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionPlaylists(
         sectionId: Int
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.GetSectionPlaylists(
             sectionId: sectionId
         ))
@@ -980,7 +980,7 @@ public struct LibraryAPI: Sendable {
     public func getSectionPreferences(
         sectionId: Int,
         agent: String? = nil
-    ) async throws -> MediaContainerWithSettings {
+    ) async throws(PlexError) -> MediaContainerWithSettings {
         try await client.perform(Operations.GetSectionPreferences(
             sectionId: sectionId,
             agent: agent
@@ -991,7 +991,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionSettings(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.GetSectionSettings(
             sectionId: sectionId
         ))
@@ -1001,7 +1001,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionShows(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSectionShows(
             sectionId: sectionId
         ))
@@ -1011,7 +1011,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionTags(
         sectionId: Int
-    ) async throws -> MediaContainerWithTags {
+    ) async throws(PlexError) -> MediaContainerWithTags {
         try await client.perform(Operations.GetSectionTags(
             sectionId: sectionId
         ))
@@ -1021,7 +1021,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getSectionTimeline(
         sectionId: Int
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSectionTimeline(
             sectionId: sectionId
         ))
@@ -1035,7 +1035,7 @@ public struct LibraryAPI: Sendable {
     /// information about supported types, filters and sorts. This allows a client to provide a rich
     /// interface around the media (e.g. allow sorting movies by release year).
     @discardableResult
-    public func getSections() async throws -> GetSectionsResponse {
+    public func getSections() async throws(PlexError) -> GetSectionsResponse {
         try await client.perform(Operations.GetSections())
     }
 
@@ -1044,7 +1044,7 @@ public struct LibraryAPI: Sendable {
     public func getSectionsPrefs(
         type: Int,
         agent: String? = nil
-    ) async throws -> MediaContainerWithSettings {
+    ) async throws(PlexError) -> MediaContainerWithSettings {
         try await client.perform(Operations.GetSectionsPrefs(
             type: type,
             agent: agent
@@ -1059,7 +1059,7 @@ public struct LibraryAPI: Sendable {
         encoding: String? = nil,
         format: String? = nil,
         autoAdjustSubtitle: BoolInt? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetStream(
             streamId: streamId,
             ext: ext,
@@ -1074,7 +1074,7 @@ public struct LibraryAPI: Sendable {
     public func getStreamLevels(
         streamId: Int,
         subsample: Int? = nil
-    ) async throws -> GetStreamLevelsResponse {
+    ) async throws(PlexError) -> GetStreamLevelsResponse {
         try await client.perform(Operations.GetStreamLevels(
             streamId: streamId,
             subsample: subsample
@@ -1086,7 +1086,7 @@ public struct LibraryAPI: Sendable {
     public func getStreamLoudness(
         streamId: Int,
         subsample: Int? = nil
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.GetStreamLoudness(
             streamId: streamId,
             subsample: subsample
@@ -1104,7 +1104,7 @@ public struct LibraryAPI: Sendable {
         format: String? = nil,
         forced: BoolInt? = nil,
         hearingImpaired: BoolInt? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSubtitles(
             ids: ids,
             title: title,
@@ -1121,7 +1121,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getTags(
         type: MediaType? = nil
-    ) async throws -> GetTagsResponse {
+    ) async throws(PlexError) -> GetTagsResponse {
         try await client.perform(Operations.GetTags(
             type: type
         ))
@@ -1131,7 +1131,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func getUnwatchedForSection(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetUnwatchedForSection(
             sectionId: sectionId
         ))
@@ -1150,7 +1150,7 @@ public struct LibraryAPI: Sendable {
         virtualFilePath: String? = nil,
         computeHashes: BoolInt? = nil,
         ingestNonMatches: BoolInt? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.IngestTransientItem(
             url: url,
             virtualFilePath: virtualFilePath,
@@ -1169,7 +1169,7 @@ public struct LibraryAPI: Sendable {
         language: String? = nil,
         year: Int? = nil,
         manual: BoolInt? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.ListMatches(
             ids: ids,
             title: title,
@@ -1185,7 +1185,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func listPersonMedia(
         personId: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.ListPersonMedia(
             personId: personId
         ))
@@ -1196,7 +1196,7 @@ public struct LibraryAPI: Sendable {
     public func listSimilar(
         count: Int? = nil,
         ids: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.ListSimilar(
             count: count,
             ids: ids
@@ -1207,7 +1207,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func listTopUsers(
         ids: String
-    ) async throws -> ListTopUsersResponse {
+    ) async throws(PlexError) -> ListTopUsersResponse {
         try await client.perform(Operations.ListTopUsers(
             ids: ids
         ))
@@ -1220,7 +1220,7 @@ public struct LibraryAPI: Sendable {
         guid: String? = nil,
         name: String? = nil,
         year: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MatchItem(
             ids: ids,
             guid: guid,
@@ -1233,7 +1233,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func matchSectionItems(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MatchSectionItems(
             sectionId: sectionId
         ))
@@ -1244,7 +1244,7 @@ public struct LibraryAPI: Sendable {
     public func mergeItems(
         ids: String,
         ids2: [String]? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MergeItems(
             ids: ids,
             ids2: ids2
@@ -1255,7 +1255,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func moveSection(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MoveSection(
             sectionId: sectionId
         ))
@@ -1264,22 +1264,22 @@ public struct LibraryAPI: Sendable {
     /// Initiate optimize on the database.
     @discardableResult
     public func optimizeDatabase(
-        `async`: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+        async: BoolInt? = nil
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.OptimizeDatabase(
-            `async`: `async`
+            async: `async`
         ))
     }
 
     /// Optimize the database globally across all library sections.
     @discardableResult
-    public func optimizeLibrary() async throws -> SuccessResponse {
+    public func optimizeLibrary() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.OptimizeLibrary())
     }
 
     /// Optimize the database globally across all library sections.
     @discardableResult
-    public func optimizeLibraryPost() async throws -> SuccessResponse {
+    public func optimizeLibraryPost() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.OptimizeLibraryPost())
     }
 
@@ -1287,7 +1287,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func optimizeSection(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.OptimizeSection(
             sectionId: sectionId
         ))
@@ -1297,7 +1297,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func optimizeSectionPost(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.OptimizeSectionPost(
             sectionId: sectionId
         ))
@@ -1310,7 +1310,7 @@ public struct LibraryAPI: Sendable {
         agent: String? = nil,
         markUpdated: BoolInt? = nil,
         skipRefresh: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshItemsMetadata(
             ids: ids,
             agent: agent,
@@ -1323,7 +1323,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func refreshSection(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshSection(
             sectionId: sectionId
         ))
@@ -1335,7 +1335,7 @@ public struct LibraryAPI: Sendable {
         sectionId: Int,
         force: BoolInt? = nil,
         path2: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshSectionPost(
             sectionId: sectionId,
             force: force,
@@ -1347,7 +1347,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func refreshSectionsMetadata(
         force: Bool? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshSectionsMetadata(
             force: force
         ))
@@ -1357,7 +1357,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func searchSection(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.SearchSection(
             sectionId: sectionId
         ))
@@ -1371,7 +1371,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         element: SetItemArtworkElement,
         url: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetItemArtwork(
             ids: ids,
             element: element,
@@ -1384,7 +1384,7 @@ public struct LibraryAPI: Sendable {
     public func setItemPreferences(
         ids: String,
         args: AnyJSON? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetItemPreferences(
             ids: ids,
             args: args
@@ -1396,7 +1396,7 @@ public struct LibraryAPI: Sendable {
     public func setSectionPreferences(
         sectionId: Int,
         prefs: AnyJSON
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetSectionPreferences(
             sectionId: sectionId,
             prefs: prefs
@@ -1409,7 +1409,7 @@ public struct LibraryAPI: Sendable {
         streamId: Int,
         ext: String,
         offset: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.SetStreamOffset(
             streamId: streamId,
             ext: ext,
@@ -1424,7 +1424,7 @@ public struct LibraryAPI: Sendable {
         audioStreamID: Int? = nil,
         subtitleStreamID: Int? = nil,
         allParts: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetStreamSelection(
             partId: partId,
             audioStreamID: audioStreamID,
@@ -1437,7 +1437,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func splitItem(
         ids: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SplitItem(
             ids: ids
         ))
@@ -1448,7 +1448,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func startAnalysis(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StartAnalysis(
             sectionId: sectionId
         ))
@@ -1459,7 +1459,7 @@ public struct LibraryAPI: Sendable {
     public func startBifGeneration(
         ids: String,
         force: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StartBifGeneration(
             ids: ids,
             force: force
@@ -1468,7 +1468,7 @@ public struct LibraryAPI: Sendable {
 
     /// Stop all refreshes across all sections
     @discardableResult
-    public func stopAllRefreshes() async throws -> SuccessResponse {
+    public func stopAllRefreshes() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StopAllRefreshes())
     }
 
@@ -1476,7 +1476,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func unmatch(
         ids: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.Unmatch(
             ids: ids
         ))
@@ -1486,7 +1486,7 @@ public struct LibraryAPI: Sendable {
     @discardableResult
     public func unmatchSectionItems(
         sectionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UnmatchSectionItems(
             sectionId: sectionId
         ))
@@ -1500,7 +1500,7 @@ public struct LibraryAPI: Sendable {
         ids: String,
         element: UpdateItemArtworkElement,
         url: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UpdateItemArtwork(
             ids: ids,
             element: element,
@@ -1569,7 +1569,7 @@ public struct LibraryAPI: Sendable {
         tagtypeIdxTaggingObject: String? = nil,
         tagtypeTagTag: String? = nil,
         tagtypeTag: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UpdateItems(
             sectionId: sectionId,
             type: type,
@@ -1593,7 +1593,7 @@ public struct LibraryAPI: Sendable {
     public func uploadArt(
         id: Int,
         body: Data? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UploadArt(
             id: id,
             body: body
@@ -1605,7 +1605,7 @@ public struct LibraryAPI: Sendable {
     public func uploadPoster(
         id: Int,
         body: Data? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UploadPoster(
             id: id,
             body: body

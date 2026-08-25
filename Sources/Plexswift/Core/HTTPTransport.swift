@@ -29,67 +29,12 @@ public struct URLSessionTransport: HTTPTransport {
     }
 
     public func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        let (data, response) = try await session.plexData(for: request)
+        // `data(for:)` is available unconditionally at this package's deployment targets, and
+        // cancels its underlying task when the surrounding Task is cancelled.
+        let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)
         }
         return (data, httpResponse)
-    }
-}
-
-extension URLSession {
-    /// `data(for:)`, with a fallback for platforms whose Foundation lacks the async overload.
-    ///
-    /// swift-corelibs-foundation gained `data(for:)` in Swift 5.7, and the Darwin overload is
-    /// gated on iOS 15 / macOS 12. Below either bar the request is bridged from the completion
-    /// handler API, cancelling the underlying task if the surrounding `Task` is cancelled.
-    func plexData(for request: URLRequest) async throws -> (Data, URLResponse) {
-        if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-            return try await data(for: request)
-        }
-        let box = CancellationBox()
-        return try await withTaskCancellationHandler {
-            try await withCheckedThrowingContinuation { continuation in
-                let task = dataTask(with: request) { data, response, error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else if let data, let response {
-                        continuation.resume(returning: (data, response))
-                    } else {
-                        continuation.resume(throwing: URLError(.badServerResponse))
-                    }
-                }
-                box.adopt(task)
-                task.resume()
-            }
-        } onCancel: {
-            box.cancel()
-        }
-    }
-
-    /// Holds the single `URLSessionTask` backing one bridged request.
-    ///
-    /// Cancellation can arrive before the task has been created, so the box records that it was
-    /// cancelled and cancels the task as soon as it is adopted.
-    private final class CancellationBox: @unchecked Sendable {
-        private let lock = NSLock()
-        private var task: URLSessionTask?
-        private var isCancelled = false
-
-        func adopt(_ task: URLSessionTask) {
-            lock.lock()
-            let shouldCancel = isCancelled
-            self.task = task
-            lock.unlock()
-            if shouldCancel { task.cancel() }
-        }
-
-        func cancel() {
-            lock.lock()
-            isCancelled = true
-            let task = self.task
-            lock.unlock()
-            task?.cancel()
-        }
     }
 }

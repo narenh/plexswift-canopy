@@ -12,7 +12,7 @@ public struct ButlerAPI: Sendable {
 
     /// Get the list of butler tasks and their scheduling
     @discardableResult
-    public func getTasks() async throws -> GetTasksResponse {
+    public func getTasks() async throws(PlexError) -> GetTasksResponse {
         try await client.perform(Operations.GetTasks())
     }
 
@@ -20,7 +20,7 @@ public struct ButlerAPI: Sendable {
     @discardableResult
     public func startTask(
         butlerTask: StartTaskButlerTask
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.StartTask(
             butlerTask: butlerTask
         ))
@@ -35,7 +35,7 @@ public struct ButlerAPI: Sendable {
     /// 3. If a task is configured to run at a random time during the configured window and we are within that window, the task will be scheduled at a random time within the window.
     /// 4. If we are outside the configured window, the task will start immediately.
     @discardableResult
-    public func startTasks() async throws -> SuccessResponse {
+    public func startTasks() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StartTasks())
     }
 
@@ -44,7 +44,7 @@ public struct ButlerAPI: Sendable {
     @discardableResult
     public func stopTask(
         butlerTask: StopTaskButlerTask
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StopTask(
             butlerTask: butlerTask
         ))
@@ -53,7 +53,7 @@ public struct ButlerAPI: Sendable {
     /// This endpoint will stop all currently running tasks and remove any scheduled tasks from the
     /// queue.
     @discardableResult
-    public func stopTasks() async throws -> SuccessResponse {
+    public func stopTasks() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StopTasks())
     }
 }

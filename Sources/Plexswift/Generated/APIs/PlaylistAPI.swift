@@ -17,7 +17,7 @@ public struct PlaylistAPI: Sendable {
     @discardableResult
     public func getPlaylist(
         playlistId: Int
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.GetPlaylist(
             playlistId: playlistId
         ))
@@ -32,7 +32,7 @@ public struct PlaylistAPI: Sendable {
     public func getPlaylistItems(
         playlistId: Int,
         type: [Int]? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetPlaylistItems(
             playlistId: playlistId,
             type: type
@@ -47,7 +47,7 @@ public struct PlaylistAPI: Sendable {
         smart: Bool? = nil,
         playlistType: ListPlaylistsPlaylistType? = nil,
         type: Int? = nil
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.ListPlaylists(
             smart: smart,
             playlistType: playlistType,

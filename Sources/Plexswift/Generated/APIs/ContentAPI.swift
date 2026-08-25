@@ -14,7 +14,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getAlbums(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetAlbums(
             sectionId: sectionId
         ))
@@ -24,7 +24,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getAllLeaves(
         sectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetAllLeaves(
             sectionId: sectionId
         ))
@@ -34,7 +34,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getArts(
         sectionId: Int
-    ) async throws -> MediaContainerWithArtwork {
+    ) async throws(PlexError) -> MediaContainerWithArtwork {
         try await client.perform(Operations.GetArts(
             sectionId: sectionId
         ))
@@ -44,7 +44,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getCategories(
         sectionId: Int
-    ) async throws -> MediaContainerWithArtwork {
+    ) async throws(PlexError) -> MediaContainerWithArtwork {
         try await client.perform(Operations.GetCategories(
             sectionId: sectionId
         ))
@@ -54,7 +54,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getCluster(
         sectionId: Int
-    ) async throws -> MediaContainerWithArtwork {
+    ) async throws(PlexError) -> MediaContainerWithArtwork {
         try await client.perform(Operations.GetCluster(
             sectionId: sectionId
         ))
@@ -66,7 +66,7 @@ public struct ContentAPI: Sendable {
         composite: GetCollectionImageComposite? = nil,
         collectionId: Int,
         updatedAt: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetCollectionImage(
             composite: composite,
             collectionId: collectionId,
@@ -79,7 +79,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getCollectionItems(
         collectionId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetCollectionItems(
             collectionId: collectionId
         ))
@@ -89,7 +89,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func getFolders(
         sectionId: Int
-    ) async throws -> GetFoldersResponse {
+    ) async throws(PlexError) -> GetFoldersResponse {
         try await client.perform(Operations.GetFolders(
             sectionId: sectionId
         ))
@@ -119,7 +119,7 @@ public struct ContentAPI: Sendable {
         includeStations: Bool? = nil,
         excludeElements: String? = nil,
         excludeFields: String? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetMetadataItem(
             ids: ids,
             asyncCheckFiles: asyncCheckFiles,
@@ -154,7 +154,7 @@ public struct ContentAPI: Sendable {
         startID: Int,
         endID: Int,
         maxDistance: Double? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSonicPath(
             count: count,
             sectionId: sectionId,
@@ -172,7 +172,7 @@ public struct ContentAPI: Sendable {
         values: [Int],
         limit: Int? = nil,
         maxDistance: Double? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSonicallySimilar(
             sectionId: sectionId,
             type: type,
@@ -228,7 +228,7 @@ public struct ContentAPI: Sendable {
         resolution: String? = nil,
         year: Int? = nil,
         firstCharacter: String? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.ListContent(
             xPlexContainerStart: xPlexContainerStart,
             xPlexContainerSize: xPlexContainerSize,
@@ -279,7 +279,7 @@ public struct ContentAPI: Sendable {
     @discardableResult
     public func listMoments(
         sectionId: Int
-    ) async throws -> MediaContainerWithArtwork {
+    ) async throws(PlexError) -> MediaContainerWithArtwork {
         try await client.perform(Operations.ListMoments(
             sectionId: sectionId
         ))

@@ -60,6 +60,11 @@ class Property:
         return f"{self.type_name}?" if self.is_optional else self.type_name
 
     @property
+    def label(self) -> str:
+        """The argument-label spelling, which rarely needs the backticks a declaration does."""
+        return naming.argument_label(self.swift_name)
+
+    @property
     def needs_coding_key(self) -> bool:
         """Whether the property name differs from the JSON key it decodes from."""
         return self.swift_name.strip("`") != self.json_key

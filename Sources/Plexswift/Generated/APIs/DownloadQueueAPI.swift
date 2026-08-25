@@ -34,7 +34,7 @@ public struct DownloadQueueAPI: Sendable {
         path2: String? = nil,
         peakBitrate: Int? = nil,
         photoResolution: String? = nil,
-        `protocol`: AddDownloadQueueItemsProtocol? = nil,
+        protocol: AddDownloadQueueItemsProtocol? = nil,
         secondsPerSegment: Int? = nil,
         subtitleSize: Int? = nil,
         subtitles: AddDownloadQueueItemsSubtitles? = nil,
@@ -43,7 +43,7 @@ public struct DownloadQueueAPI: Sendable {
         videoResolution: String? = nil,
         queueId: Int,
         keys: [String]
-    ) async throws -> AddDownloadQueueItemsResponse {
+    ) async throws(PlexError) -> AddDownloadQueueItemsResponse {
         try await client.perform(Operations.AddDownloadQueueItems(
             advancedSubtitles: advancedSubtitles,
             audioBoost: audioBoost,
@@ -64,7 +64,7 @@ public struct DownloadQueueAPI: Sendable {
             path2: path2,
             peakBitrate: peakBitrate,
             photoResolution: photoResolution,
-            `protocol`: `protocol`,
+            protocol: `protocol`,
             secondsPerSegment: secondsPerSegment,
             subtitleSize: subtitleSize,
             subtitles: subtitles,
@@ -81,7 +81,7 @@ public struct DownloadQueueAPI: Sendable {
     /// Creates a download queue for this client if one doesn't exist, or returns the existing queue for
     /// this client and user.
     @discardableResult
-    public func createDownloadQueue() async throws -> CreateDownloadQueueResponse {
+    public func createDownloadQueue() async throws(PlexError) -> CreateDownloadQueueResponse {
         try await client.perform(Operations.CreateDownloadQueue())
     }
 
@@ -91,7 +91,7 @@ public struct DownloadQueueAPI: Sendable {
     @discardableResult
     public func getDownloadQueue(
         queueId: Int
-    ) async throws -> GetDownloadQueueResponse {
+    ) async throws(PlexError) -> GetDownloadQueueResponse {
         try await client.perform(Operations.GetDownloadQueue(
             queueId: queueId
         ))
@@ -104,7 +104,7 @@ public struct DownloadQueueAPI: Sendable {
     public func getDownloadQueueItems(
         queueId: Int,
         itemId: [Int]
-    ) async throws -> GetDownloadQueueItemsResponse {
+    ) async throws(PlexError) -> GetDownloadQueueItemsResponse {
         try await client.perform(Operations.GetDownloadQueueItems(
             queueId: queueId,
             itemId: itemId
@@ -118,7 +118,7 @@ public struct DownloadQueueAPI: Sendable {
     public func getDownloadQueueMedia(
         queueId: Int,
         itemId: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetDownloadQueueMedia(
             queueId: queueId,
             itemId: itemId
@@ -132,7 +132,7 @@ public struct DownloadQueueAPI: Sendable {
     public func getItemDecision(
         queueId: Int,
         itemId: Int
-    ) async throws -> MediaContainerWithDecision {
+    ) async throws(PlexError) -> MediaContainerWithDecision {
         try await client.perform(Operations.GetItemDecision(
             queueId: queueId,
             itemId: itemId
@@ -145,7 +145,7 @@ public struct DownloadQueueAPI: Sendable {
     @discardableResult
     public func listDownloadQueueItems(
         queueId: Int
-    ) async throws -> ListDownloadQueueItemsResponse {
+    ) async throws(PlexError) -> ListDownloadQueueItemsResponse {
         try await client.perform(Operations.ListDownloadQueueItems(
             queueId: queueId
         ))
@@ -156,7 +156,7 @@ public struct DownloadQueueAPI: Sendable {
     public func removeDownloadQueueItems(
         queueId: Int,
         itemId: [Int]
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.RemoveDownloadQueueItems(
             queueId: queueId,
             itemId: itemId
@@ -170,7 +170,7 @@ public struct DownloadQueueAPI: Sendable {
     public func restartProcessingDownloadQueueItems(
         queueId: Int,
         itemId: [Int]
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.RestartProcessingDownloadQueueItems(
             queueId: queueId,
             itemId: itemId

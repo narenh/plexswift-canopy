@@ -16,7 +16,7 @@ public struct TranscoderAPI: Sendable {
         transcodeType: String,
         sessionId: String,
         segmentId: String
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetDASHSegment(
             transcodeType: transcodeType,
             sessionId: sessionId,
@@ -30,7 +30,7 @@ public struct TranscoderAPI: Sendable {
         transcodeType: String,
         sessionId: String,
         segmentId: String
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetHLSSegment(
             transcodeType: transcodeType,
             sessionId: sessionId,
@@ -40,7 +40,7 @@ public struct TranscoderAPI: Sendable {
 
     /// Get active transcode sessions.
     @discardableResult
-    public func getTranscodeSessions() async throws -> MediaContainerWithMetadata {
+    public func getTranscodeSessions() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetTranscodeSessions())
     }
 
@@ -70,7 +70,7 @@ public struct TranscoderAPI: Sendable {
         path2: String? = nil,
         peakBitrate: Int? = nil,
         photoResolution: String? = nil,
-        `protocol`: MakeDecisionProtocol? = nil,
+        protocol: MakeDecisionProtocol? = nil,
         secondsPerSegment: Int? = nil,
         subtitleSize: Int? = nil,
         subtitles: MakeDecisionSubtitles? = nil,
@@ -82,7 +82,7 @@ public struct TranscoderAPI: Sendable {
         xPlexClientProfileExtra: String? = nil,
         xPlexClientProfileName: String? = nil,
         xPlexSessionIdentifier: String? = nil
-    ) async throws -> MediaContainerWithDecision {
+    ) async throws(PlexError) -> MediaContainerWithDecision {
         try await client.perform(Operations.MakeDecision(
             transcodeType: transcodeType,
             transcodeSessionId: transcodeSessionId,
@@ -106,7 +106,7 @@ public struct TranscoderAPI: Sendable {
             path2: path2,
             peakBitrate: peakBitrate,
             photoResolution: photoResolution,
-            `protocol`: `protocol`,
+            protocol: `protocol`,
             secondsPerSegment: secondsPerSegment,
             subtitleSize: subtitleSize,
             subtitles: subtitles,
@@ -128,7 +128,7 @@ public struct TranscoderAPI: Sendable {
         transcodeSessionId: String? = nil,
         advancedSubtitles: StartTranscodeSessionAdvancedSubtitles? = nil,
         platform: String? = nil,
-        `extension`: StartTranscodeSessionExtension,
+        extension: StartTranscodeSessionExtension,
         audioBoost: Int? = nil,
         audioChannelCount: Int? = nil,
         autoAdjustQuality: BoolInt? = nil,
@@ -147,7 +147,7 @@ public struct TranscoderAPI: Sendable {
         path2: String? = nil,
         peakBitrate: Int? = nil,
         photoResolution: String? = nil,
-        `protocol`: StartTranscodeSessionProtocol? = nil,
+        protocol: StartTranscodeSessionProtocol? = nil,
         secondsPerSegment: Int? = nil,
         subtitleSize: Int? = nil,
         subtitles: StartTranscodeSessionSubtitles? = nil,
@@ -159,13 +159,13 @@ public struct TranscoderAPI: Sendable {
         xPlexClientProfileExtra: String? = nil,
         xPlexClientProfileName: String? = nil,
         xPlexSessionIdentifier: String? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.StartTranscodeSession(
             transcodeType: transcodeType,
             transcodeSessionId: transcodeSessionId,
             advancedSubtitles: advancedSubtitles,
             platform: platform,
-            `extension`: `extension`,
+            extension: `extension`,
             audioBoost: audioBoost,
             audioChannelCount: audioChannelCount,
             autoAdjustQuality: autoAdjustQuality,
@@ -184,7 +184,7 @@ public struct TranscoderAPI: Sendable {
             path2: path2,
             peakBitrate: peakBitrate,
             photoResolution: photoResolution,
-            `protocol`: `protocol`,
+            protocol: `protocol`,
             secondsPerSegment: secondsPerSegment,
             subtitleSize: subtitleSize,
             subtitles: subtitles,
@@ -216,7 +216,7 @@ public struct TranscoderAPI: Sendable {
         opacity: Int? = nil,
         chromaSubsampling: TranscodeImageChromaSubsampling? = nil,
         blendColor: String? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.TranscodeImage(
             url: url,
             format: format,
@@ -237,7 +237,7 @@ public struct TranscoderAPI: Sendable {
 
     /// Audio transcode endpoint for music playback.
     @discardableResult
-    public func transcodeMusic() async throws -> SuccessResponse {
+    public func transcodeMusic() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.TranscodeMusic())
     }
 
@@ -266,7 +266,7 @@ public struct TranscoderAPI: Sendable {
         path2: String? = nil,
         peakBitrate: Int? = nil,
         photoResolution: String? = nil,
-        `protocol`: TranscodeSubtitlesProtocol? = nil,
+        protocol: TranscodeSubtitlesProtocol? = nil,
         secondsPerSegment: Int? = nil,
         subtitleSize: Int? = nil,
         subtitles: TranscodeSubtitlesSubtitles? = nil,
@@ -278,7 +278,7 @@ public struct TranscoderAPI: Sendable {
         xPlexClientProfileExtra: String? = nil,
         xPlexClientProfileName: String? = nil,
         xPlexSessionIdentifier: String? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.TranscodeSubtitles(
             transcodeType: transcodeType,
             transcodeSessionId: transcodeSessionId,
@@ -302,7 +302,7 @@ public struct TranscoderAPI: Sendable {
             path2: path2,
             peakBitrate: peakBitrate,
             photoResolution: photoResolution,
-            `protocol`: `protocol`,
+            protocol: `protocol`,
             secondsPerSegment: secondsPerSegment,
             subtitleSize: subtitleSize,
             subtitles: subtitles,
@@ -322,7 +322,7 @@ public struct TranscoderAPI: Sendable {
     public func triggerFallback(
         transcodeType: TriggerFallbackTranscodeType,
         transcodeSessionId: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.TriggerFallback(
             transcodeType: transcodeType,
             transcodeSessionId: transcodeSessionId

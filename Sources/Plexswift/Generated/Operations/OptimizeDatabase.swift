@@ -19,7 +19,7 @@ extension Operations {
         public var `async`: BoolInt?
 
         public init(
-            `async`: BoolInt? = nil
+            async: BoolInt? = nil
         ) {
             self.`async` = `async`
         }

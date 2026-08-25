@@ -26,6 +26,12 @@ public enum PlexError: Swift.Error, Sendable {
     /// A 2xx response arrived but its body could not be decoded into the expected type.
     case decoding(DecodingFailure)
 
+    /// The request could not be built, because encoding a parameter or a body failed.
+    ///
+    /// Reachable only for operations carrying an object-valued query parameter or a request
+    /// body, since everything else is encoded without failure.
+    case encoding(operation: String, underlyingError: any Swift.Error)
+
     /// Details of a non-2xx response from Plex.
     public struct APIError: Swift.Error, Sendable, CustomStringConvertible {
         /// The HTTP status code.
@@ -141,6 +147,8 @@ extension PlexError: CustomStringConvertible {
             return error.description
         case .decoding(let failure):
             return failure.description
+        case .encoding(let operation, let underlyingError):
+            return "Could not encode the request for \(operation): \(underlyingError)"
         }
     }
 }

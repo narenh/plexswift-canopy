@@ -19,7 +19,7 @@ public struct PlayQueueAPI: Sendable {
         uri: String? = nil,
         playlistID: String? = nil,
         next: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddToPlayQueue(
             playQueueId: playQueueId,
             uri: uri,
@@ -32,7 +32,7 @@ public struct PlayQueueAPI: Sendable {
     @discardableResult
     public func clearPlayQueue(
         playQueueId: Int
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.ClearPlayQueue(
             playQueueId: playQueueId
         ))
@@ -50,19 +50,19 @@ public struct PlayQueueAPI: Sendable {
         type: CreatePlayQueueType,
         key: String? = nil,
         shuffle: BoolInt? = nil,
-        `repeat`: BoolInt? = nil,
+        repeat: BoolInt? = nil,
         continuous: BoolInt? = nil,
         extrasPrefixCount: Int? = nil,
         recursive: BoolInt? = nil,
         onDeck: BoolInt? = nil
-    ) async throws -> MediaContainerWithPlayQueue {
+    ) async throws(PlexError) -> MediaContainerWithPlayQueue {
         try await client.perform(Operations.CreatePlayQueue(
             uri: uri,
             playlistID: playlistID,
             type: type,
             key: key,
             shuffle: shuffle,
-            `repeat`: `repeat`,
+            repeat: `repeat`,
             continuous: continuous,
             extrasPrefixCount: extrasPrefixCount,
             recursive: recursive,
@@ -76,7 +76,7 @@ public struct PlayQueueAPI: Sendable {
     public func deletePlayQueueItem(
         playQueueId: Int,
         playQueueItemId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeletePlayQueueItem(
             playQueueId: playQueueId,
             playQueueItemId: playQueueItemId
@@ -94,7 +94,7 @@ public struct PlayQueueAPI: Sendable {
         window: Int? = nil,
         includeBefore: BoolInt? = nil,
         includeAfter: BoolInt? = nil
-    ) async throws -> PlayQueueResponse {
+    ) async throws(PlexError) -> PlayQueueResponse {
         try await client.perform(Operations.GetPlayQueue(
             playQueueId: playQueueId,
             own: own,
@@ -112,7 +112,7 @@ public struct PlayQueueAPI: Sendable {
         playQueueId: Int,
         playQueueItemId: Int,
         after: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MovePlayQueueItem(
             playQueueId: playQueueId,
             playQueueItemId: playQueueItemId,
@@ -124,7 +124,7 @@ public struct PlayQueueAPI: Sendable {
     @discardableResult
     public func resetPlayQueue(
         playQueueId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.ResetPlayQueue(
             playQueueId: playQueueId
         ))
@@ -136,7 +136,7 @@ public struct PlayQueueAPI: Sendable {
     @discardableResult
     public func shuffle(
         playQueueId: Int
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.Shuffle(
             playQueueId: playQueueId
         ))
@@ -147,7 +147,7 @@ public struct PlayQueueAPI: Sendable {
     @discardableResult
     public func unshuffle(
         playQueueId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.Unshuffle(
             playQueueId: playQueueId
         ))

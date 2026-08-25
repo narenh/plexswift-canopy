@@ -83,7 +83,7 @@ public struct MediaContainerWithDecisionMediaContainerMetadataItemMediaItemPartI
         key: String? = nil,
         optimizedForStreaming: Bool? = nil,
         packetLength: Int? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         requiredBandwidths: String? = nil,
         size: Int? = nil,
         stream: [MediaContainerWithDecisionMediaContainerMetadataItemMediaItemPartItemStreamItem]? = nil,

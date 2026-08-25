@@ -14,7 +14,7 @@ public struct PlaylistsAPI: Sendable {
     @discardableResult
     public func deletePlaylistByRatingKey(
         ratingKey: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeletePlaylistByRatingKey(
             ratingKey: ratingKey
         ))

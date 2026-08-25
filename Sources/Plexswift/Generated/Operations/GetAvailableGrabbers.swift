@@ -19,7 +19,7 @@ extension Operations {
         public var `protocol`: String?
 
         public init(
-            `protocol`: String? = nil
+            protocol: String? = nil
         ) {
             self.`protocol` = `protocol`
         }

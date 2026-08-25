@@ -14,7 +14,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func getClientResources(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.GetClientResources(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -25,7 +25,7 @@ public struct PlaybackAPI: Sendable {
     public func getProgress(
         key: String,
         time: Int
-    ) async throws -> ProgressResponse {
+    ) async throws(PlexError) -> ProgressResponse {
         try await client.perform(Operations.GetProgress(
             key: key,
             time: time
@@ -37,7 +37,7 @@ public struct PlaybackAPI: Sendable {
     public func playerAudioStream(
         xPlexTargetClientIdentifier: String? = nil,
         streamID: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.PlayerAudioStream(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             streamID: streamID
@@ -48,7 +48,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerMute(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerMute(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -58,7 +58,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerPause(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerPause(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -68,7 +68,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerPlay(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerPlay(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -81,7 +81,7 @@ public struct PlaybackAPI: Sendable {
         key: String? = nil,
         offset: Int? = nil,
         machineIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerPlayMedia(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             key: key,
@@ -94,7 +94,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerPollTimeline(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerPollTimeline(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -104,7 +104,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerRefreshplayqueue(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerRefreshplayqueue(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -115,7 +115,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSeek(
         xPlexTargetClientIdentifier: String? = nil,
         offset: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSeek(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             offset: offset
@@ -127,13 +127,13 @@ public struct PlaybackAPI: Sendable {
     public func playerSetParameters(
         xPlexTargetClientIdentifier: String? = nil,
         shuffle: PlayerSetParametersShuffle? = nil,
-        `repeat`: PlayerSetParametersRepeat? = nil,
+        repeat: PlayerSetParametersRepeat? = nil,
         volume: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSetParameters(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             shuffle: shuffle,
-            `repeat`: `repeat`,
+            repeat: `repeat`,
             volume: volume
         ))
     }
@@ -143,7 +143,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSetRating(
         xPlexTargetClientIdentifier: String? = nil,
         rating: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSetRating(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             rating: rating
@@ -155,7 +155,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSetState(
         xPlexTargetClientIdentifier: String? = nil,
         state: PlayerSetStateState? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSetState(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             state: state
@@ -169,7 +169,7 @@ public struct PlaybackAPI: Sendable {
         audioStreamID: Int? = nil,
         subtitleStreamID: Int? = nil,
         videoStreamID: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.PlayerSetStreams(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             audioStreamID: audioStreamID,
@@ -183,7 +183,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSetTextStream(
         xPlexTargetClientIdentifier: String? = nil,
         streamID: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.PlayerSetTextStream(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             streamID: streamID
@@ -195,7 +195,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSetViewOffset(
         xPlexTargetClientIdentifier: String? = nil,
         offset: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSetViewOffset(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             offset: offset
@@ -207,7 +207,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSkipBy(
         xPlexTargetClientIdentifier: String? = nil,
         offset: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSkipBy(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             offset: offset
@@ -219,7 +219,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSkipTo(
         xPlexTargetClientIdentifier: String? = nil,
         key: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerSkipTo(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             key: key
@@ -230,7 +230,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerStepback(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerStepback(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -240,7 +240,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerStepforward(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerStepforward(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -250,7 +250,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerStop(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerStop(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -261,7 +261,7 @@ public struct PlaybackAPI: Sendable {
     public func playerSubtitleStream(
         xPlexTargetClientIdentifier: String? = nil,
         streamID: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.PlayerSubtitleStream(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             streamID: streamID
@@ -272,7 +272,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func playerUnmute(
         xPlexTargetClientIdentifier: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerUnmute(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier
         ))
@@ -283,7 +283,7 @@ public struct PlaybackAPI: Sendable {
     public func playerVideoStream(
         xPlexTargetClientIdentifier: String? = nil,
         streamID: Int? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.PlayerVideoStream(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             streamID: streamID
@@ -295,7 +295,7 @@ public struct PlaybackAPI: Sendable {
     public func playerVolume(
         xPlexTargetClientIdentifier: String? = nil,
         level: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PlayerVolume(
             xPlexTargetClientIdentifier: xPlexTargetClientIdentifier,
             level: level
@@ -306,7 +306,7 @@ public struct PlaybackAPI: Sendable {
     @discardableResult
     public func removeFromContinueWatching(
         key: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RemoveFromContinueWatching(
             key: key
         ))

@@ -49,6 +49,14 @@ class CamelCaseTests(unittest.TestCase):
     def test_preserves_a_trailing_acronym(self):
         self.assertEqual(camel_case("librarySectionID"), "librarySectionID")
 
+    def test_pluralised_acronyms_stay_one_word(self):
+        # The "DVRs" tag names client.dvrs; splitting it as DVR + s gives "dvrS".
+        self.assertEqual(camel_case("DVRs"), "dvrs")
+        self.assertEqual(pascal_case("DVRs"), "DVRs")
+
+    def test_a_lower_case_word_after_an_acronym_is_not_absorbed(self):
+        self.assertEqual(camel_case("DVRsetting"), "dvrSetting")
+
     def test_handles_acronyms_whose_expansion_continues_in_lower_case(self):
         # Without the known-acronym table these split as "I" + "Pv6", giving "iPv6".
         self.assertEqual(camel_case("IPv6"), "ipv6")

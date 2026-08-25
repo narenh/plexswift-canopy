@@ -15,7 +15,7 @@ public struct DevicesAPI: Sendable {
     @discardableResult
     public func addDevice(
         uri: String? = nil
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.AddDevice(
             uri: uri
         ))
@@ -24,11 +24,11 @@ public struct DevicesAPI: Sendable {
     /// Tell grabbers to discover devices
     @discardableResult
     public func discoverDevices(
-        `protocol`: DiscoverDevicesProtocol? = nil,
+        protocol: DiscoverDevicesProtocol? = nil,
         grabberIdentifier: String? = nil
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.DiscoverDevices(
-            `protocol`: `protocol`,
+            protocol: `protocol`,
             grabberIdentifier: grabberIdentifier
         ))
     }
@@ -36,10 +36,10 @@ public struct DevicesAPI: Sendable {
     /// Get available grabbers visible to the server
     @discardableResult
     public func getAvailableGrabbers(
-        `protocol`: String? = nil
-    ) async throws -> GetAvailableGrabbersResponse {
+        protocol: String? = nil
+    ) async throws(PlexError) -> GetAvailableGrabbersResponse {
         try await client.perform(Operations.GetAvailableGrabbers(
-            `protocol`: `protocol`
+            protocol: `protocol`
         ))
     }
 
@@ -47,7 +47,7 @@ public struct DevicesAPI: Sendable {
     @discardableResult
     public func getDeviceDetails(
         deviceId: Int
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.GetDeviceDetails(
             deviceId: deviceId
         ))
@@ -57,7 +57,7 @@ public struct DevicesAPI: Sendable {
     @discardableResult
     public func getDevicesChannels(
         deviceId: Int
-    ) async throws -> GetDevicesChannelsResponse {
+    ) async throws(PlexError) -> GetDevicesChannelsResponse {
         try await client.perform(Operations.GetDevicesChannels(
             deviceId: deviceId
         ))
@@ -68,7 +68,7 @@ public struct DevicesAPI: Sendable {
     public func getThumb(
         deviceId: Int,
         version: Int
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetThumb(
             deviceId: deviceId,
             version: version
@@ -77,7 +77,7 @@ public struct DevicesAPI: Sendable {
 
     /// Get the list of all devices present
     @discardableResult
-    public func listDevices() async throws -> MediaContainerWithDevice {
+    public func listDevices() async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.ListDevices())
     }
 
@@ -86,7 +86,7 @@ public struct DevicesAPI: Sendable {
     public func modifyDevice(
         deviceId: Int,
         enabled: BoolInt? = nil
-    ) async throws -> ModifyDeviceResponse {
+    ) async throws(PlexError) -> ModifyDeviceResponse {
         try await client.perform(Operations.ModifyDevice(
             deviceId: deviceId,
             enabled: enabled
@@ -97,7 +97,7 @@ public struct DevicesAPI: Sendable {
     @discardableResult
     public func removeDevice(
         deviceId: Int
-    ) async throws -> RemoveDeviceResponse {
+    ) async throws(PlexError) -> RemoveDeviceResponse {
         try await client.perform(Operations.RemoveDevice(
             deviceId: deviceId
         ))
@@ -108,7 +108,7 @@ public struct DevicesAPI: Sendable {
     public func scan(
         deviceId: Int,
         source: String? = nil
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.Scan(
             deviceId: deviceId,
             source: source
@@ -122,7 +122,7 @@ public struct DevicesAPI: Sendable {
         channelMapping: AnyJSON? = nil,
         channelMappingByKey: AnyJSON? = nil,
         channelsEnabled: [String]? = nil
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.SetChannelmap(
             deviceId: deviceId,
             channelMapping: channelMapping,
@@ -137,7 +137,7 @@ public struct DevicesAPI: Sendable {
         deviceId: Int,
         name: String? = nil,
         value: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetDevicePreferences(
             deviceId: deviceId,
             name: name,
@@ -149,7 +149,7 @@ public struct DevicesAPI: Sendable {
     @discardableResult
     public func stopScan(
         deviceId: Int
-    ) async throws -> MediaContainerWithDevice {
+    ) async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.StopScan(
             deviceId: deviceId
         ))

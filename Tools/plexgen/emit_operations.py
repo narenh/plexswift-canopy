@@ -133,7 +133,7 @@ def _render_initialiser(operation: OperationSpec) -> str:
 
     for parameter in operation.parameters:
         default = " = nil" if parameter.is_optional else ""
-        parameters.append(f"{parameter.swift_name}: {parameter.rendered_type}{default}")
+        parameters.append(f"{parameter.label}: {parameter.rendered_type}{default}")
         assignments.append(f"self.{parameter.swift_name} = {parameter.swift_name}")
 
     if operation.body is not None:
@@ -295,8 +295,8 @@ def _render_method(operation: OperationSpec) -> str:
 
     for parameter in operation.parameters:
         default = " = nil" if parameter.is_optional else ""
-        arguments.append(f"{parameter.swift_name}: {parameter.rendered_type}{default}")
-        forwarded.append(f"{parameter.swift_name}: {parameter.swift_name}")
+        arguments.append(f"{parameter.label}: {parameter.rendered_type}{default}")
+        forwarded.append(f"{parameter.label}: {parameter.swift_name}")
 
     if operation.body is not None:
         default = " = nil" if operation.body.is_optional else ""
@@ -312,8 +312,8 @@ def _render_method(operation: OperationSpec) -> str:
 
     lines.append("@discardableResult")
     lines.append(
-        f"public func {operation.method_name}({signature_arguments}) async throws "
-        f"-> {operation.success_type} {{"
+        f"public func {operation.method_name}({signature_arguments}) "
+        f"async throws(PlexError) -> {operation.success_type} {{"
     )
     lines.append(indent(f"try await client.perform({construction})"))
     lines.append("}")

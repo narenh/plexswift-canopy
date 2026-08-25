@@ -79,7 +79,7 @@ public struct Part: Codable, Hashable, Sendable {
         key: String? = nil,
         optimizedForStreaming: Bool? = nil,
         packetLength: Int? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         requiredBandwidths: String? = nil,
         size: Int? = nil,
         stream: [Stream]? = nil,

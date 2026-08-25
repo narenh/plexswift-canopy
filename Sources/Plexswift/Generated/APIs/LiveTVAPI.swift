@@ -14,7 +14,7 @@ public struct LiveTVAPI: Sendable {
     @discardableResult
     public func deleteLiveTVSession(
         sessionId: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteLiveTVSession(
             sessionId: sessionId
         ))
@@ -22,7 +22,7 @@ public struct LiveTVAPI: Sendable {
 
     /// List completed DVR recordings.
     @discardableResult
-    public func getDVRRecordings() async throws -> MediaContainerWithMetadata {
+    public func getDVRRecordings() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetDVRRecordings())
     }
 
@@ -30,7 +30,7 @@ public struct LiveTVAPI: Sendable {
     @discardableResult
     public func getDVRRecordingsByDVR(
         dvrId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetDVRRecordingsByDVR(
             dvrId: dvrId
         ))
@@ -40,7 +40,7 @@ public struct LiveTVAPI: Sendable {
     @discardableResult
     public func getLiveTVSession(
         sessionId: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetLiveTVSession(
             sessionId: sessionId
         ))
@@ -51,7 +51,7 @@ public struct LiveTVAPI: Sendable {
     public func getSessionPlaylistIndex(
         sessionId: String,
         consumerId: String
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetSessionPlaylistIndex(
             sessionId: sessionId,
             consumerId: consumerId
@@ -64,7 +64,7 @@ public struct LiveTVAPI: Sendable {
         sessionId: String,
         consumerId: String,
         segmentId: String
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetSessionSegment(
             sessionId: sessionId,
             consumerId: consumerId,
@@ -77,7 +77,7 @@ public struct LiveTVAPI: Sendable {
     public func getSessions(
         dvrId: Int? = nil,
         channel: Int? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetSessions(
             dvrId: dvrId,
             channel: channel

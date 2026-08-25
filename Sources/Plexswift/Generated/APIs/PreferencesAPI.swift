@@ -12,7 +12,7 @@ public struct PreferencesAPI: Sendable {
 
     /// Get the list of all preferences
     @discardableResult
-    public func getAllPreferences() async throws -> MediaContainerWithSettings {
+    public func getAllPreferences() async throws(PlexError) -> MediaContainerWithSettings {
         try await client.perform(Operations.GetAllPreferences())
     }
 
@@ -20,7 +20,7 @@ public struct PreferencesAPI: Sendable {
     @discardableResult
     public func getPreference(
         id: String? = nil
-    ) async throws -> MediaContainerWithSettings {
+    ) async throws(PlexError) -> MediaContainerWithSettings {
         try await client.perform(Operations.GetPreference(
             id: id
         ))
@@ -30,7 +30,7 @@ public struct PreferencesAPI: Sendable {
     @discardableResult
     public func setPreferences(
         prefs: AnyJSON
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetPreferences(
             prefs: prefs
         ))

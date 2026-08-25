@@ -135,7 +135,7 @@ extension Operations {
             path2: String? = nil,
             peakBitrate: Int? = nil,
             photoResolution: String? = nil,
-            `protocol`: AddDownloadQueueItemsProtocol? = nil,
+            protocol: AddDownloadQueueItemsProtocol? = nil,
             secondsPerSegment: Int? = nil,
             subtitleSize: Int? = nil,
             subtitles: AddDownloadQueueItemsSubtitles? = nil,

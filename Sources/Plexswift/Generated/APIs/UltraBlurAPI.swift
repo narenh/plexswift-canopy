@@ -15,7 +15,7 @@ public struct UltraBlurAPI: Sendable {
     @discardableResult
     public func getColors(
         url: String? = nil
-    ) async throws -> GetColorsResponse {
+    ) async throws(PlexError) -> GetColorsResponse {
         try await client.perform(Operations.GetColors(
             url: url
         ))
@@ -32,7 +32,7 @@ public struct UltraBlurAPI: Sendable {
         width: Int? = nil,
         height: Int? = nil,
         noise: BoolInt? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetImage(
             topLeft: topLeft,
             topRight: topRight,

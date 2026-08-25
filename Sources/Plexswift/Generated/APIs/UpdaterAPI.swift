@@ -17,7 +17,7 @@ public struct UpdaterAPI: Sendable {
     public func applyUpdates(
         tonight: BoolInt? = nil,
         skip: BoolInt? = nil
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.ApplyUpdates(
             tonight: tonight,
             skip: skip
@@ -28,7 +28,7 @@ public struct UpdaterAPI: Sendable {
     @discardableResult
     public func checkUpdates(
         download: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CheckUpdates(
             download: download
         ))
@@ -36,7 +36,7 @@ public struct UpdaterAPI: Sendable {
 
     /// Get the status of updating the server
     @discardableResult
-    public func getUpdatesStatus() async throws -> GetUpdatesStatusResponse {
+    public func getUpdatesStatus() async throws(PlexError) -> GetUpdatesStatusResponse {
         try await client.perform(Operations.GetUpdatesStatus())
     }
 }

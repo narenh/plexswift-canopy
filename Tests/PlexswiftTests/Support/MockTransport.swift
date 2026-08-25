@@ -1,4 +1,5 @@
 import Foundation
+import Synchronization
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
@@ -6,19 +7,27 @@ import FoundationNetworking
 
 /// A transport that answers from a canned script instead of the network, and records every
 /// request it was handed.
-final class MockTransport: HTTPTransport, @unchecked Sendable {
+///
+/// State is held in a `Mutex` rather than behind an `NSLock`: `send(_:)` is async, and Swift 6
+/// rejects `NSLock.lock()` in an async context because a suspension while holding it would
+/// block the cooperative thread pool. `Mutex` is scoped, so it cannot be held across a suspension
+/// point, which makes the type genuinely `Sendable` rather than `@unchecked`.
+final class MockTransport: HTTPTransport, Sendable {
     /// What a `MockTransport` should do with the next request.
     enum Outcome {
         case success(statusCode: Int, headers: [String: String], body: Data)
         case failure(any Swift.Error)
     }
 
-    private let lock = NSLock()
-    private var outcomes: [Outcome]
-    private var recorded: [URLRequest] = []
+    private struct State {
+        var outcomes: [Outcome]
+        var recorded: [URLRequest] = []
+    }
+
+    private let state: Mutex<State>
 
     init(_ outcomes: [Outcome]) {
-        self.outcomes = outcomes
+        state = Mutex(State(outcomes: outcomes))
     }
 
     /// A transport that answers every request with `json` and a 200.
@@ -45,19 +54,17 @@ final class MockTransport: HTTPTransport, @unchecked Sendable {
 
     /// The requests this transport has been asked to send, in order.
     var requests: [URLRequest] {
-        lock.lock()
-        defer { lock.unlock() }
-        return recorded
+        state.withLock(\.recorded)
     }
 
     /// The single request this transport was handed.
     var lastRequest: URLRequest? { requests.last }
 
     func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        lock.lock()
-        recorded.append(request)
-        let outcome = outcomes.isEmpty ? nil : outcomes.removeFirst()
-        lock.unlock()
+        let outcome = state.withLock { state -> Outcome? in
+            state.recorded.append(request)
+            return state.outcomes.isEmpty ? nil : state.outcomes.removeFirst()
+        }
 
         guard let outcome else {
             throw MockTransportError.noOutcomeScripted(request.url?.absoluteString ?? "<no url>")

@@ -18,7 +18,7 @@ public struct LibraryPlaylistsAPI: Sendable {
         playlistId: Int,
         uri: String? = nil,
         playQueueID: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddPlaylistItems(
             playlistId: playlistId,
             uri: uri,
@@ -30,7 +30,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func clearPlaylistItems(
         playlistId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.ClearPlaylistItems(
             playlistId: playlistId
         ))
@@ -41,7 +41,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     public func createPlaylist(
         uri: String? = nil,
         playQueueID: Int? = nil
-    ) async throws -> MediaContainerWithPlaylistMetadata {
+    ) async throws(PlexError) -> MediaContainerWithPlaylistMetadata {
         try await client.perform(Operations.CreatePlaylist(
             uri: uri,
             playQueueID: playQueueID
@@ -52,7 +52,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func deletePlaylist(
         playlistId: Int
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.DeletePlaylist(
             playlistId: playlistId
         ))
@@ -63,7 +63,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     public func deletePlaylistItem(
         playlistId: Int,
         generatorId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeletePlaylistItem(
             playlistId: playlistId,
             generatorId: generatorId
@@ -75,7 +75,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     public func getPlaylistGenerator(
         playlistId: Int,
         generatorId: Int
-    ) async throws -> GetPlaylistGeneratorResponse {
+    ) async throws(PlexError) -> GetPlaylistGeneratorResponse {
         try await client.perform(Operations.GetPlaylistGenerator(
             playlistId: playlistId,
             generatorId: generatorId
@@ -87,7 +87,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     public func getPlaylistGeneratorItems(
         playlistId: Int,
         generatorId: Int
-    ) async throws -> GetPlaylistGeneratorItemsResponse {
+    ) async throws(PlexError) -> GetPlaylistGeneratorItemsResponse {
         try await client.perform(Operations.GetPlaylistGeneratorItems(
             playlistId: playlistId,
             generatorId: generatorId
@@ -98,7 +98,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func getPlaylistGenerators(
         playlistId: Int
-    ) async throws -> GetPlaylistGeneratorsResponse {
+    ) async throws(PlexError) -> GetPlaylistGeneratorsResponse {
         try await client.perform(Operations.GetPlaylistGenerators(
             playlistId: playlistId
         ))
@@ -110,7 +110,7 @@ public struct LibraryPlaylistsAPI: Sendable {
         playlistId: Int,
         generatorId: Int,
         item: ModifyPlaylistGeneratorItem? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.ModifyPlaylistGenerator(
             playlistId: playlistId,
             generatorId: generatorId,
@@ -124,7 +124,7 @@ public struct LibraryPlaylistsAPI: Sendable {
         playlistId: Int,
         playlistItemId: Int,
         after: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MovePlaylistItem(
             playlistId: playlistId,
             playlistItemId: playlistItemId,
@@ -139,7 +139,7 @@ public struct LibraryPlaylistsAPI: Sendable {
         generatorId: Int,
         metadataId: Int,
         action: RefreshPlaylistAction
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshPlaylist(
             playlistId: playlistId,
             generatorId: generatorId,
@@ -153,7 +153,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func updatePlaylist(
         playlistId: Int
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.UpdatePlaylist(
             playlistId: playlistId
         ))
@@ -165,7 +165,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     public func uploadPlaylist(
         path2: String? = nil,
         force: BoolInt? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UploadPlaylist(
             path2: path2,
             force: force

@@ -24,7 +24,7 @@ extension Operations {
 
         public init(
             sectionId: String,
-            `async`: BoolInt? = nil
+            async: BoolInt? = nil
         ) {
             self.sectionId = sectionId
             self.`async` = `async`

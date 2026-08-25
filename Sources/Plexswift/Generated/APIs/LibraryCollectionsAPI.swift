@@ -15,7 +15,7 @@ public struct LibraryCollectionsAPI: Sendable {
     public func addCollectionItems(
         collectionId: Int,
         uri: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.AddCollectionItems(
             collectionId: collectionId,
             uri: uri
@@ -28,7 +28,7 @@ public struct LibraryCollectionsAPI: Sendable {
         collectionId: Int,
         itemId: Int,
         after: Int? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.MoveCollectionItem(
             collectionId: collectionId,
             itemId: itemId,
@@ -41,7 +41,7 @@ public struct LibraryCollectionsAPI: Sendable {
     public func updateCollectionItem(
         collectionId: Int,
         itemId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.UpdateCollectionItem(
             collectionId: collectionId,
             itemId: itemId

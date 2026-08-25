@@ -47,7 +47,7 @@ public struct GetCollectionImageComposite: Codable, Hashable, Sendable {
         crop: GetCollectionImageCompositeCrop? = nil,
         height: Int? = nil,
         media: GetCollectionImageCompositeMedia? = nil,
-        `repeat`: Bool? = nil,
+        repeat: Bool? = nil,
         rows: Int? = nil,
         width: Int? = nil
     ) {

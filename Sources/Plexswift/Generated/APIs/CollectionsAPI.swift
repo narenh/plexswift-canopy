@@ -18,7 +18,7 @@ public struct CollectionsAPI: Sendable {
         type: MediaType? = nil,
         sectionId: String,
         uri: String? = nil
-    ) async throws -> Collection {
+    ) async throws(PlexError) -> Collection {
         try await client.perform(Operations.CreateCollection(
             title: title,
             smart: smart,

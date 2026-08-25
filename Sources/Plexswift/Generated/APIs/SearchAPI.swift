@@ -35,7 +35,7 @@ public struct SearchAPI: Sendable {
         sectionId: Int? = nil,
         limit: Int? = nil,
         includeCollections: Bool? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.SearchHubs(
             query: query,
             sectionId: sectionId,
@@ -60,7 +60,7 @@ public struct SearchAPI: Sendable {
         query: String,
         limit: Int? = nil,
         includeCollections: Bool? = nil
-    ) async throws -> MediaContainerWithHubs {
+    ) async throws(PlexError) -> MediaContainerWithHubs {
         try await client.perform(Operations.VoiceSearchHubs(
             type: type,
             query: query,

@@ -81,7 +81,8 @@ public struct UserPlexAccount: Codable, Hashable, Sendable {
     public let maxHomeSize: Int?
 
     /// [Might be removed] The hashed Plex Home PIN
-    @available(*, deprecated, message: "This property is deprecated in the Plex API.")
+    ///
+    /// - Warning: Deprecated in the Plex API.
     public let pin: String?
 
     public let profile: UserProfile?

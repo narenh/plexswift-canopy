@@ -22,7 +22,7 @@ extension Operations {
         public var grabberIdentifier: String?
 
         public init(
-            `protocol`: DiscoverDevicesProtocol? = nil,
+            protocol: DiscoverDevicesProtocol? = nil,
             grabberIdentifier: String? = nil
         ) {
             self.`protocol` = `protocol`

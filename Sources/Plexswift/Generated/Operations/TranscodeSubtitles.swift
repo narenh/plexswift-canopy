@@ -156,7 +156,7 @@ extension Operations {
             path2: String? = nil,
             peakBitrate: Int? = nil,
             photoResolution: String? = nil,
-            `protocol`: TranscodeSubtitlesProtocol? = nil,
+            protocol: TranscodeSubtitlesProtocol? = nil,
             secondsPerSegment: Int? = nil,
             subtitleSize: Int? = nil,
             subtitles: TranscodeSubtitlesSubtitles? = nil,

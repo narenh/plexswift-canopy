@@ -21,7 +21,7 @@ public struct Provider: Codable, Hashable, Sendable {
     public init(
         title: String? = nil,
         identifier: String? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         types: String? = nil
     ) {
         self.title = title

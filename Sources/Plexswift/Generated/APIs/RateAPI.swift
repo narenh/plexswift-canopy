@@ -18,7 +18,7 @@ public struct RateAPI: Sendable {
         key: String,
         rating: Double,
         ratedAt: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SetRating(
             identifier: identifier,
             key: key,

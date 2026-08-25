@@ -17,7 +17,7 @@ public struct SubscriptionsAPI: Sendable {
     @discardableResult
     public func cancelGrab(
         operationId: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CancelGrab(
             operationId: operationId
         ))
@@ -33,7 +33,7 @@ public struct SubscriptionsAPI: Sendable {
         hints: AnyJSON? = nil,
         prefs: AnyJSON? = nil,
         params: AnyJSON? = nil
-    ) async throws -> CreateSubscriptionResponse {
+    ) async throws(PlexError) -> CreateSubscriptionResponse {
         try await client.perform(Operations.CreateSubscription(
             targetLibrarySectionID: targetLibrarySectionID,
             targetSectionLocationID: targetSectionLocationID,
@@ -48,7 +48,7 @@ public struct SubscriptionsAPI: Sendable {
     @discardableResult
     public func deleteSubscription(
         subscriptionId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteSubscription(
             subscriptionId: subscriptionId
         ))
@@ -59,7 +59,7 @@ public struct SubscriptionsAPI: Sendable {
     public func editSubscriptionPreferences(
         subscriptionId: Int,
         prefs: AnyJSON? = nil
-    ) async throws -> MediaContainerWithSubscription {
+    ) async throws(PlexError) -> MediaContainerWithSubscription {
         try await client.perform(Operations.EditSubscriptionPreferences(
             subscriptionId: subscriptionId,
             prefs: prefs
@@ -73,7 +73,7 @@ public struct SubscriptionsAPI: Sendable {
         includeStorage: BoolInt? = nil,
         xPlexContainerStart: Int? = nil,
         xPlexContainerSize: Int? = nil
-    ) async throws -> MediaContainerWithSubscription {
+    ) async throws(PlexError) -> MediaContainerWithSubscription {
         try await client.perform(Operations.GetAllSubscriptions(
             includeGrabs: includeGrabs,
             includeStorage: includeStorage,
@@ -84,7 +84,7 @@ public struct SubscriptionsAPI: Sendable {
 
     /// Get all scheduled recordings across all subscriptions
     @discardableResult
-    public func getScheduledRecordings() async throws -> MediaContainerWithMediaGrabOperation {
+    public func getScheduledRecordings() async throws(PlexError) -> MediaContainerWithMediaGrabOperation {
         try await client.perform(Operations.GetScheduledRecordings())
     }
 
@@ -94,7 +94,7 @@ public struct SubscriptionsAPI: Sendable {
         subscriptionId: Int,
         includeGrabs: BoolInt? = nil,
         includeStorage: BoolInt? = nil
-    ) async throws -> MediaContainerWithSubscription {
+    ) async throws(PlexError) -> MediaContainerWithSubscription {
         try await client.perform(Operations.GetSubscription(
             subscriptionId: subscriptionId,
             includeGrabs: includeGrabs,
@@ -109,7 +109,7 @@ public struct SubscriptionsAPI: Sendable {
         guid: String? = nil,
         type: String? = nil,
         targetLibrarySectionID: Int? = nil
-    ) async throws -> GetTemplateResponse {
+    ) async throws(PlexError) -> GetTemplateResponse {
         try await client.perform(Operations.GetTemplate(
             guid: guid,
             type: type,
@@ -119,7 +119,7 @@ public struct SubscriptionsAPI: Sendable {
 
     /// Process all subscriptions asynchronously
     @discardableResult
-    public func processSubscriptions() async throws -> EmptyResponse {
+    public func processSubscriptions() async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.ProcessSubscriptions())
     }
 
@@ -128,7 +128,7 @@ public struct SubscriptionsAPI: Sendable {
     public func reorderSubscription(
         subscriptionId: Int,
         after: Int? = nil
-    ) async throws -> MediaContainerWithSubscription {
+    ) async throws(PlexError) -> MediaContainerWithSubscription {
         try await client.perform(Operations.ReorderSubscription(
             subscriptionId: subscriptionId,
             after: after

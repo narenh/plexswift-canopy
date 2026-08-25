@@ -15,7 +15,7 @@ public struct ProviderAPI: Sendable {
     @discardableResult
     public func addProvider(
         url: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddProvider(
             url: url
         ))
@@ -25,7 +25,7 @@ public struct ProviderAPI: Sendable {
     @discardableResult
     public func addToWatchlist(
         uri: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddToWatchlist(
             uri: uri
         ))
@@ -35,7 +35,7 @@ public struct ProviderAPI: Sendable {
     @discardableResult
     public func deleteMediaProvider(
         provider: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteMediaProvider(
             provider: provider
         ))
@@ -43,20 +43,20 @@ public struct ProviderAPI: Sendable {
 
     /// Get the user's Plex Discover watchlist.
     @discardableResult
-    public func getWatchlist() async throws -> MediaContainerWithMetadata {
+    public func getWatchlist() async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetWatchlist())
     }
 
     /// Get the list of all available media providers for this PMS. This will generally include the
     /// library provider and possibly EPG if DVR is set up.
     @discardableResult
-    public func listProviders() async throws -> ListProvidersResponse {
+    public func listProviders() async throws(PlexError) -> ListProvidersResponse {
         try await client.perform(Operations.ListProviders())
     }
 
     /// Refresh all known media providers. This is useful in case a provider has updated features.
     @discardableResult
-    public func refreshProviders() async throws -> SuccessResponse {
+    public func refreshProviders() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshProviders())
     }
 
@@ -64,7 +64,7 @@ public struct ProviderAPI: Sendable {
     @discardableResult
     public func removeFromWatchlist(
         uri: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RemoveFromWatchlist(
             uri: uri
         ))
@@ -78,7 +78,7 @@ public struct ProviderAPI: Sendable {
         searchTypes: String? = nil,
         searchProviders: String? = nil,
         includeMetadata: Int? = nil
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.SearchDiscover(
             query: query,
             limit: limit,

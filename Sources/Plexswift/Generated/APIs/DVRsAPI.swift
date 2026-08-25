@@ -6,8 +6,8 @@ import Foundation
 
 /// The `DVRs` operations of the Plex API.
 ///
-/// Reached through ``PlexClient/dvrS``.
-public struct DVRSAPI: Sendable {
+/// Reached through ``PlexClient/dvrs``.
+public struct DVRsAPI: Sendable {
     let client: PlexClient
 
     /// Add a device to an existing DVR
@@ -15,7 +15,7 @@ public struct DVRSAPI: Sendable {
     public func addDeviceToDVR(
         dvrId: Int,
         deviceId: Int
-    ) async throws -> AddDeviceToDVRResponse {
+    ) async throws(PlexError) -> AddDeviceToDVRResponse {
         try await client.perform(Operations.AddDeviceToDVR(
             dvrId: dvrId,
             deviceId: deviceId
@@ -27,7 +27,7 @@ public struct DVRSAPI: Sendable {
     public func addLineup(
         dvrId: Int,
         lineup: String
-    ) async throws -> DVRResponse {
+    ) async throws(PlexError) -> DVRResponse {
         try await client.perform(Operations.AddLineup(
             dvrId: dvrId,
             lineup: lineup
@@ -40,7 +40,7 @@ public struct DVRSAPI: Sendable {
         lineup: String? = nil,
         device: [String]? = nil,
         language: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CreateDVR(
             lineup: lineup,
             device: device,
@@ -52,7 +52,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func deleteDVR(
         dvrId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DeleteDVR(
             dvrId: dvrId
         ))
@@ -63,7 +63,7 @@ public struct DVRSAPI: Sendable {
     public func deleteLineup(
         dvrId: Int,
         lineup: String
-    ) async throws -> DVRResponse {
+    ) async throws(PlexError) -> DVRResponse {
         try await client.perform(Operations.DeleteLineup(
             dvrId: dvrId,
             lineup: lineup
@@ -74,7 +74,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func getDVR(
         dvrId: Int
-    ) async throws -> DVRResponse {
+    ) async throws(PlexError) -> DVRResponse {
         try await client.perform(Operations.GetDVR(
             dvrId: dvrId
         ))
@@ -84,7 +84,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func getDVRChannels(
         dvrId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetDVRChannels(
             dvrId: dvrId
         ))
@@ -94,7 +94,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func getDVRGuide(
         dvrId: Int
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.GetDVRGuide(
             dvrId: dvrId
         ))
@@ -102,11 +102,11 @@ public struct DVRSAPI: Sendable {
 
     /// Get the list of all available DVRs
     @discardableResult
-    public func listDVRS(
+    public func listDVRs(
         uuid: String? = nil,
         lineup: String? = nil
-    ) async throws -> DVRResponse {
-        try await client.perform(Operations.ListDVRS(
+    ) async throws(PlexError) -> DVRResponse {
+        try await client.perform(Operations.ListDVRs(
             uuid: uuid,
             lineup: lineup
         ))
@@ -116,7 +116,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func patchDVRSettings(
         dvrId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.PatchDVRSettings(
             dvrId: dvrId
         ))
@@ -126,7 +126,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func reloadGuide(
         dvrId: Int
-    ) async throws -> EmptyResponse {
+    ) async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.ReloadGuide(
             dvrId: dvrId
         ))
@@ -137,7 +137,7 @@ public struct DVRSAPI: Sendable {
     public func removeDeviceFromDVR(
         dvrId: Int,
         deviceId: Int
-    ) async throws -> RemoveDeviceFromDVRResponse {
+    ) async throws(PlexError) -> RemoveDeviceFromDVRResponse {
         try await client.perform(Operations.RemoveDeviceFromDVR(
             dvrId: dvrId,
             deviceId: deviceId
@@ -150,7 +150,7 @@ public struct DVRSAPI: Sendable {
         dvrId: Int,
         name: String? = nil,
         value: String? = nil
-    ) async throws -> DVRResponse {
+    ) async throws(PlexError) -> DVRResponse {
         try await client.perform(Operations.SetDVRPreferences(
             dvrId: dvrId,
             name: name,
@@ -162,7 +162,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func stopDVRReload(
         dvrId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.StopDVRReload(
             dvrId: dvrId
         ))
@@ -173,7 +173,7 @@ public struct DVRSAPI: Sendable {
     public func tuneChannel(
         dvrId: Int,
         channel: String
-    ) async throws -> MediaContainerWithMetadata {
+    ) async throws(PlexError) -> MediaContainerWithMetadata {
         try await client.perform(Operations.TuneChannel(
             dvrId: dvrId,
             channel: channel
@@ -184,7 +184,7 @@ public struct DVRSAPI: Sendable {
     @discardableResult
     public func updateDVRSettings(
         dvrId: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.UpdateDVRSettings(
             dvrId: dvrId
         ))
@@ -193,5 +193,5 @@ public struct DVRSAPI: Sendable {
 
 extension PlexClient {
     /// The `DVRs` operations of the Plex API.
-    public var dvrS: DVRSAPI { DVRSAPI(client: self) }
+    public var dvrs: DVRsAPI { DVRsAPI(client: self) }
 }

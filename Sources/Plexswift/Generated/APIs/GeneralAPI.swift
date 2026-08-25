@@ -12,13 +12,13 @@ public struct GeneralAPI: Sendable {
 
     /// Add a webhook URL for the logged-in user.
     @discardableResult
-    public func addUserWebhook() async throws -> SuccessResponse {
+    public func addUserWebhook() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddUserWebhook())
     }
 
     /// Add a webhook URL for the logged-in user.
     @discardableResult
-    public func addWebhook() async throws -> SuccessResponse {
+    public func addWebhook() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.AddWebhook())
     }
 
@@ -26,7 +26,7 @@ public struct GeneralAPI: Sendable {
     @discardableResult
     public func browseFilesystem(
         includeFiles: BoolInt? = nil
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.BrowseFilesystem(
             includeFiles: includeFiles
         ))
@@ -36,7 +36,7 @@ public struct GeneralAPI: Sendable {
     @discardableResult
     public func browseFilesystemPath(
         base64path: String
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.BrowseFilesystemPath(
             base64path: base64path
         ))
@@ -44,13 +44,13 @@ public struct GeneralAPI: Sendable {
 
     /// Check for available PMS updates.
     @discardableResult
-    public func checkForSystemUpdates() async throws -> SuccessResponse {
+    public func checkForSystemUpdates() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.CheckForSystemUpdates())
     }
 
     /// Claim the local PMS server using a claim token obtained from plex.tv.
     @discardableResult
-    public func claimServer() async throws -> ClaimTokenResponse {
+    public func claimServer() async throws(PlexError) -> ClaimTokenResponse {
         try await client.perform(Operations.ClaimServer())
     }
 
@@ -62,7 +62,7 @@ public struct GeneralAPI: Sendable {
     public func createTransientToken(
         type: CreateTransientTokenType,
         scope: CreateTransientTokenScope
-    ) async throws -> CreateTransientTokenResponse {
+    ) async throws(PlexError) -> CreateTransientTokenResponse {
         try await client.perform(Operations.CreateTransientToken(
             type: type,
             scope: scope
@@ -71,13 +71,13 @@ public struct GeneralAPI: Sendable {
 
     /// Download server database diagnostics bundle.
     @discardableResult
-    public func downloadDatabaseDiagnostics() async throws -> SuccessResponse {
+    public func downloadDatabaseDiagnostics() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.DownloadDatabaseDiagnostics())
     }
 
     /// Download server logs bundle.
     @discardableResult
-    public func downloadLogBundle() async throws -> BinaryResponse {
+    public func downloadLogBundle() async throws(PlexError) -> BinaryResponse {
         try await client.perform(Operations.DownloadLogBundle())
     }
 
@@ -88,7 +88,7 @@ public struct GeneralAPI: Sendable {
         accountID: Int? = nil,
         deviceID: Int? = nil,
         lan: BoolInt? = nil
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetBandwidthStatistics(
             timespan: timespan,
             accountID: accountID,
@@ -99,43 +99,43 @@ public struct GeneralAPI: Sendable {
 
     /// Get a list of connected Plex clients.
     @discardableResult
-    public func getClients() async throws -> GetClientsResponse {
+    public func getClients() async throws(PlexError) -> GetClientsResponse {
         try await client.perform(Operations.GetClients())
     }
 
     /// Get Plex Cloud server status for the logged-in user.
     @discardableResult
-    public func getCloudServer() async throws -> CloudServerResponse {
+    public func getCloudServer() async throws(PlexError) -> CloudServerResponse {
         try await client.perform(Operations.GetCloudServer())
     }
 
     /// Get server diagnostics overview.
     @discardableResult
-    public func getDiagnostics() async throws -> MediaContainerWithDirectory {
+    public func getDiagnostics() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetDiagnostics())
     }
 
     /// Get GeoIP lookup information for the current request.
     @discardableResult
-    public func getGeoIP() async throws -> GeoIPResponse {
+    public func getGeoIP() async throws(PlexError) -> GeoIPResponse {
         try await client.perform(Operations.GetGeoIP())
     }
 
     /// Get the public IP address detected by Plex.
     @discardableResult
-    public func getIP() async throws -> IPResponse {
+    public func getIP() async throws(PlexError) -> IPResponse {
         try await client.perform(Operations.GetIP())
     }
 
     /// Get details about this PMS's identity
     @discardableResult
-    public func getIdentity() async throws -> GetIdentityResponse {
+    public func getIdentity() async throws(PlexError) -> GetIdentityResponse {
         try await client.perform(Operations.GetIdentity())
     }
 
     /// Get a list of local servers.
     @discardableResult
-    public func getLocalServers() async throws -> MediaContainerWithDirectory {
+    public func getLocalServers() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetLocalServers())
     }
 
@@ -143,7 +143,7 @@ public struct GeneralAPI: Sendable {
     @discardableResult
     public func getMetadataAgentDetails(
         agentId: String
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetMetadataAgentDetails(
             agentId: agentId
         ))
@@ -151,7 +151,7 @@ public struct GeneralAPI: Sendable {
 
     /// Get a list of available metadata agents.
     @discardableResult
-    public func getMetadataAgents() async throws -> MediaContainerWithDirectory {
+    public func getMetadataAgents() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetMetadataAgents())
     }
 
@@ -159,7 +159,7 @@ public struct GeneralAPI: Sendable {
     @discardableResult
     public func getPlexDownloads(
         channel: String
-    ) async throws -> PlexDownloadsResponse {
+    ) async throws(PlexError) -> PlexDownloadsResponse {
         try await client.perform(Operations.GetPlexDownloads(
             channel: channel
         ))
@@ -167,13 +167,13 @@ public struct GeneralAPI: Sendable {
 
     /// Get dashboard resource data.
     @discardableResult
-    public func getResourceStatistics() async throws -> MediaContainerWithDirectory {
+    public func getResourceStatistics() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetResourceStatistics())
     }
 
     /// Information about this PMS setup and configuration
     @discardableResult
-    public func getServerInfo() async throws -> GetServerInfoResponse {
+    public func getServerInfo() async throws(PlexError) -> GetServerInfoResponse {
         try await client.perform(Operations.GetServerInfo())
     }
 
@@ -185,7 +185,7 @@ public struct GeneralAPI: Sendable {
     public func getSourceConnectionInformation(
         source: String,
         refresh: BoolInt? = nil
-    ) async throws -> GetSourceConnectionInformationResponse {
+    ) async throws(PlexError) -> GetSourceConnectionInformationResponse {
         try await client.perform(Operations.GetSourceConnectionInformation(
             source: source,
             refresh: refresh
@@ -196,7 +196,7 @@ public struct GeneralAPI: Sendable {
     @discardableResult
     public func getSyncItem(
         syncId: Int
-    ) async throws -> MediaContainerWithDirectory {
+    ) async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSyncItem(
             syncId: syncId
         ))
@@ -204,73 +204,73 @@ public struct GeneralAPI: Sendable {
 
     /// Get sync items list.
     @discardableResult
-    public func getSyncItems() async throws -> MediaContainerWithDirectory {
+    public func getSyncItems() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSyncItems())
     }
 
     /// Get sync queue.
     @discardableResult
-    public func getSyncQueue() async throws -> MediaContainerWithDirectory {
+    public func getSyncQueue() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSyncQueue())
     }
 
     /// Get sync status overview.
     @discardableResult
-    public func getSyncStatus() async throws -> MediaContainerWithStatus {
+    public func getSyncStatus() async throws(PlexError) -> MediaContainerWithStatus {
         try await client.perform(Operations.GetSyncStatus())
     }
 
     /// Get sync transcode queue status.
     @discardableResult
-    public func getSyncTranscodeQueue() async throws -> MediaContainerWithDirectory {
+    public func getSyncTranscodeQueue() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSyncTranscodeQueue())
     }
 
     /// Get a list of local system accounts.
     @discardableResult
-    public func getSystemAccounts() async throws -> MediaContainerWithDirectory {
+    public func getSystemAccounts() async throws(PlexError) -> MediaContainerWithDirectory {
         try await client.perform(Operations.GetSystemAccounts())
     }
 
     /// Get a list of local system devices.
     @discardableResult
-    public func getSystemDevices() async throws -> MediaContainerWithDevice {
+    public func getSystemDevices() async throws(PlexError) -> MediaContainerWithDevice {
         try await client.perform(Operations.GetSystemDevices())
     }
 
     /// Get system-level settings.
     @discardableResult
-    public func getSystemSettings() async throws -> SuccessResponse {
+    public func getSystemSettings() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.GetSystemSettings())
     }
 
     /// List webhook URLs for the logged-in user.
     @discardableResult
-    public func getUserWebhooks() async throws -> WebhookPayload {
+    public func getUserWebhooks() async throws(PlexError) -> WebhookPayload {
         try await client.perform(Operations.GetUserWebhooks())
     }
 
     /// List configured webhook URLs for the logged-in user.
     @discardableResult
-    public func getWebhooks() async throws -> WebhookPayload {
+    public func getWebhooks() async throws(PlexError) -> WebhookPayload {
         try await client.perform(Operations.GetWebhooks())
     }
 
     /// Refresh remote access port mapping.
     @discardableResult
-    public func refreshReachability() async throws -> SuccessResponse {
+    public func refreshReachability() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshReachability())
     }
 
     /// Force PMS to refresh content for known SyncLists.
     @discardableResult
-    public func refreshSyncContent() async throws -> SuccessResponse {
+    public func refreshSyncContent() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshSyncContent())
     }
 
     /// Force PMS to download new SyncList from plex.tv.
     @discardableResult
-    public func refreshSyncLists() async throws -> SuccessResponse {
+    public func refreshSyncLists() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.RefreshSyncLists())
     }
 }

@@ -14,7 +14,7 @@ public struct EventsAPI: Sendable {
     @discardableResult
     public func connectWebSocket(
         filter: [String]? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.ConnectWebSocket(
             filter: filter
         ))
@@ -24,7 +24,7 @@ public struct EventsAPI: Sendable {
     @discardableResult
     public func getNotifications(
         filter: [String]? = nil
-    ) async throws -> Data {
+    ) async throws(PlexError) -> Data {
         try await client.perform(Operations.GetNotifications(
             filter: filter
         ))
@@ -33,7 +33,7 @@ public struct EventsAPI: Sendable {
     /// WebSocket endpoint for real-time notifications (plural alias). Connect with X-Plex-Token header.
     /// Delivers NotificationContainer messages.
     @discardableResult
-    public func getWebsocketNotifications() async throws -> EmptyResponse {
+    public func getWebsocketNotifications() async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.GetWebsocketNotifications())
     }
 }

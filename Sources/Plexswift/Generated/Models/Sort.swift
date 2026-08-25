@@ -66,7 +66,7 @@ public struct Sort: Codable, Hashable, Sendable {
         share: Int? = nil,
         thumb: String? = nil,
         titleBar: String? = nil,
-        `default`: SortDefault? = nil,
+        default: SortDefault? = nil,
         defaultDirection: SortDefaultDirection? = nil,
         descKey: String? = nil,
         firstCharacterKey: String? = nil

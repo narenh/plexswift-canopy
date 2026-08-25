@@ -39,7 +39,7 @@ public struct Setting: Codable, Hashable, Sendable {
 
     public init(
         type: SettingType? = nil,
-        `default`: SettingDefault? = nil,
+        default: SettingDefault? = nil,
         advanced: Bool? = nil,
         enumValues: String? = nil,
         group: String? = nil,

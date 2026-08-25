@@ -108,6 +108,12 @@ def _split_words(value: str) -> list[str]:
                 None,
             )
             if acronym is not None:
+                # A lowercase "s" directly after an acronym pluralises it rather than starting
+                # a new word: "DVRs" is one word, not "DVR" + "s" (which would camel-case to
+                # "dvrS").
+                after = position + len(acronym)
+                if part[after : after + 1] == "s" and not part[after + 1 : after + 2].islower():
+                    acronym += "s"
                 words.append(acronym)
                 position += len(acronym)
                 continue
@@ -161,6 +167,30 @@ def escape_identifier(name: str) -> str:
     if name in SWIFT_KEYWORDS or name in SHADOWING_NAMES:
         return f"`{name}`"
     return name
+
+
+# The only keywords Swift still requires backticks for when used as an argument label.
+# Every other keyword is accepted bare there, and escaping it produces a warning.
+LABEL_KEYWORDS_NEEDING_ESCAPE = frozenset({"inout", "var", "let"})
+
+
+def argument_label(name: str) -> str:
+    """The argument-label spelling of ``name``.
+
+    An argument label sits in a position where the parser is not expecting an expression, so
+    Swift accepts almost every keyword there unescaped — and warns when one is escaped anyway.
+    The same name still needs backticks as a declaration or in an expression, so this is only
+    for the label.
+
+    >>> argument_label("`repeat`")
+    'repeat'
+    >>> argument_label("`inout`")
+    '`inout`'
+    """
+    bare = name.strip("`")
+    if bare in LABEL_KEYWORDS_NEEDING_ESCAPE:
+        return f"`{bare}`"
+    return bare
 
 
 def type_name(value: str) -> str:

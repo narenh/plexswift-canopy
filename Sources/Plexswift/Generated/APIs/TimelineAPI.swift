@@ -12,7 +12,7 @@ public struct TimelineAPI: Sendable {
 
     /// Get the conversion/optimization queue.
     @discardableResult
-    public func getConversionQueue() async throws -> MediaContainerWithPlayQueue {
+    public func getConversionQueue() async throws(PlexError) -> MediaContainerWithPlayQueue {
         try await client.perform(Operations.GetConversionQueue())
     }
 
@@ -24,7 +24,7 @@ public struct TimelineAPI: Sendable {
         identifier: String,
         key: String? = nil,
         uri: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.MarkPlayed(
             identifier: identifier,
             key: key,
@@ -56,7 +56,7 @@ public struct TimelineAPI: Sendable {
         playQueueID: Int? = nil,
         url: String? = nil,
         xPlexSessionIdentifier: String? = nil
-    ) async throws -> ReportResponse {
+    ) async throws(PlexError) -> ReportResponse {
         try await client.perform(Operations.Report(
             key: key,
             ratingKey: ratingKey,
@@ -87,7 +87,7 @@ public struct TimelineAPI: Sendable {
         identifier: String,
         key: String? = nil,
         uri: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.Unscrobble(
             identifier: identifier,
             key: key,

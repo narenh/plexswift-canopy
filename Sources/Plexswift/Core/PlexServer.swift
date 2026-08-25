@@ -53,7 +53,7 @@ public enum PlexServer: Sendable, Hashable {
     ///
     /// - Throws: ``PlexError/invalidURL(_:)`` if the components do not form a valid URL, which
     ///   can happen if a host or identifier contains characters that are illegal in a URL.
-    public func baseURL() throws -> URL {
+    public func baseURL() throws(PlexError) -> URL {
         switch self {
         case .plexDirect(let address, let identifier, let port):
             return try Self.url(from: "https://\(address).\(identifier).plex.direct:\(port)")
@@ -64,7 +64,7 @@ public enum PlexServer: Sendable, Hashable {
         }
     }
 
-    private static func url(from string: String) throws -> URL {
+    private static func url(from string: String) throws(PlexError) -> URL {
         guard let url = URL(string: string), url.host != nil else {
             throw PlexError.invalidURL(string)
         }
@@ -95,7 +95,7 @@ public enum OperationHost: Sendable, Hashable {
     public static let clientsPlexTV = OperationHost.absolute("https://clients.plex.tv/api/v2")
 
     /// Resolves this host against the client's configured server.
-    func baseURL(mediaServer: PlexServer) throws -> URL {
+    func baseURL(mediaServer: PlexServer) throws(PlexError) -> URL {
         switch self {
         case .mediaServer:
             return try mediaServer.baseURL()

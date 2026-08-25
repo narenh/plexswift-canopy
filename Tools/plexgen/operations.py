@@ -76,6 +76,11 @@ class Parameter:
         return f"{self.type_name}?" if self.is_optional else self.type_name
 
     @property
+    def label(self) -> str:
+        """The argument-label spelling, which rarely needs the backticks a declaration does."""
+        return naming.argument_label(self.swift_name)
+
+    @property
     def is_array(self) -> bool:
         return self.type_name.startswith("[")
 

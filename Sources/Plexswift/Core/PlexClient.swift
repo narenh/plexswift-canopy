@@ -91,14 +91,16 @@ public final class PlexClient: Sendable {
     ///
     /// - Throws: ``PlexError``. A non-2xx response throws ``PlexError/api(_:)``.
     @discardableResult
-    public func perform<O: PlexOperation>(_ operation: O) async throws -> O.Success {
+    public func perform<O: PlexOperation>(_ operation: O) async throws(PlexError) -> O.Success {
         try await send(operation).value
     }
 
     /// Sends `operation` and returns its decoded body along with the response metadata.
     ///
     /// - Throws: ``PlexError``. A non-2xx response throws ``PlexError/api(_:)``.
-    public func send<O: PlexOperation>(_ operation: O) async throws -> PlexResponse<O.Success> {
+    public func send<O: PlexOperation>(
+        _ operation: O
+    ) async throws(PlexError) -> PlexResponse<O.Success> {
         let request = try makeRequest(for: operation)
 
         let data: Data
@@ -154,7 +156,7 @@ public final class PlexClient: Sendable {
     /// Exposed so that a caller can hand a fully-authenticated URL to something outside the
     /// SDK — an `AVPlayer` asset, or an image loader — and so the test suite can assert on the
     /// request an operation produces.
-    public func makeRequest<O: PlexOperation>(for operation: O) throws -> URLRequest {
+    public func makeRequest<O: PlexOperation>(for operation: O) throws(PlexError) -> URLRequest {
         if O.requiresToken, configuration.token == nil {
             throw PlexError.missingToken(operation: O.operationID)
         }
@@ -176,9 +178,17 @@ public final class PlexClient: Sendable {
             request.setValue(value, forHTTPHeaderField: name)
         }
 
-        if O.method.allowsRequestBody, let body = try operation.body(encoder: configuration.encoder) {
-            request.httpBody = body.data
-            request.setValue(body.contentType, forHTTPHeaderField: "Content-Type")
+        if O.method.allowsRequestBody {
+            let body: RequestBody?
+            do {
+                body = try operation.body(encoder: configuration.encoder)
+            } catch {
+                throw PlexError.encoding(operation: O.operationID, underlyingError: error)
+            }
+            if let body {
+                request.httpBody = body.data
+                request.setValue(body.contentType, forHTTPHeaderField: "Content-Type")
+            }
         }
 
         return request
@@ -189,7 +199,7 @@ public final class PlexClient: Sendable {
         path: String,
         operation: O,
         configuration: PlexConfiguration
-    ) throws -> URL {
+    ) throws(PlexError) -> URL {
         // The base URL of a cloud host carries a path prefix (`/api/v2`), so the operation path
         // is appended to it rather than replacing it.
         let combined = base.absoluteString.trimmingTrailingSlash() + path
@@ -198,7 +208,12 @@ public final class PlexClient: Sendable {
             throw PlexError.invalidURL(combined)
         }
 
-        var items = try operation.queryItems
+        var items: [URLQueryItem]
+        do {
+            items = try operation.queryItems
+        } catch {
+            throw PlexError.encoding(operation: O.operationID, underlyingError: error)
+        }
         if case .queryItem = configuration.tokenPlacement, let token = configuration.token {
             items.append(URLQueryItem(name: "X-Plex-Token", value: token))
         }

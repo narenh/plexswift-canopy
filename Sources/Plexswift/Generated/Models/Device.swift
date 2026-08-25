@@ -72,7 +72,7 @@ public struct Device: Codable, Hashable, Sendable {
         model: String? = nil,
         modelNumber: String? = nil,
         name: String? = nil,
-        `protocol`: String? = nil,
+        protocol: String? = nil,
         sources: String? = nil,
         state: String? = nil,
         status: String? = nil,

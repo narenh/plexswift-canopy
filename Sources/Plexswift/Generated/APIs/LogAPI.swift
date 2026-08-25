@@ -17,7 +17,7 @@ public struct LogAPI: Sendable {
     @discardableResult
     public func enablePapertrail(
         minutes: Int? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.EnablePapertrail(
             minutes: minutes
         ))
@@ -29,7 +29,7 @@ public struct LogAPI: Sendable {
     @discardableResult
     public func writeLog(
         body: String
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.WriteLog(
             body: body
         ))
@@ -44,7 +44,7 @@ public struct LogAPI: Sendable {
         level: WriteMessageLevel? = nil,
         message: String? = nil,
         source: String? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.WriteMessage(
             level: level,
             message: message,

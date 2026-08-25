@@ -4,11 +4,14 @@ import PackageDescription
 let package = Package(
     name: "Plexswift",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v10_15),
-        .tvOS(.v13),
-        .watchOS(.v6),
-        .visionOS(.v1)
+        // Raised from iOS 13 so the package can use the modern concurrency and Foundation
+        // APIs directly rather than through availability-gated fallbacks. These five versions
+        // are the same OS generation, released together.
+        .iOS(.v18),
+        .macOS(.v15),
+        .tvOS(.v18),
+        .watchOS(.v11),
+        .visionOS(.v2)
     ],
     products: [
         .library(
@@ -22,7 +25,7 @@ let package = Package(
             name: "Plexswift",
             dependencies: [],
             swiftSettings: [
-                .swiftLanguageMode(.v5)
+                .swiftLanguageMode(.v6)
             ]
         ),
         .testTarget(
@@ -34,7 +37,7 @@ let package = Package(
                 .copy("Generated/Fixtures")
             ],
             swiftSettings: [
-                .swiftLanguageMode(.v5)
+                .swiftLanguageMode(.v6)
             ]
         )
   ]

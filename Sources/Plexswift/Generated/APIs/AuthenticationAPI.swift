@@ -12,20 +12,20 @@ public struct AuthenticationAPI: Sendable {
 
     /// Change or reset the logged-in user's password.
     @discardableResult
-    public func changePassword() async throws -> SuccessResponse {
+    public func changePassword() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.ChangePassword())
     }
 
     /// Legacy PIN creation (XML).
     @discardableResult
-    public func createLegacyPin() async throws -> EmptyResponse {
+    public func createLegacyPin() async throws(PlexError) -> EmptyResponse {
         try await client.perform(Operations.CreateLegacyPin())
     }
 
     /// Create a 4-character PIN for device linking via OAuth. The user must visit https://plex.tv/link
     /// and enter the PIN to authorize the device.
     @discardableResult
-    public func createOAuthPin() async throws -> CreateOAuthPinResponse {
+    public func createOAuthPin() async throws(PlexError) -> CreateOAuthPinResponse {
         try await client.perform(Operations.CreateOAuthPin())
     }
 
@@ -33,7 +33,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func exchangeJWTToken(
         body: TokenExchangeRequest? = nil
-    ) async throws -> AuthTokenResponse {
+    ) async throws(PlexError) -> AuthTokenResponse {
         try await client.perform(Operations.ExchangeJWTToken(
             body: body
         ))
@@ -41,25 +41,25 @@ public struct AuthenticationAPI: Sendable {
 
     /// Get Plex public JWKs for signature verification.
     @discardableResult
-    public func getAuthKeys() async throws -> AuthKeysResponse {
+    public func getAuthKeys() async throws(PlexError) -> AuthKeysResponse {
         try await client.perform(Operations.GetAuthKeys())
     }
 
     /// Get a nonce to sign in client JWT authentication flow.
     @discardableResult
-    public func getAuthNonce() async throws -> AuthNonceResponse {
+    public func getAuthNonce() async throws(PlexError) -> AuthNonceResponse {
         try await client.perform(Operations.GetAuthNonce())
     }
 
     /// Get a claim token for new server setup.
     @discardableResult
-    public func getClaimToken() async throws -> ClaimTokenResponse {
+    public func getClaimToken() async throws(PlexError) -> ClaimTokenResponse {
         try await client.perform(Operations.GetClaimToken())
     }
 
     /// Get Plex Pass feature flags for the logged-in user.
     @discardableResult
-    public func getFeatures() async throws -> GetFeaturesResponse {
+    public func getFeatures() async throws(PlexError) -> GetFeaturesResponse {
         try await client.perform(Operations.GetFeatures())
     }
 
@@ -67,7 +67,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func getOAuthPin(
         pinId: Int
-    ) async throws -> GetOAuthPinResponse {
+    ) async throws(PlexError) -> GetOAuthPinResponse {
         try await client.perform(Operations.GetOAuthPin(
             pinId: pinId
         ))
@@ -75,13 +75,13 @@ public struct AuthenticationAPI: Sendable {
 
     /// List access tokens for the server.
     @discardableResult
-    public func getServerAccessTokens() async throws -> ServerAccessTokensResponse {
+    public func getServerAccessTokens() async throws(PlexError) -> ServerAccessTokensResponse {
         try await client.perform(Operations.GetServerAccessTokens())
     }
 
     /// Get the User data from the provided X-Plex-Token
     @discardableResult
-    public func getTokenDetails() async throws -> UserPlexAccount {
+    public func getTokenDetails() async throws(PlexError) -> UserPlexAccount {
         try await client.perform(Operations.GetTokenDetails())
     }
 
@@ -89,7 +89,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func linkOAuthPin(
         body: LinkOAuthPinBody? = nil
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.LinkOAuthPin(
             body: body
         ))
@@ -97,7 +97,7 @@ public struct AuthenticationAPI: Sendable {
 
     /// Health / latency check. No authentication required.
     @discardableResult
-    public func ping() async throws -> SuccessResponse {
+    public func ping() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.Ping())
     }
 
@@ -105,7 +105,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func postUsersSignInData(
         body: PostUsersSignInDataBody? = nil
-    ) async throws -> PostUsersSignInDataResponse {
+    ) async throws(PlexError) -> PostUsersSignInDataResponse {
         try await client.perform(Operations.PostUsersSignInData(
             body: body
         ))
@@ -115,7 +115,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func registerDeviceJWK(
         body: JWKRegistrationRequest? = nil
-    ) async throws -> AuthTokenResponse {
+    ) async throws(PlexError) -> AuthTokenResponse {
         try await client.perform(Operations.RegisterDeviceJWK(
             body: body
         ))
@@ -123,7 +123,7 @@ public struct AuthenticationAPI: Sendable {
 
     /// Invalidate the current authentication token.
     @discardableResult
-    public func signOut() async throws -> SuccessResponse {
+    public func signOut() async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SignOut())
     }
 
@@ -131,7 +131,7 @@ public struct AuthenticationAPI: Sendable {
     @discardableResult
     public func switchHomeUser(
         id: Int
-    ) async throws -> SuccessResponse {
+    ) async throws(PlexError) -> SuccessResponse {
         try await client.perform(Operations.SwitchHomeUser(
             id: id
         ))

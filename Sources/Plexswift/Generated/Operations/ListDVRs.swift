@@ -6,7 +6,7 @@ import Foundation
 
 extension Operations {
     /// Get the list of all available DVRs
-    public struct ListDVRS: PlexOperation {
+    public struct ListDVRs: PlexOperation {
         public typealias Success = DVRResponse
 
         public static let operationID = "listDVRs"

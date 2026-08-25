@@ -57,8 +57,7 @@ def _render_struct(struct: Struct) -> str:
     members: list[str] = []
 
     for prop in struct.properties:
-        member = documentation(prop.documentation)
-        member += availability(prop.deprecated, "This property is deprecated in the Plex API.")
+        member = documentation(_property_documentation(prop))
         member.append(f"public let {prop.swift_name}: {prop.rendered_type}")
         members.append("\n".join(member))
 
@@ -73,6 +72,22 @@ def _render_struct(struct: Struct) -> str:
     return "\n".join(lines)
 
 
+def _property_documentation(prop) -> str | None:
+    """The doc comment for a stored property, including any deprecation notice.
+
+    A deprecated property carries its notice in prose rather than as `@available(*,
+    deprecated)`. The attribute would be better — the compiler would flag uses — but the
+    memberwise initialiser has to assign every stored property, including deprecated ones, and
+    that assignment is itself a use. There is no way to exempt it, so the attribute makes the
+    generated code warn about itself on every build, drowning the warnings a consumer should
+    actually see. The prose notice still reaches them through Quick Help and DocC.
+    """
+    if not prop.deprecated:
+        return prop.documentation
+    notice = "- Warning: Deprecated in the Plex API."
+    return f"{prop.documentation}\n\n{notice}" if prop.documentation else notice
+
+
 def _render_memberwise_init(struct: Struct) -> str:
     """A public memberwise initialiser.
 
@@ -85,7 +100,7 @@ def _render_memberwise_init(struct: Struct) -> str:
         return "public init() {}"
 
     parameters = [
-        f"{prop.swift_name}: {prop.rendered_type}" + (" = nil" if prop.is_optional else "")
+        f"{prop.label}: {prop.rendered_type}" + (" = nil" if prop.is_optional else "")
         for prop in struct.properties
     ]
     assignments = [
