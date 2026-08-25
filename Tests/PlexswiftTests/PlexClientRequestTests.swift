@@ -63,6 +63,31 @@ final class PlexClientRequestTests: XCTestCase {
         XCTAssertTrue(request.url?.absoluteString.contains("%26") == true)
     }
 
+    /// `URLComponents` escapes `&` and `=` inside a query value but leaves `+` alone, and a
+    /// parser following form-encoding rules reads a literal `+` as a space — so a search for
+    /// "C++" would reach Plex as "C  ".
+    func testPlusInAQueryValueIsEscapedSoItIsNotReadAsASpace() throws {
+        let client = makeClient()
+        var operation = ProbeOperation()
+        operation.queryItems = [URLQueryItem(name: "query", value: "C++ programming")]
+
+        let request = try client.makeRequest(for: operation)
+
+        XCTAssertEqual(request.url?.query, "query=C%2B%2B%20programming")
+        XCTAssertEqual(request.queryItemsByName["query"], "C++ programming")
+    }
+
+    func testAmpersandAndEqualsInAQueryValueAreEscaped() throws {
+        let client = makeClient()
+        var operation = ProbeOperation()
+        operation.queryItems = [URLQueryItem(name: "title", value: "a&b=c")]
+
+        let request = try client.makeRequest(for: operation)
+
+        XCTAssertEqual(request.url?.query, "title=a%26b%3Dc")
+        XCTAssertEqual(request.queryItemsByName["title"], "a&b=c")
+    }
+
     func testOperationWithoutQueryItemsProducesNoQueryString() throws {
         let client = makeClient()
 

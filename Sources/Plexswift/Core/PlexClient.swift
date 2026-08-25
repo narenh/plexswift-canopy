@@ -165,7 +165,12 @@ public final class PlexClient: Sendable {
         }
 
         let baseURL = try O.host.baseURL(mediaServer: configuration.server)
-        let url = try Self.url(base: baseURL, path: operation.path, operation: operation, configuration: configuration)
+        let url = try Self.url(
+            base: baseURL,
+            path: operation.path,
+            operation: operation,
+            configuration: configuration
+        )
 
         var request = URLRequest(url: url)
         request.httpMethod = O.method.rawValue
@@ -218,6 +223,13 @@ public final class PlexClient: Sendable {
             items.append(URLQueryItem(name: "X-Plex-Token", value: token))
         }
         components.queryItems = items.isEmpty ? nil : items
+
+        // `URLComponents` escapes `&` and `=` inside a value but leaves `+` alone, and a query
+        // parser reading `application/x-www-form-urlencoded` rules decodes `+` as a space. A
+        // search for "C++" would otherwise reach Plex as "C  ".
+        if let encoded = components.percentEncodedQuery, encoded.contains("+") {
+            components.percentEncodedQuery = encoded.replacingOccurrences(of: "+", with: "%2B")
+        }
 
         guard let url = components.url else {
             throw PlexError.invalidURL(combined)
