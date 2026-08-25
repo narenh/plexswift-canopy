@@ -57,6 +57,13 @@ own `required` lists fails for 13 schemas — and a real server omits fields dep
 type, agent and version. A non-optional property would turn any such omission into a thrown
 error that fails the whole request.
 
+### Plex Discover is here too, on different terms
+
+The endpoints behind Plex Discover — catalogue search, the home-screen hubs, the watchlist,
+and streaming availability — are not in the specification, so they are not generated. They are
+hand-written under ``PlexClient/discover``, and their models decode leniently because an
+undocumented API can change under a shipped app. See <doc:PlexDiscover>.
+
 ### Going lower level
 
 An operation is an inert value describing a request, not something that performs one. Construct
@@ -74,6 +81,13 @@ SDK — an `AVPlayer` asset URL, or an image loader.
 - ``PlexConfiguration``
 - ``PlexServer``
 - ``ClientIdentity``
+
+### Plex Discover
+
+- <doc:PlexDiscover>
+- ``DiscoverAPI``
+- ``DiscoverMetadata``
+- ``DiscoverMetadataInclusions``
 
 ### Results and failures
 

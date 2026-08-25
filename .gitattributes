@@ -9,4 +9,5 @@ Spec/plex-api-spec.yaml linguist-vendored=true
 
 # The handwritten runtime and the generator are ordinary source.
 Sources/Plexswift/Core/** linguist-generated=false
+Sources/Plexswift/Discover/** linguist-generated=false
 Tools/** linguist-generated=false

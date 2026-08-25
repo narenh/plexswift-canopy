@@ -10,6 +10,7 @@ The repository has three parts, and almost every change belongs in exactly one o
 | Path | What it is | Edit it? |
 | --- | --- | --- |
 | `Sources/Plexswift/Core/` | The handwritten runtime — client, server resolution, auth, errors, encoding | Yes |
+| `Sources/Plexswift/Discover/` | Handwritten support for the Discover and metadata providers, which the specification does not describe | Yes |
 | `Sources/Plexswift/Generated/`, `Tests/PlexswiftTests/Generated/` | Emitted by `Tools/generate.py` | **No** — edits are overwritten |
 | `Tools/` | The generator itself | Yes |
 | `Spec/plex-api-spec.yaml` | The vendored OpenAPI specification | Only to move to a new version |
@@ -35,6 +36,13 @@ The package requires Swift 6.0 or later and builds in Swift 6 language mode.
 **To the runtime.** Add or adjust the tests in `Tests/PlexswiftTests/` alongside it. The suite
 runs without a network — `HTTPTransport` is the seam, and `MockTransport` answers from a
 script — so there is no reason for a change to arrive untested.
+
+**To `Discover/`.** These endpoints are undocumented, so nothing regenerates them and nothing
+external checks them: the tests in `DiscoverRequestTests.swift` and `DiscoverDecodingTests.swift`
+are the only record of what Plex sends and expects. Keep decoding non-throwing and every
+property optional — a model that can fail turns a field Plex renamed into a broken screen in a
+shipped app — and prefer adding a parameter to a method over widening a model that already
+decodes what the provider sends.
 
 **To the generator.** Add a case to the relevant file in `Tools/tests/`, then regenerate:
 

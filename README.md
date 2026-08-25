@@ -232,6 +232,88 @@ let client = PlexClient(server: .localhost, token: "test", transport: StubTransp
 | `client.liveTV` | 7 | | `client.users` | 23 |
 | `client.log` | 3 | | | |
 
+One further namespace, `client.discover`, is not in that table because it is not generated.
+
+## Plex Discover
+
+Discover is the part of Plex that knows about titles nobody owns: the catalogue behind the
+search field, the rows on the home screen, the watchlist, and — the thing a media server cannot
+answer at all — which services a film is currently streaming on.
+
+Its endpoints are not in the specification. They are what the Plex apps themselves call, they
+have been stable for years, and `client.discover` wraps them:
+
+```swift
+let matches = try await client.discover.search("severance", types: [.tv])
+guard let key = matches.items.first?.ratingKey else { return }
+
+let show = try await client.discover.metadata(ratingKey: key, including: [.availability, .related])
+for offer in show?.streamingAvailability ?? [] {
+    print(offer.title ?? "", offer.videoQuality ?? "")
+}
+
+let seasons = try await client.discover.children(ratingKey: key)
+```
+
+| Method | Endpoint |
+| --- | --- |
+| `search(_:types:limit:)` | `GET discover.provider.plex.tv/library/search` |
+| `hubs(path:count:)` | `GET discover.provider.plex.tv/hubs` |
+| `items(path:count:offset:pageSize:)` | Any Discover key — a hub's contents, a directory, a person's filmography |
+| `metadata(ratingKey:including:)` | `GET metadata.provider.plex.tv/library/metadata/{key}` |
+| `children(ratingKey:)` | `GET metadata.provider.plex.tv/library/metadata/{key}/children` |
+| `watchlist(filter:libtype:sort:)` | `GET discover.provider.plex.tv/library/sections/watchlist/all` |
+| `artworkURL(for:width:height:)` | A signed URL for a provider artwork path |
+
+Discover is walked by following keys rather than by assembling paths: a hub arrives with its
+first few items and a `key`, and that key — query string and all — is what `items(path:)`
+takes.
+
+```swift
+for hub in try await client.discover.hubs(count: 12).hubs {
+    print(hub.title ?? "", hub.items.count)
+
+    if hub.more == true, let key = hub.key {
+        let rest = try await client.discover.items(path: key, count: 40)
+        print(rest.items.count)
+    }
+}
+```
+
+### These endpoints are undocumented, and the models are built for that
+
+Plex owes nobody notice before changing an endpoint that was never published, so
+`DiscoverMetadata` and the types around it decode differently from the generated models: every
+property is optional, **decoding never throws**, and a value of an unexpected shape costs that
+one property rather than the whole response. A field that arrives quoted where it used to be a
+number still reads as a number, a single object is accepted where a list was expected, and one
+malformed item in a row is skipped while the rest of the row survives.
+
+The trade is that a typo in a field name looks the same as a field Plex removed — both are
+simply nil. A response body that is not a container at all still fails, so an error page cannot
+masquerade as an empty result.
+
+Where a parameter is not named on a method, pass it through: every Discover operation takes
+`additionalQueryItems`.
+
+```swift
+let response = try await client.perform(Operations.GetDiscoverItems(
+    key: "/hubs/home/recommended",
+    additionalQueryItems: [URLQueryItem(name: "excludeFields", value: "summary")]
+))
+```
+
+Two of these endpoints do appear in the specification, and the generated operations for them
+are still there. `Operations.SearchDiscover` types the search response as a plain metadata
+container, where the provider actually answers with scored results grouped by source — so it
+decodes to an empty container even when there were matches, and `client.discover.search` should
+be preferred. `Operations.GetWatchlist` works, but decodes into the media server's `Metadata`,
+which has no place for the availability and slug fields a watchlist entry carries;
+`client.discover.watchlist` decodes into `DiscoverMetadata` instead.
+
+Adding to and removing from the watchlist are ordinary specified operations, under
+`client.provider`.
+
 ---
 
 ## What changed in the Plex API
@@ -337,7 +419,7 @@ calls, instead of at each one.
 ## Working on this package
 
 ```bash
-swift test                       # 222 tests
+swift test                       # 273 tests
 python Tools/generate.py         # regenerate from Spec/plex-api-spec.yaml
 python Tools/generate.py --check # what CI runs
 cd Tools && python -m unittest discover -s . -p "test_*.py"

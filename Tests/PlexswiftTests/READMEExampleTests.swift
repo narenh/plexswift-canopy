@@ -220,4 +220,80 @@ final class READMEExampleTests: XCTestCase {
         let container = try await client.library.getLibrarySectionsFallback()
         XCTAssertEqual(container.mediaContainer?.size, 0)
     }
+
+    // MARK: - Plex Discover
+
+    func testDiscoverExampleCompiles() async throws {
+        let client = discoverClient(responses: [
+            #"{"MediaContainer":{"SearchResult":[{"score":0.9,"Metadata":{"ratingKey":"5d9c0879","title":"Severance"}}]}}"#,
+            #"{"MediaContainer":{"Metadata":[{"ratingKey":"5d9c0879","title":"Severance","Availability":[{"title":"Apple TV+","platform":"appletv","offerType":"subscription","videoQuality":"uhd"}]}]}}"#,
+            #"{"MediaContainer":{"Metadata":[{"ratingKey":"5d9c0880","type":"season","index":1}]}}"#
+        ])
+
+        let matches = try await client.discover.search("severance", types: [.tv])
+        let key = try XCTUnwrap(matches.items.first?.ratingKey)
+
+        let show = try await client.discover.metadata(
+            ratingKey: key,
+            including: [.availability, .related]
+        )
+        var offers: [String] = []
+        for offer in show?.streamingAvailability ?? [] {
+            offers.append([offer.title ?? "", offer.videoQuality ?? ""].joined(separator: " "))
+        }
+
+        let seasons = try await client.discover.children(ratingKey: key)
+
+        XCTAssertEqual(offers, ["Apple TV+ uhd"])
+        XCTAssertEqual(seasons.items.count, 1)
+    }
+
+    func testDiscoverHubExampleCompiles() async throws {
+        let client = discoverClient(responses: [
+            #"{"MediaContainer":{"Hub":[{"title":"Trending","key":"/hubs/home/trending","more":true,"Metadata":[{"ratingKey":"1","title":"The Matrix"}]}]}}"#,
+            #"{"MediaContainer":{"Metadata":[{"ratingKey":"1","title":"The Matrix"},{"ratingKey":"2","title":"Blade Runner"}]}}"#
+        ])
+
+        var counts: [Int] = []
+        for hub in try await client.discover.hubs(count: 12).hubs {
+            counts.append(hub.items.count)
+
+            if hub.more == true, let key = hub.key {
+                let rest = try await client.discover.items(path: key, count: 40)
+                counts.append(rest.items.count)
+            }
+        }
+
+        XCTAssertEqual(counts, [1, 2])
+    }
+
+    func testDiscoverPassthroughParameterExampleCompiles() async throws {
+        let client = discoverClient(responses: [#"{"MediaContainer":{"size":0}}"#])
+
+        let response = try await client.perform(Operations.GetDiscoverItems(
+            key: "/hubs/home/recommended",
+            additionalQueryItems: [URLQueryItem(name: "excludeFields", value: "summary")]
+        ))
+
+        XCTAssertEqual(response.mediaContainer?.size, 0)
+    }
+
+    private func discoverClient(responses: [String]) -> PlexClient {
+        PlexClient(
+            configuration: PlexConfiguration(
+                server: .localhost,
+                token: "token",
+                identity: ClientIdentity(clientIdentifier: "device-abc", product: "My Plex App")
+            ),
+            transport: MockTransport(
+                responses.map {
+                    .success(
+                        statusCode: 200,
+                        headers: ["Content-Type": "application/json"],
+                        body: Data($0.utf8)
+                    )
+                }
+            )
+        )
+    }
 }

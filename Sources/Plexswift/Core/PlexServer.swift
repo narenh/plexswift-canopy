@@ -89,8 +89,11 @@ public enum OperationHost: Sendable, Hashable {
     public static let plexTVv1 = OperationHost.absolute("https://plex.tv/api")
     /// `https://plex.tv` — endpoints served from the site root.
     public static let plexTV = OperationHost.absolute("https://plex.tv")
-    /// `https://discover.provider.plex.tv` — the Discover metadata provider.
+    /// `https://discover.provider.plex.tv` — Discover's search, hubs and watchlist.
     public static let discoverProvider = OperationHost.absolute("https://discover.provider.plex.tv")
+    /// `https://metadata.provider.plex.tv` — the metadata provider behind Discover, which
+    /// describes a title whether or not any server holds it.
+    public static let metadataProvider = OperationHost.absolute("https://metadata.provider.plex.tv")
     /// `https://clients.plex.tv/api/v2` — client-facing companion endpoints.
     public static let clientsPlexTV = OperationHost.absolute("https://clients.plex.tv/api/v2")
 
