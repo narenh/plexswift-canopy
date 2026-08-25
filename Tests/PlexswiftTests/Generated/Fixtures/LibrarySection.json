@@ -1,0 +1,27 @@
+{
+  "Location": [
+    {
+      "id": 1
+    }
+  ],
+  "agent": "string value",
+  "allowSync": true,
+  "art": "string value",
+  "composite": "string value",
+  "content": true,
+  "contentChangedAt": 1,
+  "createdAt": 1,
+  "directory": true,
+  "filters": true,
+  "hidden": true,
+  "key": "string value",
+  "language": "string value",
+  "refreshing": true,
+  "scannedAt": 1,
+  "scanner": "string value",
+  "thumb": "string value",
+  "title": "string value",
+  "type": "movie",
+  "updatedAt": 1,
+  "uuid": "string value"
+}

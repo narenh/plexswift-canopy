@@ -42,21 +42,25 @@ class StructTests(unittest.TestCase):
         self.assertIsInstance(thing, Struct)
         self.assertEqual(
             [(p.swift_name, p.rendered_type) for p in thing.properties],
-            [("id", "Int"), ("name", "String?")],
+            [("id", "Int?"), ("name", "String?")],
         )
 
-    def test_properties_not_listed_as_required_are_optional(self):
+    def test_every_property_is_optional_even_when_required(self):
+        # The spec's required lists contradict its own example payloads, so they are treated
+        # as advisory. See the note on ModelBuilder.
         builder = build(
             """
             Thing:
               type: object
+              required: [a, b]
               properties:
                 a: {type: string}
+                b: {type: integer}
             """
         )
-        self.assertTrue(builder.declarations["Thing"].properties[0].is_optional)
+        self.assertTrue(all(p.is_optional for p in builder.declarations["Thing"].properties))
 
-    def test_a_required_but_nullable_property_is_still_optional(self):
+    def test_a_nullable_property_is_optional(self):
         builder = build(
             """
             Thing:
@@ -395,7 +399,7 @@ class AllOfTests(unittest.TestCase):
         derived = builder.declarations["Derived"]
         self.assertEqual(
             [(p.swift_name, p.rendered_type) for p in derived.properties],
-            [("id", "Int"), ("name", "String?")],
+            [("id", "Int?"), ("name", "String?")],
         )
 
 

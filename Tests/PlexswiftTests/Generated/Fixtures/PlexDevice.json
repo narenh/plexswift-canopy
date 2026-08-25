@@ -1,0 +1,29 @@
+{
+  "accessToken": "string value",
+  "clientIdentifier": "string value",
+  "connections": [
+    {
+      "IPv6": true,
+      "address": "string value",
+      "local": true,
+      "port": 1,
+      "protocol": "http",
+      "relay": true,
+      "uri": "string value"
+    }
+  ],
+  "dnsRebindingProtection": true,
+  "home": true,
+  "httpsRequired": true,
+  "name": "string value",
+  "natLoopbackSupported": true,
+  "owned": true,
+  "presence": true,
+  "product": "string value",
+  "productVersion": "string value",
+  "provides": "string value",
+  "publicAddress": "string value",
+  "publicAddressMatches": true,
+  "relay": true,
+  "synced": true
+}

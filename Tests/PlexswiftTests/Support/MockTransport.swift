@@ -10,7 +10,7 @@ final class MockTransport: HTTPTransport, @unchecked Sendable {
     /// What a `MockTransport` should do with the next request.
     enum Outcome {
         case success(statusCode: Int, headers: [String: String], body: Data)
-        case failure(any Error)
+        case failure(any Swift.Error)
     }
 
     private let lock = NSLock()
@@ -82,7 +82,7 @@ final class MockTransport: HTTPTransport, @unchecked Sendable {
     }
 }
 
-enum MockTransportError: Error {
+enum MockTransportError: Swift.Error {
     case noOutcomeScripted(String)
     case couldNotBuildResponse
 }

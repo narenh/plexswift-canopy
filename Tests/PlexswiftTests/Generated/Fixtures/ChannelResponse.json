@@ -1,0 +1,11 @@
+{
+  "MediaContainer": {
+    "Channel": [
+      {
+        "id": 1,
+        "title": "Example Channel"
+      }
+    ],
+    "size": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "Account": {
+    "id": 1,
+    "thumb": "string value",
+    "title": "string value"
+  },
+  "Metadata": {},
+  "Player": {
+    "local": true,
+    "publicAddress": "string value",
+    "title": "string value",
+    "uuid": "string value"
+  },
+  "Server": {
+    "title": "string value",
+    "uuid": "string value"
+  },
+  "event": "media.play",
+  "owner": true,
+  "user": true
+}

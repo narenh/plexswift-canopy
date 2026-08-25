@@ -1,0 +1,9 @@
+{
+  "errors": [
+    {
+      "code": 1,
+      "message": "string value",
+      "status": 1
+    }
+  ]
+}

@@ -28,6 +28,11 @@ let package = Package(
         .testTarget(
             name: "PlexswiftTests",
             dependencies: ["Plexswift"],
+            resources: [
+                // Example payloads extracted from the specification, decoded by
+                // GeneratedModelDecodingTests.
+                .copy("Generated/Fixtures")
+            ],
             swiftSettings: [
                 .swiftLanguageMode(.v5)
             ]

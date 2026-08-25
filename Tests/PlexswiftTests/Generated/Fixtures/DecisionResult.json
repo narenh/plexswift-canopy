@@ -1,0 +1,11 @@
+{
+  "availableBandwidth": 1,
+  "directPlayDecisionCode": 1,
+  "directPlayDecisionText": "string value",
+  "generalDecisionCode": 1,
+  "generalDecisionText": "string value",
+  "mdeDecisionCode": 1,
+  "mdeDecisionText": "string value",
+  "transcodeDecisionCode": 1,
+  "transcodeDecisionText": "string value"
+}

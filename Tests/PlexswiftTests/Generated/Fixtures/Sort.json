@@ -1,0 +1,6 @@
+{
+  "default": "asc",
+  "defaultDirection": "asc",
+  "descKey": "titleSort:desc",
+  "key": "titleSort"
+}

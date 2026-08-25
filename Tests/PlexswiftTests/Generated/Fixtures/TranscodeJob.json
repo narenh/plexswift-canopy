@@ -1,0 +1,13 @@
+{
+  "generatorID": 1,
+  "key": "string value",
+  "progress": 1,
+  "ratingKey": "string value",
+  "remaining": 1,
+  "size": 1,
+  "speed": 1,
+  "targetTagID": 1,
+  "thumb": "string value",
+  "title": "string value",
+  "type": "transcode"
+}

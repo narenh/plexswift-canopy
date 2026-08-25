@@ -28,6 +28,37 @@ SWIFT_KEYWORDS = frozenset(
 # Identifiers that are legal Swift but would shadow something the generated code relies on.
 SHADOWING_NAMES = frozenset({"Self", "Type", "Protocol", "Any", "AnyObject"})
 
+# Type names the generated models themselves refer to. A schema called "Data" would emit
+# `public struct Data` into the same module, and every `Data` in a generated file would then
+# resolve to it instead of `Foundation.Data`, so these get a suffix.
+#
+# Names the *handwritten* runtime depends on are not listed. A schema called `Error` is fine,
+# because the runtime spells that dependency `Swift.Error`; qualifying at the point of use is
+# better than renaming a type the API actually has.
+RESERVED_TYPE_NAMES = frozenset(
+    {
+        "AnyJSON",
+        "Bool",
+        "CodingKey",
+        "Data",
+        "Date",
+        "Decodable",
+        "Decoder",
+        "DecodingError",
+        "Double",
+        "Encodable",
+        "Encoder",
+        "EncodingError",
+        "Hashable",
+        "Int",
+        "JSONDecoder",
+        "JSONEncoder",
+        "Sendable",
+        "String",
+        "URL",
+    }
+)
+
 # Plex's JSON mixes conventions freely (``librarySectionID`` next to ``ratingKey``), so the
 # general rule is to split on separators and case boundaries and normalise only the first
 # character. That rule mis-splits acronyms whose expansion continues in lower case — "IPv6"
@@ -139,7 +170,7 @@ def type_name(value: str) -> str:
         raise ValueError("Cannot derive a Swift type name from an empty string")
     if _LEADING_DIGITS.match(name):
         name = f"_{name}"
-    if name in SHADOWING_NAMES:
+    if name in SHADOWING_NAMES or name in RESERVED_TYPE_NAMES:
         name = f"{name}Value"
     return name
 

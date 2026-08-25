@@ -1,0 +1,14 @@
+{
+  "callSign": "string value",
+  "channelVcn": "string value",
+  "drm": true,
+  "favorite": true,
+  "hd": true,
+  "identifier": "string value",
+  "key": "string value",
+  "language": "string value",
+  "signalQuality": 1,
+  "signalStrength": 1,
+  "thumb": "string value",
+  "title": "string value"
+}

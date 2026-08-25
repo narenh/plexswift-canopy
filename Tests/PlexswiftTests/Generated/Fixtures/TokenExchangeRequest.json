@@ -1,0 +1,5 @@
+{
+  "clientIdentifier": "string value",
+  "jwt": "string value",
+  "scope": "string value"
+}

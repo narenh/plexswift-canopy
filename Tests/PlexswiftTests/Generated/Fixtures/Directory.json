@@ -1,0 +1,26 @@
+{
+  "Pivot": [
+    {
+      "context": "string value",
+      "id": "string value",
+      "key": "string value",
+      "symbol": "string value",
+      "title": "string value",
+      "type": "string value"
+    }
+  ],
+  "art": "string value",
+  "content": true,
+  "filter": "string value",
+  "hasPrefs": true,
+  "hasStoreServices": true,
+  "hubKey": "string value",
+  "identifier": "string value",
+  "key": "string value",
+  "lastAccessedAt": 1,
+  "share": 1,
+  "thumb": "string value",
+  "title": "string value",
+  "titleBar": "string value",
+  "type": "string value"
+}

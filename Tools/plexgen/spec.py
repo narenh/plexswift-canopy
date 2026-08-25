@@ -56,6 +56,16 @@ class Spec:
     document: dict[str, Any]
     schemas: dict[str, Any] = field(default_factory=dict)
     operations: list[Operation] = field(default_factory=list)
+    # The document as written, with example payloads intact. Only the test emitter reads it;
+    # everything else works from the stripped `document`.
+    raw_document: dict[str, Any] = field(default_factory=dict)
+
+    def schema_example(self, name: str) -> Any:
+        """The ``example`` payload published for component schema ``name``, if it has one."""
+        schema = self.raw_document.get("components", {}).get("schemas", {}).get(name)
+        if isinstance(schema, dict):
+            return schema.get("example")
+        return None
 
     @property
     def version(self) -> str:
@@ -166,8 +176,9 @@ def load(path: str | Path) -> Spec:
     if not isinstance(document, dict):
         raise SpecError(f"{path} does not contain an OpenAPI document")
 
+    raw_document = document
     document = _strip_examples(document)
-    spec = Spec(document=document)
+    spec = Spec(document=document, raw_document=raw_document)
     spec.schemas = document.get("components", {}).get("schemas", {})
     spec.operations = _collect_operations(spec)
     return spec

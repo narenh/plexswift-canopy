@@ -89,6 +89,17 @@ class TypeNameTests(unittest.TestCase):
         self.assertEqual(type_name("Type"), "TypeValue")
         self.assertEqual(type_name("Any"), "AnyValue")
 
+    def test_avoids_shadowing_types_the_generated_models_refer_to(self):
+        # A `struct Data` in the same module would capture every `Data` in a generated file.
+        self.assertEqual(type_name("Data"), "DataValue")
+        self.assertEqual(type_name("Date"), "DateValue")
+        self.assertEqual(type_name("AnyJSON"), "AnyJSONValue")
+
+    def test_leaves_names_the_runtime_qualifies_alone(self):
+        # The runtime spells its dependency `Swift.Error`, so the API's own `Error` schema
+        # keeps the name the specification gives it.
+        self.assertEqual(type_name("Error"), "Error")
+
     def test_rejects_empty_names(self):
         with self.assertRaises(ValueError):
             type_name("!!!")

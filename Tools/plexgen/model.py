@@ -131,7 +131,22 @@ Declaration = Struct | Enum | Union | Typealias
 
 
 class ModelBuilder:
-    """Builds the set of Swift declarations implied by a spec."""
+    """Builds the set of Swift declarations implied by a spec.
+
+    **Every generated property is optional**, regardless of the schema's ``required`` list.
+
+    That is a deliberate departure from the spec, taken because the spec contradicts itself:
+    decoding the example payloads it publishes against the models its own ``required`` lists
+    describe fails for 13 schemas. ``Stream`` requires ``streamType`` and then publishes an
+    example without it; ``Items`` inherits ``title`` as required through an ``allOf`` and
+    publishes an example with neither ``title`` nor ``type``.
+
+    The examples are the better evidence. A real Plex Media Server omits fields freely
+    depending on library type, agent, and server version, and a non-optional property turns
+    any such omission into a thrown error that fails the entire request rather than leaving one
+    value nil. Being wrong in that direction is expensive; being wrong in the other direction
+    costs an optional unwrap.
+    """
 
     def __init__(self, spec: Spec) -> None:
         self.spec = spec
@@ -153,6 +168,10 @@ class ModelBuilder:
 
         for name, schema in self.spec.schemas.items():
             self._declare(self._component_types[name], schema)
+
+    def component_type_name(self, schema_name: str) -> str | None:
+        """The Swift type name chosen for the component schema called ``schema_name``."""
+        return self._component_types.get(schema_name)
 
     def type_reference(self, schema: Any, hint: str) -> str:
         """The Swift type for ``schema``, declaring one if it is inline and needs a name.
@@ -232,7 +251,6 @@ class ModelBuilder:
             documentation=resolved.get("description"),
             deprecated=bool(resolved.get("deprecated")),
         )
-        required = set(resolved.get("required", []))
         used_names: set[str] = set()
 
         for key, raw in resolved.get("properties", {}).items():
@@ -245,7 +263,8 @@ class ModelBuilder:
                     swift_name=swift_property,
                     json_key=key,
                     type_name=type_name,
-                    is_optional=key not in required or self._is_nullable(property_schema),
+                    # Every property is optional; see the note on ModelBuilder.
+                    is_optional=True,
                     documentation=property_schema.get("description"),
                     deprecated=bool(property_schema.get("deprecated")),
                 )

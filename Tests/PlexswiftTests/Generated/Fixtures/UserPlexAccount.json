@@ -1,0 +1,64 @@
+{
+  "adsConsentReminderAt": 1,
+  "adsConsentSetAt": 1,
+  "authToken": "string value",
+  "backupCodesCreated": false,
+  "confirmed": false,
+  "country": "string value",
+  "email": "user@example.com",
+  "emailOnlyAuth": false,
+  "entitlements": [
+    "string value"
+  ],
+  "experimentalFeatures": false,
+  "friendlyName": "string value",
+  "guest": false,
+  "hasPassword": true,
+  "home": false,
+  "homeAdmin": false,
+  "homeSize": 1,
+  "id": 1,
+  "joinedAt": 1,
+  "mailingListActive": false,
+  "mailingListStatus": "active",
+  "maxHomeSize": 1,
+  "pin": "string value",
+  "profile": {
+    "autoSelectAudio": true
+  },
+  "protected": false,
+  "rememberExpiresAt": 1,
+  "restricted": false,
+  "roles": [
+    "string value"
+  ],
+  "scrobbleTypes": "string value",
+  "services": [
+    {
+      "endpoint": "https://plex.tv",
+      "identifier": "string value",
+      "status": "online"
+    }
+  ],
+  "subscription": {
+    "active": true,
+    "features": [
+      "string value"
+    ],
+    "status": "Inactive"
+  },
+  "subscriptions": [
+    {
+      "active": true,
+      "features": [
+        "string value"
+      ],
+      "status": "Inactive"
+    }
+  ],
+  "thumb": "https://plex.tv",
+  "title": "string value",
+  "twoFactorEnabled": false,
+  "username": "string value",
+  "uuid": "string value"
+}

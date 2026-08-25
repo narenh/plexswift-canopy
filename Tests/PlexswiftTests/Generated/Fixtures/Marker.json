@@ -1,0 +1,8 @@
+{
+  "color": "string value",
+  "endTimeOffset": 1,
+  "id": 1,
+  "startTimeOffset": 1,
+  "title": "string value",
+  "type": "intro"
+}

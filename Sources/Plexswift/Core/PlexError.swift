@@ -5,7 +5,7 @@ import Foundation
 /// The cases split by *where* the request failed, so that callers can react without
 /// string-matching: configuration problems are programmer errors, ``transport(_:)`` wraps
 /// connectivity failures worth retrying, and ``api(_:)`` carries a real response from Plex.
-public enum PlexError: Error, Sendable {
+public enum PlexError: Swift.Error, Sendable {
     /// The configured server, or an operation's path, could not be turned into a valid URL.
     case invalidURL(String)
 
@@ -18,7 +18,7 @@ public enum PlexError: Error, Sendable {
 
     /// The request never produced an HTTP response — DNS failure, connection refused, TLS
     /// failure, timeout. The associated value is the underlying `URLSession` error.
-    case transport(any Error)
+    case transport(any Swift.Error)
 
     /// Plex returned a response outside the 2xx range.
     case api(APIError)
@@ -27,7 +27,7 @@ public enum PlexError: Error, Sendable {
     case decoding(DecodingFailure)
 
     /// Details of a non-2xx response from Plex.
-    public struct APIError: Error, Sendable, CustomStringConvertible {
+    public struct APIError: Swift.Error, Sendable, CustomStringConvertible {
         /// The HTTP status code.
         public let statusCode: Int
         /// The `operationId` of the operation that failed.
@@ -87,7 +87,7 @@ public enum PlexError: Error, Sendable {
     }
 
     /// Details of a response body that could not be decoded.
-    public struct DecodingFailure: Error, Sendable, CustomStringConvertible {
+    public struct DecodingFailure: Swift.Error, Sendable, CustomStringConvertible {
         /// The `operationId` of the operation whose response could not be decoded.
         public let operation: String
         /// The Swift type the body was being decoded into.
@@ -97,14 +97,14 @@ public enum PlexError: Error, Sendable {
         /// The raw response body.
         public let body: Data
         /// The underlying `DecodingError`, when the failure came from `JSONDecoder`.
-        public let underlyingError: (any Error)?
+        public let underlyingError: (any Swift.Error)?
 
         public init(
             operation: String,
             expectedType: String,
             contentType: String?,
             body: Data,
-            underlyingError: (any Error)?
+            underlyingError: (any Swift.Error)?
         ) {
             self.operation = operation
             self.expectedType = expectedType

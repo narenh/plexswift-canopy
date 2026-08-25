@@ -1,0 +1,15 @@
+{
+  "Connection": [
+    {
+      "address": "string value",
+      "local": true,
+      "port": 1,
+      "protocol": "string value",
+      "relay": true,
+      "uri": "string value"
+    }
+  ],
+  "accessToken": "string value",
+  "clientIdentifier": "string value",
+  "name": "string value"
+}
