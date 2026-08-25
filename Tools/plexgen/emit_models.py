@@ -13,6 +13,21 @@ from .swiftfmt import (
 )
 
 
+def render_namespace_file() -> str:
+    """Renders the namespace the generated operation types are nested in."""
+    return file_contents(
+        """\
+/// The namespace containing every generated operation type.
+///
+/// An operation describes a request without performing one. Construct one and hand it to
+/// ``PlexClient/send(_:)`` when you need the response metadata, or call the equivalent method
+/// on an API namespace — ``PlexClient/library``, ``PlexClient/hubs`` and so on — to get just
+/// the decoded body.
+public enum Operations {}
+"""
+    )
+
+
 def render_file(declarations: list[Declaration]) -> str:
     """Renders ``declarations`` into one Swift file."""
     body = "\n\n".join(render(declaration) for declaration in declarations)

@@ -15,8 +15,9 @@ import shutil
 import sys
 from pathlib import Path
 
-from plexgen import emit_models, emit_tests, spec as spec_module
+from plexgen import emit_models, emit_operations, emit_tests, spec as spec_module
 from plexgen.model import ModelBuilder
+from plexgen.operations import OperationBuilder
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SPEC = REPO_ROOT / "Spec" / "plex-api-spec.yaml"
@@ -31,9 +32,25 @@ def generate(spec_path: Path) -> tuple[dict[str, str], dict[str, str]]:
     builder = ModelBuilder(spec)
     builder.build_components()
 
+    # Operations are built before the models are emitted, because building one can declare a
+    # model for an inline parameter, body or response schema.
+    operations = OperationBuilder(spec, builder).build_all()
+
     sources: dict[str, str] = {}
     for name, declaration in sorted(builder.declarations.items()):
         sources[f"Models/{name}.swift"] = emit_models.render_file([declaration])
+
+    sources["Operations.swift"] = emit_models.render_namespace_file()
+    for operation in sorted(operations, key=lambda o: o.swift_name):
+        sources[f"Operations/{operation.swift_name}.swift"] = (
+            emit_operations.render_operation_file(operation)
+        )
+
+    for tag, tagged in sorted(emit_operations.group_by_tag(operations).items()):
+        type_name = emit_operations.namespace_type_name(tag)
+        sources[f"APIs/{type_name}.swift"] = emit_operations.render_namespace_file(
+            tag, sorted(tagged, key=lambda o: o.method_name)
+        )
 
     tests: dict[str, str] = {}
     examples = emit_tests.collect_examples(spec, builder)

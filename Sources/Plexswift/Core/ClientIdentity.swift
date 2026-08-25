@@ -26,6 +26,13 @@ public struct ClientIdentity: Sendable, Hashable {
     public var platform: String?
     /// The operating system version. Sent as `X-Plex-Platform-Version`.
     public var platformVersion: String?
+    /// A less friendly identifier for the device model. Sent as `X-Plex-Model`.
+    public var model: String?
+    /// The vendor of the device. Sent as `X-Plex-Device-Vendor`.
+    public var deviceVendor: String?
+    /// The marketplace the application is distributed on, for example `apple`.
+    /// Sent as `X-Plex-Marketplace`.
+    public var marketplace: String?
 
     /// Creates an identity for the calling application.
     ///
@@ -38,7 +45,10 @@ public struct ClientIdentity: Sendable, Hashable {
         deviceName: String? = nil,
         device: String? = nil,
         platform: String? = nil,
-        platformVersion: String? = nil
+        platformVersion: String? = nil,
+        model: String? = nil,
+        deviceVendor: String? = nil,
+        marketplace: String? = nil
     ) {
         self.clientIdentifier = clientIdentifier
         self.product = product
@@ -47,6 +57,9 @@ public struct ClientIdentity: Sendable, Hashable {
         self.device = device
         self.platform = platform
         self.platformVersion = platformVersion
+        self.model = model
+        self.deviceVendor = deviceVendor
+        self.marketplace = marketplace
     }
 
     /// The `X-Plex-*` headers describing this identity.
@@ -60,6 +73,9 @@ public struct ClientIdentity: Sendable, Hashable {
         headers["X-Plex-Device"] = device
         headers["X-Plex-Platform"] = platform
         headers["X-Plex-Platform-Version"] = platformVersion
+        headers["X-Plex-Model"] = model
+        headers["X-Plex-Device-Vendor"] = deviceVendor
+        headers["X-Plex-Marketplace"] = marketplace
         return headers
     }
 }

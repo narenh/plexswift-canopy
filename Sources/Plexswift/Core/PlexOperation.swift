@@ -31,7 +31,10 @@ public protocol PlexOperation: Sendable {
     var path: String { get }
 
     /// Query items for the request, in specification order.
-    var queryItems: [URLQueryItem] { get }
+    ///
+    /// Throwing, because an object-valued parameter has to be encoded to be expanded into
+    /// query items. Operations whose parameters are all scalars do not throw.
+    var queryItems: [URLQueryItem] { get throws }
 
     /// Headers specific to this operation, applied over the client's base headers.
     var headers: [String: String] { get }
@@ -102,6 +105,43 @@ public struct RequestBody: Sendable, Hashable {
         return RequestBody(
             data: Data(encoded.utf8),
             contentType: "application/x-www-form-urlencoded"
+        )
+    }
+
+    /// A `text/plain` body.
+    public static func text(_ value: String) -> RequestBody {
+        RequestBody(data: Data(value.utf8), contentType: "text/plain; charset=utf-8")
+    }
+
+    /// A `multipart/form-data` body carrying a single file part.
+    ///
+    /// Used by the image upload operations, which declare a multipart body with one binary
+    /// field. The boundary is derived from a UUID so it cannot occur in the payload.
+    public static func multipart(
+        fieldName: String,
+        data: Data,
+        filename: String = "upload",
+        contentType: String = "application/octet-stream",
+        boundary: String = "PlexswiftBoundary-\(UUID().uuidString)"
+    ) -> RequestBody {
+        var body = Data()
+        body.append(Data("--\(boundary)\r\n".utf8))
+        body.append(
+            Data(
+                """
+                Content-Disposition: form-data; name="\(fieldName)"; filename="\(filename)"\r
+                Content-Type: \(contentType)\r
+                \r
+
+                """.utf8
+            )
+        )
+        body.append(data)
+        body.append(Data("\r\n--\(boundary)--\r\n".utf8))
+
+        return RequestBody(
+            data: body,
+            contentType: "multipart/form-data; boundary=\(boundary)"
         )
     }
 }

@@ -26,6 +26,22 @@ jobs:
       - name: Test
         run: swift test
 
+  generator:
+    name: Generator tests and drift check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install generator dependencies
+        run: python -m pip install --requirement Tools/requirements.txt
+      - name: Run generator unit tests
+        working-directory: Tools
+        run: python -m unittest discover --start-directory . --pattern "test_*.py" --verbose
+      - name: Check the generated sources match the vendored spec
+        run: python Tools/generate.py --check
+
   macos:
     name: Build and test (macOS)
     runs-on: macos-14

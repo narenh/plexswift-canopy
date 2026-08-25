@@ -198,7 +198,7 @@ public final class PlexClient: Sendable {
             throw PlexError.invalidURL(combined)
         }
 
-        var items = operation.queryItems
+        var items = try operation.queryItems
         if case .queryItem = configuration.tokenPlacement, let token = configuration.token {
             items.append(URLQueryItem(name: "X-Plex-Token", value: token))
         }
