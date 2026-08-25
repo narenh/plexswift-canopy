@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Get the logged-in user's account details in XML format (legacy v1 endpoint).
     public struct GetAccountXML: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "getAccountXML"
         public static let method = HTTPMethod.get

@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Deletes a playlist by provided id
     public struct DeletePlaylist: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "deletePlaylist"
         public static let method = HTTPMethod.delete

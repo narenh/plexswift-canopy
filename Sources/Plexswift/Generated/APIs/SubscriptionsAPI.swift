@@ -119,7 +119,7 @@ public struct SubscriptionsAPI: Sendable {
 
     /// Process all subscriptions asynchronously
     @discardableResult
-    public func processSubscriptions() async throws(PlexError) -> EmptyResponse {
+    public func processSubscriptions() async throws(PlexError) -> String {
         try await client.perform(Operations.ProcessSubscriptions())
     }
 

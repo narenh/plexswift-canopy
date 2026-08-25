@@ -17,7 +17,7 @@ public struct UpdaterAPI: Sendable {
     public func applyUpdates(
         tonight: BoolInt? = nil,
         skip: BoolInt? = nil
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.ApplyUpdates(
             tonight: tonight,
             skip: skip

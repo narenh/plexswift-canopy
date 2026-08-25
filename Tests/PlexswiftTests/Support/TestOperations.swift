@@ -71,3 +71,14 @@ struct BinaryProbeOperation: PlexOperation {
 
     var path: String = "/photo/:/transcode"
 }
+
+/// An operation whose successful response is text rather than JSON, as the legacy plex.tv XML
+/// endpoints are.
+struct TextProbeOperation: PlexOperation {
+    typealias Success = String
+
+    static let operationID = "textProbe"
+    static let method = HTTPMethod.get
+
+    var path: String = "/api/resources"
+}

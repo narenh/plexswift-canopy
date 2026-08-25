@@ -52,7 +52,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func deletePlaylist(
         playlistId: Int
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.DeletePlaylist(
             playlistId: playlistId
         ))
@@ -153,7 +153,7 @@ public struct LibraryPlaylistsAPI: Sendable {
     @discardableResult
     public func updatePlaylist(
         playlistId: Int
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.UpdatePlaylist(
             playlistId: playlistId
         ))

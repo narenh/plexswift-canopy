@@ -8,7 +8,7 @@ extension Operations {
     /// WebSocket endpoint for real-time notifications (plural alias). Connect with X-Plex-Token header.
     /// Delivers NotificationContainer messages.
     public struct GetWebsocketNotifications: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = Data
 
         public static let operationID = "getWebsocketNotifications"
         public static let method = HTTPMethod.get

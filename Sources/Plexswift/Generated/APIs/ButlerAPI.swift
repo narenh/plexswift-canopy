@@ -20,7 +20,7 @@ public struct ButlerAPI: Sendable {
     @discardableResult
     public func startTask(
         butlerTask: StartTaskButlerTask
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.StartTask(
             butlerTask: butlerTask
         ))

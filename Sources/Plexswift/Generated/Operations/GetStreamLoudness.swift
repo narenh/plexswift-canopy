@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// The the loudness of a stream in db, one number per line, one entry per 100ms
     public struct GetStreamLoudness: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "getStreamLoudness"
         public static let method = HTTPMethod.get

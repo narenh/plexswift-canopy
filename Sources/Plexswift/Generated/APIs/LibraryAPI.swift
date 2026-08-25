@@ -405,7 +405,7 @@ public struct LibraryAPI: Sendable {
     public func getAugmentationStatus(
         augmentationId: String,
         wait: BoolInt? = nil
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.GetAugmentationStatus(
             augmentationId: augmentationId,
             wait: wait
@@ -1086,7 +1086,7 @@ public struct LibraryAPI: Sendable {
     public func getStreamLoudness(
         streamId: Int,
         subsample: Int? = nil
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.GetStreamLoudness(
             streamId: streamId,
             subsample: subsample

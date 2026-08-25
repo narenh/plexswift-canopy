@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Legacy PIN creation (XML).
     public struct CreateLegacyPin: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "createLegacyPin"
         public static let method = HTTPMethod.post

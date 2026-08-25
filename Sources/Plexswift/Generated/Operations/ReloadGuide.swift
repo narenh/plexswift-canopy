@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Tell a DVR to reload program guide
     public struct ReloadGuide: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "reloadGuide"
         public static let method = HTTPMethod.post

@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Accept a pending Plex friend, home, or server invitation.
     public struct AcceptInvite: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "acceptInvite"
         public static let method = HTTPMethod.put

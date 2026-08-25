@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// This endpoint will attempt to start a specific Butler task by name.
     public struct StartTask: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "startTask"
         public static let method = HTTPMethod.post

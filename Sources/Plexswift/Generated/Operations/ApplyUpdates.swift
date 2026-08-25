@@ -9,7 +9,7 @@ extension Operations {
     /// mutually exclusive. The `tonight` parameter takes precedence and `skip` will be ignored if
     /// `tonight` is also passed.
     public struct ApplyUpdates: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "applyUpdates"
         public static let method = HTTPMethod.put

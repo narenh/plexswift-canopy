@@ -67,6 +67,27 @@ extension PlexOperation where Success == Data {
     }
 }
 
+extension PlexOperation where Success == String {
+    /// Decodes a textual response body.
+    ///
+    /// Used by the operations whose successful response is XML or plain text rather than JSON —
+    /// the legacy plex.tv endpoints, mostly. This overload is more specialised than the
+    /// `Success: Decodable` one, so it wins: without it a `String` body would be handed to
+    /// `JSONDecoder`, which would reject anything that is not a quoted JSON string.
+    public static func decodeSuccess(_ data: Data, decoder: JSONDecoder) throws -> String {
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw ResponseDecodingError.notValidUTF8
+        }
+        return text
+    }
+}
+
+/// Failures raised while turning a response body into an operation's `Success` type.
+public enum ResponseDecodingError: Swift.Error, Sendable {
+    /// The body was expected to be text but is not valid UTF-8.
+    case notValidUTF8
+}
+
 extension PlexOperation where Success == EmptyResponse {
     public static func decodeSuccess(_ data: Data, decoder: JSONDecoder) throws -> EmptyResponse {
         EmptyResponse()

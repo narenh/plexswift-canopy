@@ -8,7 +8,7 @@ extension Operations {
     /// Edits a playlist in the same manner as [editing
     /// metadata](#tag/Provider/operation/metadataPutItem)
     public struct UpdatePlaylist: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "updatePlaylist"
         public static let method = HTTPMethod.put

@@ -126,7 +126,7 @@ public struct DVRsAPI: Sendable {
     @discardableResult
     public func reloadGuide(
         dvrId: Int
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.ReloadGuide(
             dvrId: dvrId
         ))

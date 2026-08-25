@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Get legacy friends list (XML).
     public struct GetLegacyUsers: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "getLegacyUsers"
         public static let method = HTTPMethod.get

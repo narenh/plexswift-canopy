@@ -17,7 +17,7 @@ public struct UsersAPI: Sendable {
         friend: BoolInt,
         home: BoolInt,
         server: BoolInt
-    ) async throws(PlexError) -> EmptyResponse {
+    ) async throws(PlexError) -> String {
         try await client.perform(Operations.AcceptInvite(
             inviteId: inviteId,
             friend: friend,
@@ -50,7 +50,7 @@ public struct UsersAPI: Sendable {
 
     /// Get the logged-in user's account details in XML format (legacy v1 endpoint).
     @discardableResult
-    public func getAccountXML() async throws(PlexError) -> EmptyResponse {
+    public func getAccountXML() async throws(PlexError) -> String {
         try await client.perform(Operations.GetAccountXML())
     }
 
@@ -74,13 +74,13 @@ public struct UsersAPI: Sendable {
 
     /// Get legacy published server connections (XML).
     @discardableResult
-    public func getLegacyResources() async throws(PlexError) -> EmptyResponse {
+    public func getLegacyResources() async throws(PlexError) -> String {
         try await client.perform(Operations.GetLegacyResources())
     }
 
     /// Get legacy friends list (XML).
     @discardableResult
-    public func getLegacyUsers() async throws(PlexError) -> EmptyResponse {
+    public func getLegacyUsers() async throws(PlexError) -> String {
         try await client.perform(Operations.GetLegacyUsers())
     }
 

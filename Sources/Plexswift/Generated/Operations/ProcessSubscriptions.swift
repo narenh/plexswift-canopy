@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Process all subscriptions asynchronously
     public struct ProcessSubscriptions: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "processSubscriptions"
         public static let method = HTTPMethod.post

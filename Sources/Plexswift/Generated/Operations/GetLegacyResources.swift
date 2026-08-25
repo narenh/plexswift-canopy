@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Get legacy published server connections (XML).
     public struct GetLegacyResources: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "getLegacyResources"
         public static let method = HTTPMethod.get

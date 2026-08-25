@@ -288,9 +288,11 @@ class OperationBuilder:
     def _success_type(self, operation: Operation, owner: str) -> str:
         """The Swift type the operation's successful response decodes to.
 
-        The lowest 2xx response wins. An operation with no JSON body — a 204, or a response
-        the spec only describes as `text/html` — surfaces as ``EmptyResponse``, and a binary
-        body surfaces as ``Data``.
+        The lowest 2xx response wins, and the body is preserved whatever its media type:
+        JSON decodes to a generated model, binary and octet-stream to ``Data``, and XML or
+        plain text to ``String``. Only a response that declares no content at all becomes
+        ``EmptyResponse`` — 14 operations return XML, text or raw bytes, and mapping those to
+        ``EmptyResponse`` would silently discard what the caller asked for.
         """
         codes = sorted(
             code for code in operation.responses if code.isdigit() and code.startswith("2")
@@ -298,6 +300,8 @@ class OperationBuilder:
         for code in codes:
             response = self.spec.resolve(operation.responses[code])
             content = response.get("content") or {}
+            if not content:
+                continue
 
             json_media = content.get("application/json")
             if json_media and json_media.get("schema") is not None:
@@ -308,7 +312,26 @@ class OperationBuilder:
             if any(self._is_binary(media) for media in content.values()):
                 return "Data"
 
+            if any(self._is_binary_media_type(name) for name in content):
+                return "Data"
+
+            if any(self._is_textual_media_type(name) for name in content):
+                return "String"
+
         return "EmptyResponse"
+
+    @staticmethod
+    def _is_binary_media_type(name: str) -> bool:
+        return name == "application/octet-stream" or name.startswith(
+            ("image/", "video/", "audio/")
+        )
+
+    @staticmethod
+    def _is_textual_media_type(name: str) -> bool:
+        return name.startswith("text/") or name in (
+            "application/xml",
+            "application/xhtml+xml",
+        )
 
     def _is_binary(self, media: Any) -> bool:
         if not isinstance(media, dict):

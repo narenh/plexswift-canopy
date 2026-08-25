@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Get augmentation status and potentially wait for completion
     public struct GetAugmentationStatus: PlexOperation {
-        public typealias Success = EmptyResponse
+        public typealias Success = String
 
         public static let operationID = "getAugmentationStatus"
         public static let method = HTTPMethod.get

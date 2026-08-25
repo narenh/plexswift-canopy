@@ -18,7 +18,7 @@ public struct AuthenticationAPI: Sendable {
 
     /// Legacy PIN creation (XML).
     @discardableResult
-    public func createLegacyPin() async throws(PlexError) -> EmptyResponse {
+    public func createLegacyPin() async throws(PlexError) -> String {
         try await client.perform(Operations.CreateLegacyPin())
     }
 

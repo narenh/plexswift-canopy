@@ -200,6 +200,45 @@ final class PlexClientResponseTests: XCTestCase {
         XCTAssertEqual(value, EmptyResponse())
     }
 
+    /// 13 operations answer with XML or plain text. Their bodies must reach the caller:
+    /// handing them to JSONDecoder would fail, and treating them as empty would discard the
+    /// response entirely.
+    func testTextualOperationReturnsTheBodyAsAString() async throws {
+        let xml = "<MediaContainer size=\"1\"/>"
+        let transport = MockTransport([
+            .success(
+                statusCode: 200,
+                headers: ["Content-Type": "application/xml"],
+                body: Data(xml.utf8)
+            )
+        ])
+        let client = makeClient(transport: transport)
+
+        let text = try await client.perform(TextProbeOperation())
+
+        XCTAssertEqual(text, xml)
+    }
+
+    func testTextualOperationRejectsABodyThatIsNotUTF8() async {
+        let transport = MockTransport([
+            .success(
+                statusCode: 200,
+                headers: ["Content-Type": "application/xml"],
+                body: Data([0xFF, 0xFE, 0xFD])
+            )
+        ])
+        let client = makeClient(transport: transport)
+
+        do {
+            _ = try await client.perform(TextProbeOperation())
+            XCTFail("Expected the request to throw")
+        } catch let PlexError.decoding(failure) {
+            XCTAssertEqual(failure.operation, "textProbe")
+        } catch {
+            XCTFail("Expected PlexError.decoding, got \(error)")
+        }
+    }
+
     func testResponseMapTransformsTheValue() async throws {
         let client = makeClient(transport: MockTransport(json: #"{"name":"Movies","size":7}"#))
 
