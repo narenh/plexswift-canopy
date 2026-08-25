@@ -1,0 +1,10 @@
+{
+  "artBlurHash": "string value",
+  "collectionFilterBasedOnUser": true,
+  "collectionMode": "default",
+  "collectionPublished": true,
+  "collectionSort": "string value",
+  "lastRatedAt": 1,
+  "thumbBlurHash": "string value",
+  "userRating": 1
+}

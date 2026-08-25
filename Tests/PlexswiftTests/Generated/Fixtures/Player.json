@@ -1,0 +1,17 @@
+{
+  "address": "string value",
+  "local": true,
+  "machineIdentifier": "string value",
+  "model": "string value",
+  "platform": "string value",
+  "platformVersion": "string value",
+  "product": "string value",
+  "relayed": true,
+  "remotePublicAddress": "string value",
+  "secure": true,
+  "state": "string value",
+  "title": "string value",
+  "userID": 1,
+  "vendor": "string value",
+  "version": "string value"
+}

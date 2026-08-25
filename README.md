@@ -1,296 +1,358 @@
 # plexswift
 
-<a href="https://speakeasyapi.dev/"><img src="https://custom-icon-badges.demolab.com/badge/-Built%20By%20Speakeasy-212015?style=for-the-badge&logoColor=FBE331&logo=speakeasy&labelColor=545454" /></a>
-<a href="https://opensource.org/licenses/MIT">
-<img src="https://img.shields.io/badge/License-MIT-blue.svg" style="width: 100px; height: 28px;" />
-</a>
-![Platform](https://img.shields.io/badge/Platform-iOS-lightgray)
-![Swift Version](https://img.shields.io/badge/Swift-5.6-orange.svg)
+A Swift client for the [Plex Media Server and plex.tv APIs](https://plexapi.dev), generated
+from the [Plex OpenAPI specification](https://github.com/LukeHagar/plex-api-spec).
 
-An Open API Spec for interacting with Plex.tv and Plex Servers
+![Platforms](https://img.shields.io/badge/Platforms-iOS%2018%20%7C%20macOS%2015%20%7C%20tvOS%2018%20%7C%20watchOS%2011%20%7C%20visionOS%202%20%7C%20Linux-lightgray)
+![Swift](https://img.shields.io/badge/Swift-6.0%2B-orange.svg)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+
+**405 operations across 33 namespaces, generated from specification 1.1.1.**
+
+---
+
+## About this fork
+
+This is a fork of [`LukeHagar/plexswift`](https://github.com/LukeHagar/plexswift), which was
+archived in 2024. It has been rebuilt rather than patched, for two reasons.
+
+**The archived package did not compile.** A clean checkout of its `main` fails with 1,801
+errors under Swift 6.2. Its last generation run emitted a `PlexswiftAPI` protocol referencing
+request and response types it never wrote — `GetLibraries`, `GetMetadata`, `GetToken` and four
+others — along with entirely missing types including `UsersAPI`, `WatchlistAPI` and three
+server enums. No published release of it could have built.
+
+**It also could not have made a request.** The client held a private `_selectedServer` that
+nothing ever assigned and no API exposed, so every call fell back to a default that returned
+the specification's server *template* — the literal string `{protocol}://{ip}:{port}` — without
+substituting its variables. `URL(string:)` rejects that. The single configured server value
+also hardcoded a private address, `10.10.10.47`, as its default IP.
+
+Regenerating in place was not an option: the Speakeasy CLI requires an interactive browser
+login against the original author's account, and the nightly workflow in the repository would
+have overwritten any local work with output this fork cannot reproduce. So this fork owns its
+generation. The specification is vendored at [`Spec/`](Spec/), the generator lives in
+[`Tools/`](Tools/), and CI fails if the two drift apart.
+
+If you are migrating from the original package, see
+[Migrating from plexswift 0.10](#migrating-from-plexswift-010).
 
 ## Requirements
 
-The SDK supports iOS 13 and later.
+Swift 6.0 or later. iOS 18+, macOS 15+, tvOS 18+, watchOS 11+, visionOS 2+, and Linux.
 
-<!-- Start Summary [summary] -->
-## Summary
+The package builds in **Swift 6 language mode** with full strict concurrency, and the whole
+public surface is `Sendable`.
 
-Plex-API: An Open API Spec for interacting with Plex.tv and Plex Media Server
+Raising the floor from the original package's iOS 13 removed the availability-gated fallbacks
+it needed — `URLSession.data(for:)` is now used directly rather than bridged from the
+completion-handler API through a continuation — and allows **typed throws**: every method that
+can fail is declared `throws(PlexError)`, so `catch` is exhaustive and callers never have to
+handle an error the SDK cannot produce.
 
-# Plex Media Server OpenAPI Specification
+## Installation
 
-An Open Source OpenAPI Specification for Plex Media Server
-
-Automation and SDKs provided by [Speakeasy](https://speakeasyapi.dev/)
-
-## Documentation
-
-[API Documentation](https://plexapi.dev)
-
-## SDKs
-
-The following SDKs are generated from the OpenAPI Specification. They are automatically generated and may not be fully tested. If you find any issues, please open an issue on the [main specification Repository](https://github.com/LukeHagar/plex-api-spec).
-
-| Language              | Repository                                        | Releases                                                                                         | Other                                                   |
-| --------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
-| Python                | [GitHub](https://github.com/LukeHagar/plexpy)     | [PyPI](https://pypi.org/project/plex-api-client/)                                                | -                                                       |
-| JavaScript/TypeScript | [GitHub](https://github.com/LukeHagar/plexjs)     | [NPM](https://www.npmjs.com/package/@lukehagar/plexjs) \ [JSR](https://jsr.io/@lukehagar/plexjs) | -                                                       |
-| Go                    | [GitHub](https://github.com/LukeHagar/plexgo)     | [Releases](https://github.com/LukeHagar/plexgo/releases)                                         | [GoDoc](https://pkg.go.dev/github.com/LukeHagar/plexgo) |
-| Ruby                  | [GitHub](https://github.com/LukeHagar/plexruby)   | [Releases](https://github.com/LukeHagar/plexruby/releases)                                       | -                                                       |
-| Swift                 | [GitHub](https://github.com/LukeHagar/plexswift)  | [Releases](https://github.com/LukeHagar/plexswift/releases)                                      | -                                                       |
-| PHP                   | [GitHub](https://github.com/LukeHagar/plexphp)    | [Releases](https://github.com/LukeHagar/plexphp/releases)                                        | -                                                       |
-| Java                  | [GitHub](https://github.com/LukeHagar/plexjava)   | [Releases](https://github.com/LukeHagar/plexjava/releases)                                       | -                                                       |
-| C#                    | [GitHub](https://github.com/LukeHagar/plexcsharp) | [Releases](https://github.com/LukeHagar/plexcsharp/releases)                                     | -
-<!-- End Summary [summary] -->
-
-<!-- Start Table of Contents [toc] -->
-## Table of Contents
-
-* [SDK Installation](#sdk-installation)
-* [SDK Example Usage](#sdk-example-usage)
-* [Available Resources and Operations](#available-resources-and-operations)
-* [Authentication](#authentication)
-<!-- End Table of Contents [toc] -->
-
-<!-- Start SDK Installation [installation] -->
-## SDK Installation
-
-The SDK uses the [Swift Package Manager](https://www.swift.org/documentation/package-manager/) to handle dependencies, which is included in Swift 3.0 and above.
-
-You can add `plexswift` to your project directly in Xcode `(File > Add Packages...)` or by adding it to your project's Package.swift file:
-
-```bash
+```swift
 dependencies: [
-    .package(url: "https://github.com/LukeHagar/plexswift.git", .upToNextMajor(from: "0.10.5"))
+    .package(url: "https://github.com/narenh/plexswift-canopy.git", branch: "main")
 ]
 ```
-<!-- End SDK Installation [installation] -->
 
-<!-- Start SDK Example Usage [usage] -->
-## SDK Example Usage
+## Getting started
 
-### Example
+A client needs an address. There is no implicit default, and every `PlexServer` case resolves
+to a real URL.
+
+```swift
+import Plexswift
+
+let client = PlexClient(
+    server: .host(scheme: .http, host: "192.168.1.10", port: 32400),
+    token: storedToken,
+    identity: ClientIdentity(
+        clientIdentifier: storedClientIdentifier,   // stable across launches — see below
+        product: "My Plex App",
+        version: "1.0.0"
+    )
+)
+
+let container = try await client.library.getLibrarySectionsFallback()
+for directory in container.mediaContainer?.directory ?? [] {
+    print(directory.title ?? "Untitled", directory.type ?? "")
+}
+```
+
+### Addressing a server
+
+```swift
+.host(scheme: .https, host: "plex.example.com", port: 32400)   // LAN or reverse proxy
+.plexDirect(ip: "10.0.0.5", identifier: machineIdentifier)      // valid TLS for a bare IP
+.url(URL(string: "http://localhost:32400")!)                    // anything else
+.localhost                                                       // http://localhost:32400
+```
+
+`plexDirect` converts the address to the hyphenated form the certificates require, so
+`10.0.0.5` becomes `https://10-0-0-5.<identifier>.plex.direct:32400`.
+
+### Identifying your app
+
+Plex expects every client to describe itself through `X-Plex-*` headers. They are what makes
+your app appear under **Settings → Authorized Devices**.
+
+`X-Plex-Client-Identifier` is not optional in practice: the specification marks it required on
+**366 of the 405 operations**, including most of the library and playback surface. Treat
+`identity` as a required argument to `PlexClient` — the parameter defaults to `nil` only
+because a handful of endpoints genuinely do not need it.
+
+The identifier must be **stable across launches**. Generating a fresh UUID each time registers
+a new device on every launch and invalidates previously issued tokens, so persist it and pass
+the stored value back in. On iOS, macOS, watchOS and visionOS the keychain is the right place.
+On tvOS it is not — see below.
+
+Calling an operation that needs an identity without one fails locally, with
+`PlexError.missingClientIdentifier`, rather than as a confusing error from the server.
+
+> [!IMPORTANT]
+> **tvOS: persisting the client identifier needs care.**
+>
+> Every API in this package works on tvOS — nothing in the SDK is gated by platform. The
+> caveat is about *your* storage, not about this package.
+>
+> tvOS deliberately provides almost no durable local storage. `UserDefaults` is capped at
+> around 500 KB and the system may purge it, and there is no guarantee that locally stored
+> data — keychain items included — survives. Apple's guidance is to keep anything that must
+> persist in [iCloud key-value storage](https://developer.apple.com/documentation/foundation/nsubiquitouskeyvaluestore)
+> (`NSUbiquitousKeyValueStore`, 1 MB total, 64-byte keys), which comfortably fits a UUID and
+> a token.
+>
+> This matters here because a lost `clientIdentifier` is not a cache miss: the next launch
+> registers as a *new device* with Plex, and the user has to authorise it through the PIN
+> flow again. On tvOS, store the identifier in `NSUbiquitousKeyValueStore` with a
+> `UserDefaults` fallback for when iCloud is unavailable, rather than in the keychain.
+>
+> Nothing else in the SDK is affected — `URLSession`, `Codable` and all 405 operations behave
+> identically on tvOS.
+
+### Signing in with the OAuth PIN flow
+
+```swift
+let identity = ClientIdentity(clientIdentifier: storedClientIdentifier, product: "My Plex App")
+let anonymous = PlexClient(server: .localhost, identity: identity)
+
+let pin = try await anonymous.authentication.createOAuthPin()
+// Send the user to https://plex.tv/link and have them enter pin.code
+
+// Poll until the user finishes, then keep the token.
+let checked = try await anonymous.authentication.getOAuthPin(pinId: pin.id!)
+guard let token = checked.authToken else { /* not linked yet */ return }
+
+let client = anonymous.with(token: token)
+```
+
+### Errors
+
+Operations return the decoded response body and throw for everything else, so a non-2xx status
+is an error rather than a case to handle on every call.
+
+```swift
+do {
+    let container = try await client.library.getLibrarySectionsFallback()
+} catch let PlexError.api(error) where error.isAuthenticationFailure {
+    // 401 or 403 — token missing, invalid, or expired
+} catch let PlexError.api(error) where error.isRetryable {
+    // 429 or 5xx — worth trying again
+} catch let PlexError.api(error) {
+    print(error.statusCode, error.bodyText ?? "")
+} catch let PlexError.transport(underlying) {
+    // No HTTP response at all — offline, DNS, TLS, timeout
+}
+```
+
+Any URL attached to a response or an error has its `X-Plex-Token` replaced with `REDACTED`, so
+logging one does not leak the token.
+
+### Response metadata
+
+The namespace methods return the decoded body. When you also need the status code or headers,
+send the operation directly:
+
+```swift
+let response = try await client.send(Operations.GetServerInfo())
+print(response.statusCode, response.headers["X-Plex-Protocol"] ?? "")
+```
+
+Operations are inert values describing a request, so you can also build a `URLRequest` without
+sending it — useful for handing an authenticated URL to `AVPlayer` or an image loader:
+
+```swift
+var configuration = client.configuration
+configuration.tokenPlacement = .queryItem      // AVPlayer cannot set headers
+let request = try PlexClient(configuration: configuration)
+    .makeRequest(for: Operations.TranscodeImage(/* … */))
+let asset = AVURLAsset(url: request.url!)
+```
+
+### Testing against the client
+
+`HTTPTransport` is the seam. Substitute one to answer from fixtures, or to wrap requests in
+your own retry or logging:
 
 ```swift
 import Foundation
-import Plexswift
+#if canImport(FoundationNetworking)
+import FoundationNetworking   // URLRequest and HTTPURLResponse live here on Linux
+#endif
 
-let client = Client(security: .accessToken("<YOUR_API_KEY_HERE>"))
-
-let response = try await client.server.getServerCapabilities()
-
-switch response.data {
-case .object(let object):
-    // Handle response
-    break
-case .badRequest(let badRequest):
-    // Handle response
-    break
-case .unauthorized(let unauthorized):
-    // Handle response
-    break
-case .empty:
-    // Handle empty response
-    break
+struct StubTransport: HTTPTransport {
+    func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) { /* … */ }
 }
 
+let client = PlexClient(server: .localhost, token: "test", transport: StubTransport())
 ```
-<!-- End SDK Example Usage [usage] -->
 
-<!-- Start Available Resources and Operations [operations] -->
-## Available Resources and Operations
+## Namespaces
 
-<details open>
-<summary>Available methods</summary>
+| Namespace | Operations | | Namespace | Operations |
+| --- | --: | --- | --- | --: |
+| `client.activities` | 2 | | `client.playQueue` | 9 |
+| `client.authentication` | 17 | | `client.playback` | 26 |
+| `client.butler` | 5 | | `client.playlist` | 3 |
+| `client.collections` | 1 | | `client.playlists` | 1 |
+| `client.content` | 13 | | `client.plex` | 1 |
+| `client.devices` | 13 | | `client.preferences` | 3 |
+| `client.downloadQueue` | 9 | | `client.provider` | 8 |
+| `client.dvrs` | 16 | | `client.rate` | 1 |
+| `client.epg` | 11 | | `client.search` | 2 |
+| `client.events` | 3 | | `client.status` | 6 |
+| `client.general` | 36 | | `client.subscriptions` | 10 |
+| `client.hubs` | 16 | | `client.timeline` | 4 |
+| `client.library` | 126 | | `client.transcoder` | 9 |
+| `client.libraryCollections` | 3 | | `client.ultraBlur` | 2 |
+| `client.libraryPlaylists` | 13 | | `client.updater` | 3 |
+| `client.liveTV` | 7 | | `client.users` | 23 |
+| `client.log` | 3 | | | |
 
-### [Activities](docs/sdks/activities/README.md)
+---
 
-* [getServerActivities](docs/sdks/activities/README.md#getserveractivities) - Get Server Activities
-* [cancelServerActivities](docs/sdks/activities/README.md#cancelserveractivities) - Cancel Server Activities
+## What changed in the Plex API
 
-### [Authentication](docs/sdks/authentication/README.md)
+The original package was generated from specification **0.0.3**. This one is generated from
+**1.1.1**. That is not an incremental revision — the specification was substantially rewritten,
+and the surface grew from roughly 60 operations to **405**.
 
-* [getTransientToken](docs/sdks/authentication/README.md#gettransienttoken) - Get a Transient Token
-* [getSourceConnectionInformation](docs/sdks/authentication/README.md#getsourceconnectioninformation) - Get Source Connection Information
-* [getTokenDetails](docs/sdks/authentication/README.md#gettokendetails) - Get Token Details
-* [postUsersSignInData](docs/sdks/authentication/README.md#postuserssignindata) - Get User Sign In Data
+### The API is much larger, and organised differently
 
-### [Butler](docs/sdks/butler/README.md)
+The old package exposed 18 namespaces built around a single Plex Media Server. The current
+specification has 33, and the growth is concentrated in areas the old one barely covered:
 
-* [getButlerTasks](docs/sdks/butler/README.md#getbutlertasks) - Get Butler tasks
-* [startAllTasks](docs/sdks/butler/README.md#startalltasks) - Start all Butler tasks
-* [stopAllTasks](docs/sdks/butler/README.md#stopalltasks) - Stop all Butler tasks
-* [startTask](docs/sdks/butler/README.md#starttask) - Start a single Butler task
-* [stopTask](docs/sdks/butler/README.md#stoptask) - Stop a single Butler task
+- **Library** is now 126 operations. Filtering, sorting, collections, hub management, per-type
+  metadata, and the `mediaQuery` filter language are all described where previously only a
+  handful of list endpoints were.
+- **Live TV and DVR** are new: `dvrs` (16), `epg` (11), `liveTV` (7), `subscriptions` (10) and
+  `downloadQueue` (9) cover tuners, guide data, scheduled recordings and the grab queue.
+- **Playback** (26) and **Transcoder** (9) describe session control, decision endpoints and
+  transcode management as first-class operations.
+- **Devices** (13), **Provider** (8), **Content** (13) and **Events** (3) cover the cloud-side
+  surfaces — companion devices, metadata providers, and the event stream.
 
-### [Hubs](docs/sdks/hubs/README.md)
+### Authentication gained JWTs alongside tokens
 
-* [getGlobalHubs](docs/sdks/hubs/README.md#getglobalhubs) - Get Global Hubs
-* [getRecentlyAdded](docs/sdks/hubs/README.md#getrecentlyadded) - Get Recently Added
-* [getLibraryHubs](docs/sdks/hubs/README.md#getlibraryhubs) - Get library specific hubs
+`X-Plex-Token` still authenticates every request, but it now carries one of two things: a
+traditional access token from plex.tv, or a **JWT** obtained through a new device-registration
+flow. The specification describes JWTs as short-lived (seven days), signed with ED25519, and
+revocable per device — none of which the old specification mentioned.
 
-### [Library](docs/sdks/library/README.md)
+Four operations under `client.authentication` implement it, all against
+`https://clients.plex.tv/api/v2`: `registerDeviceJWK` registers a device's public key,
+`getAuthNonce` and `getAuthKeys` support the handshake, and `exchangeJWTToken` trades a signed
+client JWT for a Plex one.
 
-* [getFileHash](docs/sdks/library/README.md#getfilehash) - Get Hash Value
-* [getRecentlyAddedLibrary](docs/sdks/library/README.md#getrecentlyaddedlibrary) - Get Recently Added
-* [getAllLibraries](docs/sdks/library/README.md#getalllibraries) - Get All Libraries
-* [getLibraryDetails](docs/sdks/library/README.md#getlibrarydetails) - Get Library Details
-* [deleteLibrary](docs/sdks/library/README.md#deletelibrary) - Delete Library Section
-* [getLibraryItems](docs/sdks/library/README.md#getlibraryitems) - Get Library Items
-* [getAllMediaLibrary](docs/sdks/library/README.md#getallmedialibrary) - Get all media of library
-* [getRefreshLibraryMetadata](docs/sdks/library/README.md#getrefreshlibrarymetadata) - Refresh Metadata Of The Library
-* [getSearchLibrary](docs/sdks/library/README.md#getsearchlibrary) - Search Library
-* [getGenresLibrary](docs/sdks/library/README.md#getgenreslibrary) - Get Genres of library media
-* [getCountriesLibrary](docs/sdks/library/README.md#getcountrieslibrary) - Get Countries of library media
-* [getActorsLibrary](docs/sdks/library/README.md#getactorslibrary) - Get Actors of library media
-* [getSearchAllLibraries](docs/sdks/library/README.md#getsearchalllibraries) - Search All Libraries
-* [getMediaMetaData](docs/sdks/library/README.md#getmediametadata) - Get Media Metadata
-* [getMetadataChildren](docs/sdks/library/README.md#getmetadatachildren) - Get Items Children
-* [getTopWatchedContent](docs/sdks/library/README.md#gettopwatchedcontent) - Get Top Watched Content
+The OAuth PIN flow is unchanged in shape but is now fully described, including the legacy XML
+variant (`createLegacyPin`) for older clients.
 
-### [Log](docs/sdks/log/README.md)
+### Requests are addressed to six different hosts
 
-* [logLine](docs/sdks/log/README.md#logline) - Logging a single line message.
-* [logMultiLine](docs/sdks/log/README.md#logmultiline) - Logging a multi-line message
-* [enablePaperTrail](docs/sdks/log/README.md#enablepapertrail) - Enabling Papertrail
+The old specification described one server. The current one recognises that Plex is several
+services, and pins an explicit host per operation:
 
-### [Media](docs/sdks/media/README.md)
+| Host | Operations | What lives there |
+| --- | --: | --- |
+| The user's Plex Media Server | 353 | Libraries, playback, transcoding, server settings |
+| `https://plex.tv/api/v2` | 27 | Authentication, account, devices, sharing |
+| `https://plex.tv/api` | 11 | Legacy XML: friends, home users, claim tokens |
+| `https://plex.tv` | 6 | Site-root endpoints such as `pins.xml` |
+| `https://discover.provider.plex.tv` | 4 | Discover metadata provider |
+| `https://clients.plex.tv/api/v2` | 4 | JWT device registration and companion endpoints |
 
-* [markPlayed](docs/sdks/media/README.md#markplayed) - Mark Media Played
-* [markUnplayed](docs/sdks/media/README.md#markunplayed) - Mark Media Unplayed
-* [updatePlayProgress](docs/sdks/media/README.md#updateplayprogress) - Update Media Play Progress
-* [getBannerImage](docs/sdks/media/README.md#getbannerimage) - Get Banner Image
-* [getThumbImage](docs/sdks/media/README.md#getthumbimage) - Get Thumb Image
+This is handled for you: each operation declares its host, and only the ones targeting your own
+server use the address you configured.
 
-### [Playlists](docs/sdks/playlists/README.md)
+### Server addressing is described properly
 
-* [createPlaylist](docs/sdks/playlists/README.md#createplaylist) - Create a Playlist
-* [getPlaylists](docs/sdks/playlists/README.md#getplaylists) - Get All Playlists
-* [getPlaylist](docs/sdks/playlists/README.md#getplaylist) - Retrieve Playlist
-* [deletePlaylist](docs/sdks/playlists/README.md#deleteplaylist) - Deletes a Playlist
-* [updatePlaylist](docs/sdks/playlists/README.md#updateplaylist) - Update a Playlist
-* [getPlaylistContents](docs/sdks/playlists/README.md#getplaylistcontents) - Retrieve Playlist Contents
-* [clearPlaylistContents](docs/sdks/playlists/README.md#clearplaylistcontents) - Delete Playlist Contents
-* [addPlaylistContents](docs/sdks/playlists/README.md#addplaylistcontents) - Adding to a Playlist
-* [uploadPlaylist](docs/sdks/playlists/README.md#uploadplaylist) - Upload Playlist
+The old specification offered one templated server, `{protocol}://{ip}:{port}`, defaulting to a
+private address. The current one describes three, including `plex.direct` — the scheme by which
+Plex serves a valid TLS certificate for what is otherwise a bare IP, by encoding the address
+into the hostname. `PlexServer.plexDirect(ip:identifier:)` builds it.
 
-### [Plex](docs/sdks/plex/README.md)
+### The schemas are far better factored
 
-* [getCompanionsData](docs/sdks/plex/README.md#getcompanionsdata) - Get Companions Data
-* [getUserFriends](docs/sdks/plex/README.md#getuserfriends) - Get list of friends of the user logged in
-* [getGeoData](docs/sdks/plex/README.md#getgeodata) - Get Geo Data
-* [getHomeData](docs/sdks/plex/README.md#gethomedata) - Get Plex Home Data
-* [getServerResources](docs/sdks/plex/README.md#getserverresources) - Get Server Resources
-* [getPin](docs/sdks/plex/README.md#getpin) - Get a Pin
-* [getTokenByPinId](docs/sdks/plex/README.md#gettokenbypinid) - Get Access Token by PinId
+The old specification inlined nearly everything, which is why the previous package expanded to
+over 1,100 files. The current one defines 112 reusable component schemas and references them
+throughout, so the whole API generates into 240 model types covering 1,473 properties.
 
+### Response fields are optional
 
-### [Search](docs/sdks/search/README.md)
+Every generated property is optional, deliberately, even where the specification marks it
+required. The specification contradicts itself here: decoding the example payloads it publishes
+against the models its own `required` lists describe fails for 13 schemas — `Stream` requires
+`streamType` and then publishes an example without it; `Items` inherits `title` as required and
+publishes an example with neither `title` nor `type`.
 
-* [performSearch](docs/sdks/search/README.md#performsearch) - Perform a search
-* [performVoiceSearch](docs/sdks/search/README.md#performvoicesearch) - Perform a voice search
-* [getSearchResults](docs/sdks/search/README.md#getsearchresults) - Get Search Results
+The examples are the better evidence. A real server omits fields depending on library type,
+agent and version, and a non-optional property turns any such omission into a thrown error that
+fails the whole request rather than leaving one value `nil`.
 
-### [Server](docs/sdks/server/README.md)
+---
 
-* [getServerCapabilities](docs/sdks/server/README.md#getservercapabilities) - Get Server Capabilities
-* [getServerPreferences](docs/sdks/server/README.md#getserverpreferences) - Get Server Preferences
-* [getAvailableClients](docs/sdks/server/README.md#getavailableclients) - Get Available Clients
-* [getDevices](docs/sdks/server/README.md#getdevices) - Get Devices
-* [getServerIdentity](docs/sdks/server/README.md#getserveridentity) - Get Server Identity
-* [getMyPlexAccount](docs/sdks/server/README.md#getmyplexaccount) - Get MyPlex Account
-* [getResizedPhoto](docs/sdks/server/README.md#getresizedphoto) - Get a Resized Photo
-* [getMediaProviders](docs/sdks/server/README.md#getmediaproviders) - Get Media Providers
-* [getServerList](docs/sdks/server/README.md#getserverlist) - Get Server List
+## Migrating from plexswift 0.10
 
-### [Sessions](docs/sdks/sessions/README.md)
+| Then | Now |
+| --- | --- |
+| `Client(security: .accessToken(token))` | `PlexClient(server:token:identity:)` — the address is required |
+| No way to set the server | `PlexServer.host`, `.plexDirect`, `.url`, `.localhost` |
+| `Response<T>` with a case per status code | The decoded body is returned; failures throw `PlexError` |
+| `switch response.data { case .object(let o): … }` | `let value = try await client.library.…()` |
+| `PlexswiftError` | `PlexError`, with `.api`, `.transport` and `.decoding` |
+| `client.server`, `client.video`, `client.sessions` | See the [namespace table](#namespaces) |
+| `AnyValue` | `AnyJSON`, with typed accessors |
+| No client identity headers | `ClientIdentity` |
+| Mutable, non-`Sendable` `Client` | `PlexClient` is `Sendable`; `with(server:)` / `with(token:)` return copies |
+| `throws` (untyped) | `throws(PlexError)` — `catch` is exhaustive |
+| iOS 13+, Swift 5 | iOS 18+, Swift 6 language mode |
 
-* [getSessions](docs/sdks/sessions/README.md#getsessions) - Get Active Sessions
-* [getSessionHistory](docs/sdks/sessions/README.md#getsessionhistory) - Get Session History
-* [getTranscodeSessions](docs/sdks/sessions/README.md#gettranscodesessions) - Get Transcode Sessions
-* [stopTranscodeSession](docs/sdks/sessions/README.md#stoptranscodesession) - Stop a Transcode Session
+The response-handling change is the one that touches every call site. Where you previously
+switched over a `Response` enum, you now write a `do`/`catch` — usually once, around a group of
+calls, instead of at each one.
 
-### [Statistics](docs/sdks/statistics/README.md)
+## Working on this package
 
-* [getStatistics](docs/sdks/statistics/README.md#getstatistics) - Get Media Statistics
-* [getResourcesStatistics](docs/sdks/statistics/README.md#getresourcesstatistics) - Get Resources Statistics
-* [getBandwidthStatistics](docs/sdks/statistics/README.md#getbandwidthstatistics) - Get Bandwidth Statistics
-
-### [Updater](docs/sdks/updater/README.md)
-
-* [getUpdateStatus](docs/sdks/updater/README.md#getupdatestatus) - Querying status of updates
-* [checkForUpdates](docs/sdks/updater/README.md#checkforupdates) - Checking for updates
-* [applyUpdates](docs/sdks/updater/README.md#applyupdates) - Apply Updates
-
-### [Users](docs/sdks/users/README.md)
-
-* [getUsers](docs/sdks/users/README.md#getusers) - Get list of all connected users
-
-### [Video](docs/sdks/video/README.md)
-
-* [getTimeline](docs/sdks/video/README.md#gettimeline) - Get the timeline for a media item
-* [startUniversalTranscode](docs/sdks/video/README.md#startuniversaltranscode) - Start Universal Transcode
-
-### [Watchlist](docs/sdks/watchlist/README.md)
-
-* [getWatchList](docs/sdks/watchlist/README.md#getwatchlist) - Get User Watchlist
-
-</details>
-<!-- End Available Resources and Operations [operations] -->
-
-<!-- Start Authentication [security] -->
-## Authentication
-
-### Global Security Schemes
-
-The SDK supports the following security scheme globally through the `Shared.Security` type:
-
-| Name           | Type           | Scheme         |
-| -------------- | -------------- | -------------- |
-| `.accessToken` | apiKey         | API key        |
-
-You can set the appropriate security parameters by passing a `Shared.Security` value for the `security` parameter when initializing the `Client` instance. For example:
-
-```swift
-import Foundation
-import Plexswift
-
-let client = Client(security: .accessToken("<YOUR_API_KEY_HERE>"))
-
-let response = try await client.server.getServerCapabilities()
-
-switch response.data {
-case .object(let object):
-    // Handle response
-    break
-case .badRequest(let badRequest):
-    // Handle response
-    break
-case .unauthorized(let unauthorized):
-    // Handle response
-    break
-case .empty:
-    // Handle empty response
-    break
-}
-
+```bash
+swift test                       # 222 tests
+python Tools/generate.py         # regenerate from Spec/plex-api-spec.yaml
+python Tools/generate.py --check # what CI runs
+cd Tools && python -m unittest discover -s . -p "test_*.py"
 ```
-<!-- End Authentication [security] -->
 
-<!-- Placeholder for Future Speakeasy SDK Sections -->
+Everything under `Sources/Plexswift/Generated` and `Tests/PlexswiftTests/Generated` is
+generated; edits there are overwritten. The handwritten runtime is in
+`Sources/Plexswift/Core`. To move to a newer specification, follow
+[`Spec/README.md`](Spec/README.md).
 
-# Development
+The generator emits a decoding test for each of the 112 example payloads the specification
+publishes, so a specification change that breaks a model shows up as a test failure rather than
+at runtime.
 
-## Maturity
+## Licence
 
-This SDK is in beta, and there may be breaking changes between versions without a major version update. Therefore, we recommend pinning usage
-to a specific package version. This way, you can install the same version each time without breaking changes unless you are intentionally
-looking for the latest version.
-
-## Contributions
-
-While we value open-source contributions to this SDK, this library is generated programmatically.
-Feel free to open a PR or a Github issue as a proof of concept and we'll do our best to include it in a future release!
-
-### SDK Created by [Speakeasy](https://docs.speakeasyapi.dev/docs/using-speakeasy/client-sdks)
+MIT — see [LICENSE.md](LICENSE.md). The Plex OpenAPI specification is maintained by
+[LukeHagar](https://github.com/LukeHagar/plex-api-spec).

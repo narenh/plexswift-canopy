@@ -1,0 +1,9 @@
+{
+  "homeVisibility": "all",
+  "identifier": "string value",
+  "promotedToOwnHome": true,
+  "promotedToRecommended": true,
+  "promotedToSharedHome": true,
+  "recommendationsVisibility": "all",
+  "title": "string value"
+}

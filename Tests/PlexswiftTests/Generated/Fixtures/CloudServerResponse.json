@@ -1,0 +1,6 @@
+{
+  "address": "string value",
+  "name": "string value",
+  "port": 1,
+  "scheme": "string value"
+}

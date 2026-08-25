@@ -1,0 +1,8 @@
+{
+  "description": "string value",
+  "enabled": true,
+  "interval": 1,
+  "name": "string value",
+  "scheduleRandomized": true,
+  "title": "string value"
+}

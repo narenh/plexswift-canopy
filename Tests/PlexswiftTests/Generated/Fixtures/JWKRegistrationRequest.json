@@ -1,0 +1,9 @@
+{
+  "jwk": {
+    "crv": "string value",
+    "kid": "string value",
+    "kty": "string value",
+    "x": "string value"
+  },
+  "strong": false
+}

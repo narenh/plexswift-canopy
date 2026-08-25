@@ -1,0 +1,35 @@
+{
+  "DecisionResult": {
+    "availableBandwidth": 1,
+    "directPlayDecisionCode": 1,
+    "directPlayDecisionText": "string value",
+    "generalDecisionCode": 1,
+    "generalDecisionText": "string value",
+    "mdeDecisionCode": 1,
+    "mdeDecisionText": "string value",
+    "transcodeDecisionCode": 1,
+    "transcodeDecisionText": "string value"
+  },
+  "TranscodeSession": {
+    "complete": true,
+    "context": "string value",
+    "duration": 1,
+    "error": true,
+    "key": "string value",
+    "progress": 1,
+    "protocol": "string value",
+    "size": 1,
+    "sourceAudioCodec": "string value",
+    "sourceVideoCodec": "string value",
+    "speed": 1,
+    "throttled": true,
+    "transcodeHwFullPipeline": true,
+    "transcodeHwRequested": true
+  },
+  "error": "string value",
+  "id": 1,
+  "key": "string value",
+  "queueId": 1,
+  "status": "deciding",
+  "transcode": {}
+}

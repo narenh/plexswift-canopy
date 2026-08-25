@@ -1,0 +1,11 @@
+{
+  "playQueueID": 1,
+  "playQueueLastAddedItemID": "string value",
+  "playQueueSelectedItemID": 1,
+  "playQueueSelectedItemOffset": 1,
+  "playQueueSelectedMetadataItemID": 1,
+  "playQueueShuffled": true,
+  "playQueueSourceURI": "string value",
+  "playQueueTotalCount": 1,
+  "playQueueVersion": 1
+}

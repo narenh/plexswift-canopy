@@ -1,0 +1,18 @@
+{
+  "accountID": 1,
+  "deviceID": 1,
+  "grandparentRatingKey": "string value",
+  "grandparentTitle": "string value",
+  "historyKey": "string value",
+  "index": 1,
+  "key": "string value",
+  "librarySectionID": "string value",
+  "originallyAvailableAt": "string value",
+  "parentIndex": 1,
+  "parentTitle": "string value",
+  "ratingKey": "string value",
+  "thumb": "string value",
+  "title": "string value",
+  "type": "string value",
+  "viewedAt": 1
+}

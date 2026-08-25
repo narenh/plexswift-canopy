@@ -1,0 +1,12 @@
+{
+  "advanced": true,
+  "default": "string value",
+  "enumValues": "string value",
+  "group": "string value",
+  "hidden": true,
+  "id": "string value",
+  "label": "string value",
+  "summary": "string value",
+  "type": "bool",
+  "value": "string value"
+}

@@ -1,0 +1,5 @@
+{
+  "authToken": "string value",
+  "clientIdentifier": "string value",
+  "jwt": "string value"
+}

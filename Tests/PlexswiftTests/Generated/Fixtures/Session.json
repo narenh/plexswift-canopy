@@ -1,0 +1,9 @@
+{
+  "bandwidth": 1,
+  "id": "string value",
+  "location": "lan",
+  "sessionKey": "string value",
+  "title": "string value",
+  "userID": 1,
+  "uuid": "string value"
+}

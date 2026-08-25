@@ -1,0 +1,9 @@
+{
+  "accessTokens": [
+    {
+      "expiresAt": "string value",
+      "scope": "string value",
+      "token": "string value"
+    }
+  ]
+}

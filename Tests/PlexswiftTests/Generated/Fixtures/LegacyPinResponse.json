@@ -1,0 +1,8 @@
+{
+  "authToken": "string value",
+  "clientIdentifier": "string value",
+  "code": "string value",
+  "expiresIn": 1,
+  "id": 1,
+  "trusted": true
+}

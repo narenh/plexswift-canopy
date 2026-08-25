@@ -1,0 +1,11 @@
+{
+  "Context": {},
+  "Response": {},
+  "cancellable": true,
+  "progress": 1,
+  "subtitle": "string value",
+  "title": "string value",
+  "type": "string value",
+  "userID": 1,
+  "uuid": "string value"
+}

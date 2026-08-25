@@ -1,0 +1,6 @@
+{
+  "channelKey": "string value",
+  "deviceIdentifier": "string value",
+  "enabled": "string value",
+  "lineupIdentifier": "string value"
+}

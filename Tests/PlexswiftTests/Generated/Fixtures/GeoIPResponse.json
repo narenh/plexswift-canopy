@@ -1,0 +1,8 @@
+{
+  "city": "string value",
+  "coordinates": "string value",
+  "country": "string value",
+  "country_code": "string value",
+  "subdivisions": "string value",
+  "timezone": "string value"
+}
