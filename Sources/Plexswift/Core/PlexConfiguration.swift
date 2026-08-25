@@ -53,6 +53,11 @@ public struct PlexConfiguration: Sendable {
     ///   - server: The Plex Media Server to talk to.
     ///   - token: The `X-Plex-Token` to authenticate with.
     ///   - identity: How the calling application identifies itself to Plex.
+    ///   - tokenPlacement: Whether the token travels as a header or a query item.
+    ///   - additionalHeaders: Headers added to every request.
+    ///   - timeout: The timeout applied to each request, in seconds.
+    ///   - decoder: The decoder used for response bodies.
+    ///   - encoder: The encoder used for request bodies.
     public init(
         server: PlexServer,
         token: String? = nil,

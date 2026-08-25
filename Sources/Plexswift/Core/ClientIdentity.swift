@@ -36,8 +36,18 @@ public struct ClientIdentity: Sendable, Hashable {
 
     /// Creates an identity for the calling application.
     ///
-    /// - Parameter clientIdentifier: A stable identifier for this installation. See the note on
-    ///   ``ClientIdentity`` about persisting it rather than generating one per launch.
+    /// - Parameters:
+    ///   - clientIdentifier: A stable identifier for this installation. See the note on
+    ///     ``ClientIdentity`` about persisting it rather than generating one per launch.
+    ///   - product: The name of the application.
+    ///   - version: The version of the application.
+    ///   - deviceName: A human-readable name for the device, shown in Plex's device list.
+    ///   - device: The device model or type, for example `iPhone`.
+    ///   - platform: The operating system, for example `iOS`.
+    ///   - platformVersion: The operating system version.
+    ///   - model: A less friendly identifier for the device model.
+    ///   - deviceVendor: The vendor of the device.
+    ///   - marketplace: The marketplace the application is distributed on.
     public init(
         clientIdentifier: String,
         product: String = Plexswift.defaultProduct,

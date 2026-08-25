@@ -57,6 +57,7 @@ public final class PlexClient: Sendable {
     ///   - token: The `X-Plex-Token` to authenticate with.
     ///   - identity: How the calling application identifies itself. Required for the OAuth PIN
     ///     flow and JWT device registration.
+    ///   - transport: The transport requests are sent on.
     public convenience init(
         server: PlexServer,
         token: String? = nil,
