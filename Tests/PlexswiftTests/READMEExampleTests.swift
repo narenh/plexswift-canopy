@@ -127,9 +127,11 @@ final class READMEExampleTests: XCTestCase {
         XCTAssertTrue(handled)
     }
 
-    /// The README claims a `catch` over `PlexError` is exhaustive. That only holds because the
-    /// throwing methods are declared `throws(PlexError)`, so this compiles without a final
-    /// catch-all — which is the property being asserted.
+    /// The README claims a `catch` over `PlexError` is exhaustive.
+    ///
+    /// The proof is that `error` below needs no `as PlexError` and no final catch-all: because
+    /// the call is declared `throws(PlexError)`, the compiler already knows the type. Writing
+    /// `catch let error as PlexError` here draws an "'as' test is always true" warning.
     func testTypedThrowsMakeCatchExhaustive() async {
         let client = PlexClient(
             server: .localhost,
@@ -141,7 +143,8 @@ final class READMEExampleTests: XCTestCase {
         do {
             _ = try await client.library.getLibrarySectionsFallback()
             XCTFail("Expected the request to throw")
-        } catch let error as PlexError {
+        } catch {
+            // `error` is a PlexError here, not `any Error`.
             guard case .api(let apiError) = error else {
                 return XCTFail("Expected PlexError.api, got \(error)")
             }
