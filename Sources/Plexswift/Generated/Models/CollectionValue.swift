@@ -5,7 +5,7 @@
 import Foundation
 
 /// A collection of related media items.
-public struct Collection: Codable, Hashable, Sendable {
+public struct CollectionValue: Codable, Hashable, Sendable {
     /// Blur hash for collection art.
     public let artBlurHash: String?
 
@@ -13,7 +13,7 @@ public struct Collection: Codable, Hashable, Sendable {
     public let collectionFilterBasedOnUser: Bool?
 
     /// Display mode for the collection.
-    public let collectionMode: CollectionCollectionMode?
+    public let collectionMode: CollectionValueCollectionMode?
 
     /// Whether the collection is published to Plex Discover.
     public let collectionPublished: Bool?
@@ -33,7 +33,7 @@ public struct Collection: Codable, Hashable, Sendable {
     public init(
         artBlurHash: String? = nil,
         collectionFilterBasedOnUser: Bool? = nil,
-        collectionMode: CollectionCollectionMode? = nil,
+        collectionMode: CollectionValueCollectionMode? = nil,
         collectionPublished: Bool? = nil,
         collectionSort: String? = nil,
         lastRatedAt: Int? = nil,

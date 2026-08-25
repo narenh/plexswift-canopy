@@ -4,11 +4,11 @@
 
 import Foundation
 
-public struct Error: Codable, Hashable, Sendable {
-    public let errors: [ErrorErrorsItem]?
+public struct ErrorValue: Codable, Hashable, Sendable {
+    public let errors: [ErrorValueErrorsItem]?
 
     public init(
-        errors: [ErrorErrorsItem]? = nil
+        errors: [ErrorValueErrorsItem]? = nil
     ) {
         self.errors = errors
     }

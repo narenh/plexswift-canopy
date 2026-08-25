@@ -7,7 +7,7 @@ import Foundation
 extension Operations {
     /// Create a collection in the library
     public struct CreateCollection: PlexOperation {
-        public typealias Success = Collection
+        public typealias Success = CollectionValue
 
         public static let operationID = "createCollection"
         public static let method = HTTPMethod.post

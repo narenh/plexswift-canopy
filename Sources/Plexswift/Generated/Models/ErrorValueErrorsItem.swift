@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct ErrorErrorsItem: Codable, Hashable, Sendable {
+public struct ErrorValueErrorsItem: Codable, Hashable, Sendable {
     public let code: Int?
 
     public let message: String?

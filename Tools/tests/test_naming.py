@@ -103,10 +103,14 @@ class TypeNameTests(unittest.TestCase):
         self.assertEqual(type_name("Date"), "DateValue")
         self.assertEqual(type_name("AnyJSON"), "AnyJSONValue")
 
-    def test_leaves_names_the_runtime_qualifies_alone(self):
-        # The runtime spells its dependency `Swift.Error`, so the API's own `Error` schema
-        # keeps the name the specification gives it.
-        self.assertEqual(type_name("Error"), "Error")
+    def test_avoids_shadowing_names_consumers_write_bare(self):
+        # `import Plexswift` must not break unrelated consumer code. A generated
+        # `struct Collection` makes `func f<C: Collection>(_ c: C) -> C.Element?` fail to
+        # compile, and a generated `struct Error` breaks every `enum MyError: Error`.
+        self.assertEqual(type_name("Collection"), "CollectionValue")
+        self.assertEqual(type_name("Error"), "ErrorValue")
+        self.assertEqual(type_name("Result"), "ResultValue")
+        self.assertEqual(type_name("Sequence"), "SequenceValue")
 
     def test_rejects_empty_names(self):
         with self.assertRaises(ValueError):

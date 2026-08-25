@@ -82,8 +82,8 @@ final class GeneratedModelDecodingTests: XCTestCase {
         XCTAssertNoThrow(try decodeFixture("CloudServerResponse", as: CloudServerResponse.self))
     }
 
-    func testDecodesCollectionExample() throws {
-        XCTAssertNoThrow(try decodeFixture("Collection", as: Collection.self))
+    func testDecodesCollectionValueExample() throws {
+        XCTAssertNoThrow(try decodeFixture("CollectionValue", as: CollectionValue.self))
     }
 
     func testDecodesConnectionExample() throws {
@@ -142,8 +142,8 @@ final class GeneratedModelDecodingTests: XCTestCase {
         XCTAssertNoThrow(try decodeFixture("EPGRegion", as: EPGRegion.self))
     }
 
-    func testDecodesErrorExample() throws {
-        XCTAssertNoThrow(try decodeFixture("Error", as: Error.self))
+    func testDecodesErrorValueExample() throws {
+        XCTAssertNoThrow(try decodeFixture("ErrorValue", as: ErrorValue.self))
     }
 
     func testDecodesFeatureExample() throws {

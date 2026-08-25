@@ -28,15 +28,24 @@ SWIFT_KEYWORDS = frozenset(
 # Identifiers that are legal Swift but would shadow something the generated code relies on.
 SHADOWING_NAMES = frozenset({"Self", "Type", "Protocol", "Any", "AnyObject"})
 
-# Type names the generated models themselves refer to. A schema called "Data" would emit
-# `public struct Data` into the same module, and every `Data` in a generated file would then
-# resolve to it instead of `Foundation.Data`, so these get a suffix.
+# Standard-library and Foundation names a generated type must not take, because declaring one
+# in this module makes every bare use of that name resolve here instead.
 #
-# Names the *handwritten* runtime depends on are not listed. A schema called `Error` is fine,
-# because the runtime spells that dependency `Swift.Error`; qualifying at the point of use is
-# better than renaming a type the API actually has.
+# Two things break. Inside the module, a schema called "Data" would capture the `Data` that
+# every generated model refers to. Outside it, the damage is worse and less obvious: `import
+# Plexswift` is enough to break code that has nothing to do with Plex, because Swift resolves
+# the name to this module's type in preference to nothing at all. A generated `struct
+# Collection` turns a consumer's `func f<C: Collection>(_ c: C) -> C.Element?` into an error —
+# the constraint now names a struct — and a generated `struct Error` breaks every `enum
+# MyError: Error`. An SDK has no business poisoning the namespace of anything that imports it.
+#
+# Qualifying at the point of use (the runtime spells its own dependency `Swift.Error`) fixes
+# the inside-the-module half only. Consumers cannot be asked to write `Swift.Collection`
+# throughout their own code because they imported this package, so the API's type is the one
+# that yields.
 RESERVED_TYPE_NAMES = frozenset(
     {
+        # Referred to by the generated code itself.
         "AnyJSON",
         "Bool",
         "CodingKey",
@@ -56,6 +65,26 @@ RESERVED_TYPE_NAMES = frozenset(
         "Sendable",
         "String",
         "URL",
+        # Written bare in ordinary consumer code, and so must not be captured.
+        "Array",
+        "AsyncSequence",
+        "Character",
+        "Codable",
+        "Collection",
+        "Comparable",
+        "Dictionary",
+        "Equatable",
+        "Error",
+        "Identifiable",
+        "Iterator",
+        "Never",
+        "Optional",
+        "Range",
+        "Result",
+        "Sequence",
+        "Set",
+        "Task",
+        "Void",
     }
 )
 

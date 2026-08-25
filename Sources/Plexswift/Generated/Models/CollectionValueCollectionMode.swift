@@ -5,7 +5,7 @@
 import Foundation
 
 /// Display mode for the collection.
-public enum CollectionCollectionMode: String, Codable, Hashable, Sendable, CaseIterable {
+public enum CollectionValueCollectionMode: String, Codable, Hashable, Sendable, CaseIterable {
     case `default` = "default"
     case hideItems = "hideItems"
     case showItems = "showItems"
